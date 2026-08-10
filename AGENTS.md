@@ -1,0 +1,125 @@
+# AGENTS.md
+
+Entry point for humans and agents working on pi-norm-spec.
+
+## Purpose
+
+pi-norm-spec is the pi runtime adapter for the canonical Rust norm-spec engine.
+It provides per-turn convention injection and enforceable tool-call policy
+without becoming a second `.norm` implementation.
+
+pi loads TypeScript/JavaScript extensions. This repository is therefore
+intentionally hybrid:
+
+- Rust owns policy evaluation and the bridge protocol.
+- TypeScript owns pi ExtensionAPI events and UI adaptation.
+- norm-spec owns parsing, collection, schema validation, and format semantics.
+
+## Current state
+
+Version `0.2.0-alpha.1` is a bootstrap. The Rust bridge and TypeScript entry
+expose identity/status only. Injection and enforcement are not complete until
+the execution plan and end-to-end tests say so.
+
+Read first:
+
+- `docs/planning/status.md` for live state.
+- `docs/planning/v0.2-execution.md` for the active plan.
+- `docs/ARCHITECTURE.md` for the Rust/TypeScript boundary.
+- `docs/decisions.md` for immutable decisions.
+
+## Common commands
+
+```bash
+cargo fmt --check
+cargo clippy --workspace --all-targets --all-features -- -D warnings
+cargo test --workspace --all-features
+cargo doc --workspace --no-deps
+npm ci
+npm run typecheck
+npm test
+```
+
+## Sources of truth
+
+| Concern | Source of truth |
+|---|---|
+| project workflow and quality gates | `AGENTS.md` |
+| adapter architecture | `docs/ARCHITECTURE.md` |
+| rationale | `docs/decisions.md` |
+| milestones | `ROADMAP.md` |
+| shipped changes | `CHANGELOG.md` |
+| in-flight state | `docs/planning/status.md` |
+| bridge protocol fixtures | `tests/contract/` |
+| `.norm` format and semantics | upstream `norm-spec` |
+
+## Work loop
+
+plan → decide → implement → test → review → merge → archive → release review → release.
+
+Non-trivial scope, protocol, enforcement, security, or distribution decisions
+require a decision record before implementation.
+
+## Branching and commits
+
+Use trunk-based development. `main` stays releasable. Use short-lived
+`feat/*`, `fix/*`, `docs/*`, `refactor/*`, `test/*`, and `chore/*` branches.
+Do not create `develop` or long-lived release branches.
+
+Use Conventional Commits: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`,
+`chore:`, `perf:`, `build:`, and `ci:`. Each commit has one semantic purpose.
+Stage explicitly, never with `git add -A`, and run `git diff --cached --check`.
+
+## Versioning and releases
+
+pi-norm-spec has independent Semantic Versioning and begins this rewrite at
+`0.2.0-alpha.1`, following the previous TypeScript package's `0.1.0` line.
+
+- Release tag: `vX.Y.Z` on `main`.
+- Rust workspace and npm package versions must match in a release commit.
+- Commit both `Cargo.lock` and `package-lock.json`.
+- Pin the Rust development toolchain and define MSRV before public alpha.
+- Declare compatible norm-spec product and machine protocol ranges explicitly.
+- Promote `[Unreleased]` only during release preparation.
+
+## Rust rules
+
+- Forbid unsafe code workspace-wide unless an explicit audited decision says
+  otherwise.
+- `pi-norm-engine` owns framework-neutral policy decisions over normalized
+  upstream data.
+- `pi-norm-bridge` owns JSON/JSONL framing and process lifecycle.
+- Libraries do not exit the process, write terminal output, or hide failures.
+- Production code avoids `unwrap` and `expect` for recoverable failures.
+- Structured outputs are versioned and deterministic.
+
+## TypeScript rules
+
+- Keep `extensions/` thin: event registration, input projection, bridge calls,
+  cancellation, and user-facing messages only.
+- Do not parse YAML, walk `.norm` inheritance, validate schemas, or duplicate
+  policy evaluation in TypeScript.
+- Use strict TypeScript with no implicit `any`.
+- Never swallow bridge errors or convert them into an empty active ruleset.
+- Treat tool-call blocking as a security boundary: reasons and escape behavior
+  require tests.
+
+## Testing
+
+Use Rust unit/integration tests for engine and bridge behavior, TypeScript tests
+for event adaptation, and real pi end-to-end tests for injection and blocking.
+An unavailable bridge, upstream fixture, or pi runtime fails the applicable
+test; it must not be reported as a successful skip.
+
+## Documentation
+
+English is primary for repository materials; keep `README.zh-CN.md` aligned.
+Decisions are append-only. Planning and status documents are mutable working
+records. Upstream format changes are proposed in norm-spec, never documented as
+private pi fields here.
+
+## `.norm` awareness
+
+Before operating in a directory, collect `.norm` files to the repository root
+and honor them. Until the Rust norm-spec CLI is self-hosting, use the legacy
+Python CLI as the compatibility oracle.
