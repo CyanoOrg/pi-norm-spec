@@ -1,0 +1,44 @@
+---
+metadata:
+  layer: root
+  profile: root
+  scope: ./
+  version: "1.0"
+  description: pi-norm-spec hybrid repository governance
+
+template:
+  required_files: [AGENTS.md, README.md, CHANGELOG.md, ROADMAP.md, Cargo.toml, package.json]
+  required_directories: [crates/, docs/, extensions/, tests/]
+  naming_convention:
+    - "kebab-case for crate and planning directory names"
+    - "kebab-case TypeScript extension filenames"
+  single_source_of_truth:
+    - source: docs/ARCHITECTURE.md
+      for: the Rust and TypeScript boundary
+    - source: docs/decisions.md
+      for: decisions and rationale
+    - source: docs/planning/status.md
+      for: current development state
+
+agent_rules:
+  update_order:
+    - "Record protocol or enforcement decisions before implementation"
+    - "Implement semantics in Rust and keep the TypeScript adapter thin"
+    - "Run Rust, TypeScript, and applicable end-to-end gates"
+  reference_policy:
+    target_must_exist: true
+    allow_external: false
+    require_description: true
+
+strong_references:
+  - type: source
+    target: /docs/ARCHITECTURE.md
+    sync: auto_pull
+    validation: strict
+    description: Architecture defines which side owns each behavior
+---
+
+# Repository conventions
+
+TypeScript adapts pi events; Rust owns the engine and bridge. Format semantics
+remain upstream in norm-spec.
