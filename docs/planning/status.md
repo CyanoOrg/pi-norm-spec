@@ -3,14 +3,14 @@
 ## Resume here
 
 - Stage: `0.1.0-alpha.1`; upstream-contract and bridge-model work are next.
-- Integration branch: `main`; Node 24 CI maintenance awaits GitHub verification.
+- Integration branch: `main`; Node 24 CI maintenance is verified and ready to
+  integrate.
 - Current objective: pin the canonical upstream contract and measure the bridge
   process model without duplicating `.norm` semantics.
 - The private GitHub repository, initial `main` push, and first hosted Actions
   run are complete and green.
-- Maintainer checkpoint: push the Node 24 Action pins and confirm the next run
-  is green without deprecation annotations; public visibility may follow after
-  the initial functional slice.
+- GitHub repository bootstrap is complete; public visibility remains a
+  maintainer checkpoint after the initial functional slice.
 - Injection, enforcement, and validation feedback are not implemented.
 
 ## Verification
@@ -25,9 +25,8 @@ Bootstrap verification on 2026-08-10:
 - `npm run typecheck` and `npm test` → green.
 - `bash scripts/check-public-history.sh` → green across the current index and
   all reachable commits.
-- The first GitHub-hosted run was green across Rust, extension, Linux, macOS,
-  and Windows jobs; its only annotations were Node 20 Action-runtime
-  deprecations.
+- The Node 24 GitHub-hosted verification run was green across Rust, extension,
+  Linux, macOS, and Windows jobs with no annotations.
 
 ## Open-source readiness
 
@@ -37,8 +36,7 @@ Bootstrap verification on 2026-08-10:
 - [x] GitHub Actions references pinned to full commit SHAs.
 - [x] Private GitHub repository creation, initial `main` push, and first hosted
       Actions run.
-- [ ] Verify the Node 24 Action pins on GitHub without deprecation annotations
-      (maintainer checkpoint).
+- [x] Node 24 Action pins verified green on GitHub without annotations.
 - [ ] Configure `main` protection when repository visibility or the
       organization plan permits it.
 
