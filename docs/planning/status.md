@@ -3,9 +3,11 @@
 ## Resume here
 
 - Stage: `0.1.0-alpha.1` bootstrap.
-- Branch: `docs/v0.1-public-line`.
+- Branch: `chore/open-source-readiness`.
 - Current objective: establish the Rust engine/bridge boundary, thin TypeScript
   entry, protocol fixtures, and CI.
+- Current side objective: finish public-repository safeguards before GitHub
+  publication.
 - Injection, enforcement, and validation feedback are not implemented.
 
 ## Verification
@@ -18,6 +20,16 @@ Bootstrap verification on 2026-08-10:
 - `RUSTDOCFLAGS=-Dwarnings cargo doc --workspace --no-deps` → green.
 - `npm ci --ignore-scripts` → 147 packages audited, 0 vulnerabilities.
 - `npm run typecheck` and `npm test` → green.
+- `bash scripts/check-public-history.sh` → green across the current index and
+  all reachable commits.
+
+## Open-source readiness
+
+- [x] Independent public `0.1` history and product identity.
+- [x] Security policy, code of conduct, and structured issue/PR templates.
+- [x] High-confidence secret, sensitive filename, and private-path history scan.
+- [x] GitHub Actions references pinned to full commit SHAs.
+- [ ] GitHub repository creation, rules, and initial push (maintainer checkpoint).
 
 ## Open work
 

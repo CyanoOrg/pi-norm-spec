@@ -1,0 +1,70 @@
+name: Bug report
+description: Report reproducible incorrect pi-norm-spec behavior
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        pi-norm-spec is pre-release software. Please remove secrets and private project data from every example.
+  - type: input
+    id: version
+    attributes:
+      label: pi-norm-spec version or commit
+      placeholder: 0.1.0-alpha.1 or a commit SHA
+    validations:
+      required: true
+  - type: input
+    id: pi_version
+    attributes:
+      label: pi version
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Affected surface
+      options:
+        - Extension loading
+        - Bridge startup or protocol
+        - Convention injection
+        - Tool-call enforcement
+        - Escape behavior
+        - Post-edit validation
+        - Installation or packaging
+        - Documentation
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating system, architecture, Node version, and installation method
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include sanitized configuration, `.norm` input, and exact steps.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include complete sanitized output and bridge status.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: I searched existing issues and removed credentials and private project data.
+          required: true

@@ -7,8 +7,8 @@ metadata:
   description: pi-norm-spec hybrid repository governance
 
 template:
-  required_files: [AGENTS.md, README.md, CHANGELOG.md, ROADMAP.md, Cargo.toml, package.json]
-  required_directories: [crates/, docs/, extensions/, tests/]
+  required_files: [AGENTS.md, README.md, CHANGELOG.md, ROADMAP.md, Cargo.toml, package.json, SECURITY.md, CODE_OF_CONDUCT.md]
+  required_directories: [.github/, crates/, docs/, extensions/, scripts/, tests/]
   naming_convention:
     - "kebab-case for crate and planning directory names"
     - "kebab-case TypeScript extension filenames"

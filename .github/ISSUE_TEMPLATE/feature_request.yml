@@ -1,0 +1,34 @@
+name: Feature request
+description: Propose a pi runtime-adapter improvement
+title: "[Feature]: "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Describe the pi user problem independently of a preferred solution.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed outcome
+      description: Explain expected runtime behavior, security impact, and alternatives.
+    validations:
+      required: true
+  - type: textarea
+    id: upstream
+    attributes:
+      label: Upstream contract impact
+      description: State whether norm-spec format or machine-protocol changes are needed.
+    validations:
+      required: true
+  - type: checkboxes
+    id: boundary
+    attributes:
+      label: Scope check
+      options:
+        - label: This belongs in pi host adaptation rather than the upstream norm-spec format or validator.
+          required: true
+        - label: I considered bridge compatibility, enforcement, and escape behavior.
+          required: true

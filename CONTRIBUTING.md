@@ -15,6 +15,7 @@ cargo doc --workspace --no-deps
 npm ci
 npm run typecheck
 npm test
+bash scripts/check-public-history.sh
 ```
 
 Changes to enforcement, escape behavior, bridge framing, or pi event handling

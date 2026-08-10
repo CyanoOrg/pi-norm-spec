@@ -38,6 +38,7 @@ cargo doc --workspace --no-deps
 npm ci
 npm run typecheck
 npm test
+bash scripts/check-public-history.sh
 ```
 
 ## Sources of truth
