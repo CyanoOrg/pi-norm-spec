@@ -1,0 +1,19 @@
+[package]
+name = "pi-norm-bridge"
+description = "Versioned process bridge between pi TypeScript extensions and the Rust policy engine"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "pi-norm-bridge"
+path = "src/main.rs"
+
+[dependencies]
+pi-norm-engine = { path = "../pi-norm-engine", version = "0.2.0-alpha.1" }
+
+[lints]
+workspace = true
