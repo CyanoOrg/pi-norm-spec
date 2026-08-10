@@ -3,11 +3,11 @@
 ## Resume here
 
 - Stage: `0.1.0-alpha.1` bootstrap.
-- Branch: `chore/open-source-readiness`.
+- Integration branch: `main`; the open-source-readiness batch is complete.
 - Current objective: establish the Rust engine/bridge boundary, thin TypeScript
   entry, protocol fixtures, and CI.
-- Current side objective: finish public-repository safeguards before GitHub
-  publication.
+- Maintainer checkpoint: create and configure the GitHub repository, then push
+  `main`; public visibility may follow after the initial functional slice.
 - Injection, enforcement, and validation feedback are not implemented.
 
 ## Verification
