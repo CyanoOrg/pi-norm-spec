@@ -1,0 +1,30 @@
+---
+metadata:
+  layer: documentation
+  scope: docs/
+  version: "1.0"
+  description: Architecture, decisions, and execution records
+
+template:
+  required_files: [ARCHITECTURE.md, decisions.md]
+  required_directories: [planning/]
+  single_source_of_truth:
+    - source: ARCHITECTURE.md
+      for: Rust, bridge, and TypeScript boundaries
+    - source: decisions.md
+      for: decisions and rationale
+
+agent_rules:
+  update_order:
+    - "Record a decision before changing architecture, protocol, or enforcement scope"
+    - "Update stable architecture documentation"
+    - "Update planning and status records"
+  reference_policy:
+    target_must_exist: true
+    allow_external: false
+    require_description: true
+---
+
+# Documentation conventions
+
+Decisions are append-only; plans and status remain reality-based working docs.
