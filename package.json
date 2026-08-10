@@ -1,6 +1,6 @@
 {
   "name": "pi-norm-spec",
-  "version": "0.2.0-alpha.1",
+  "version": "0.1.0-alpha.1",
   "description": "Rust-backed pi adapter for norm-spec conventions",
   "license": "MIT",
   "author": "Wade",
@@ -14,7 +14,8 @@
     "extensions": ["./extensions"]
   },
   "normSpec": {
-    "productCompat": ">=0.4.0-alpha.1 <0.5.0",
+    "formatCompat": ["norm-spec/a1"],
+    "productCompat": ">=0.1.0-alpha.1 <0.2.0",
     "collectApi": "norm-spec/collect/v1",
     "bridgeApi": "pi-norm-spec/bridge/v1"
   },

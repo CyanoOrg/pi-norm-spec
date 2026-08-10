@@ -17,14 +17,14 @@ intentionally hybrid:
 
 ## Current state
 
-Version `0.2.0-alpha.1` is a bootstrap. The Rust bridge and TypeScript entry
+Version `0.1.0-alpha.1` is a bootstrap. The Rust bridge and TypeScript entry
 expose identity/status only. Injection and enforcement are not complete until
 the execution plan and end-to-end tests say so.
 
 Read first:
 
 - `docs/planning/status.md` for live state.
-- `docs/planning/v0.2-execution.md` for the active plan.
+- `docs/planning/v0.1-execution.md` for the active plan.
 - `docs/ARCHITECTURE.md` for the Rust/TypeScript boundary.
 - `docs/decisions.md` for immutable decisions.
 
@@ -72,8 +72,9 @@ Stage explicitly, never with `git add -A`, and run `git diff --cached --check`.
 
 ## Versioning and releases
 
-pi-norm-spec has independent Semantic Versioning and begins this rewrite at
-`0.2.0-alpha.1`, following the previous TypeScript package's `0.1.0` line.
+pi-norm-spec has independent Semantic Versioning and begins its public product
+line at `0.1.0-alpha.1`. Earlier prototype histories and package versions are
+not part of this repository.
 
 - Release tag: `vX.Y.Z` on `main`.
 - Rust workspace and npm package versions must match in a release commit.
@@ -121,5 +122,6 @@ private pi fields here.
 ## `.norm` awareness
 
 Before operating in a directory, collect `.norm` files to the repository root
-and honor them. Until the Rust norm-spec CLI is self-hosting, use the legacy
-Python CLI as the compatibility oracle.
+and honor them. Until the Rust norm-spec CLI is self-hosting, perform that
+collection directly from the filesystem and use the upstream specification and
+contract fixtures as the format authority.

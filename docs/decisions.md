@@ -37,3 +37,20 @@ different reasons.
 
 **Rationale.** Explicit protocol negotiation permits controlled upgrades and
 clear incompatibility errors.
+
+## D004 — Start an independent public hybrid product line
+
+**Decision.** This repository begins the public pi-norm-spec product at
+`0.1.0-alpha.1` with its own Git history. It does not import prototype commits,
+branches, tags, or package versions. The future `CyanoOrg/pi-norm-spec`
+repository is the canonical public collaboration and release authority; any
+Gitea copy is a mirror or separately named legacy archive.
+
+**Context.** An earlier private TypeScript proof of concept validated basic pi
+integration, but it was not published as a public package or GitHub project.
+Carrying that product lineage into the hybrid implementation would imply a
+public release history that does not exist.
+
+**Rationale.** A clean `0.1` line lets the package version describe this
+implementation's maturity. Useful behavior is captured as self-contained
+protocol and end-to-end fixtures rather than inherited Git ancestry.

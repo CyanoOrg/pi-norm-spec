@@ -4,11 +4,11 @@ version = 4
 
 [[package]]
 name = "pi-norm-bridge"
-version = "0.2.0-alpha.1"
+version = "0.1.0-alpha.1"
 dependencies = [
  "pi-norm-engine",
 ]
 
 [[package]]
 name = "pi-norm-engine"
-version = "0.2.0-alpha.1"
+version = "0.1.0-alpha.1"

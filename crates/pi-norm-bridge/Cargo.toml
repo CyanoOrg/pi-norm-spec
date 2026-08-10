@@ -13,7 +13,7 @@ name = "pi-norm-bridge"
 path = "src/main.rs"
 
 [dependencies]
-pi-norm-engine = { path = "../pi-norm-engine", version = "0.2.0-alpha.1" }
+pi-norm-engine = { path = "../pi-norm-engine", version = "0.1.0-alpha.1" }
 
 [lints]
 workspace = true

@@ -2,8 +2,8 @@
 
 ## Resume here
 
-- Stage: `0.2.0-alpha.1` bootstrap.
-- Branch: `main` after bootstrap integration.
+- Stage: `0.1.0-alpha.1` bootstrap.
+- Branch: `docs/v0.1-public-line`.
 - Current objective: establish the Rust engine/bridge boundary, thin TypeScript
   entry, protocol fixtures, and CI.
 - Injection, enforcement, and validation feedback are not implemented.
@@ -18,8 +18,6 @@ Bootstrap verification on 2026-08-10:
 - `RUSTDOCFLAGS=-Dwarnings cargo doc --workspace --no-deps` → green.
 - `npm ci --ignore-scripts` → 147 packages audited, 0 vulnerabilities.
 - `npm run typecheck` and `npm test` → green.
-- Legacy `norm validate --all --strict` against this repository → 2 files,
-  0 errors, 0 warnings.
 
 ## Open work
 

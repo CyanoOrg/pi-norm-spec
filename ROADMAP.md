@@ -1,6 +1,6 @@
 # Roadmap
 
-## 0.2 — Rust-backed runtime adapter
+## 0.1 — Initial Rust-backed runtime adapter
 
 ### Alpha
 
@@ -20,4 +20,5 @@
 
 - npm/pi package distribution includes or reliably obtains the Rust binary.
 - Real pi end-to-end gates are green.
-- The legacy TypeScript parser/collect implementation is retired.
+- The adapter consumes versioned upstream contracts without duplicating format
+  parsing or validation.

@@ -1,5 +1,5 @@
 {
   "bridgeApiVersion": "pi-norm-spec/bridge/v1",
   "expectedNormCollectApi": "norm-spec/collect/v1",
-  "packageVersion": "0.2.0-alpha.1"
+  "packageVersion": "0.1.0-alpha.1"
 }
