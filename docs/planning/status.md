@@ -10,8 +10,16 @@
 
 ## Verification
 
-Record current Rust and npm gate results here after bootstrap setup. Do not
-reuse results from the previous TypeScript repository.
+Bootstrap verification on 2026-08-10:
+
+- `cargo fmt --check` → green.
+- `cargo clippy --workspace --all-targets --all-features -- -D warnings` → green.
+- `cargo test --workspace --all-features` → 3 tests passed.
+- `RUSTDOCFLAGS=-Dwarnings cargo doc --workspace --no-deps` → green.
+- `npm ci --ignore-scripts` → 147 packages audited, 0 vulnerabilities.
+- `npm run typecheck` and `npm test` → green.
+- Legacy `norm validate --all --strict` against this repository → 2 files,
+  0 errors, 0 warnings.
 
 ## Open work
 
