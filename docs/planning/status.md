@@ -8,6 +8,10 @@
 - Current objective: define the exact machine-evaluable enforcement subset and
   explicit escape semantics before implementing `tool_call` blocking. This
   does not authorize enforcement or Gate E production/publication yet.
+- `docs/planning/gate-d-enforcement-design.md` records the current proposal:
+  the pinned A1 hard-enforcement subset is empty, and one-call human escape
+  requires a final immutable pi input. It awaits the maintainer checkpoint and
+  is not an accepted decision or implementation authorization.
 - D005 fixes the upstream boundary as `norm` CLI subprocesses. D006 fixes the
   first distribution path as verified platform-specific optional packages with
   the complete runtime/conformance payload. D007 fixes one pi-specific Skill
