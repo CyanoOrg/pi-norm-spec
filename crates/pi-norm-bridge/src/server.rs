@@ -8,7 +8,7 @@ use std::{
     thread::{self, JoinHandle},
 };
 
-use pi_norm_engine::{BRIDGE_API_VERSION, NormCompatibility};
+use pi_norm_engine::{BRIDGE_API_VERSION, NormCompatibility, PromptContext};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use serde_json::Value;
 
@@ -78,6 +78,13 @@ struct RequestFrame {
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct CollectParams {
+    root: PathBuf,
+    target: PathBuf,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct PromptContextParams {
     root: PathBuf,
     target: PathBuf,
 }
@@ -234,6 +241,7 @@ impl SessionState<'_> {
         match request.method.as_str() {
             "status" => self.handle_status(&request),
             "collect" => self.handle_collect(request),
+            "promptContext" => self.handle_prompt_context(request),
             "validate" => self.handle_validate(request),
             "cancel" => self.handle_cancel(&request),
             "shutdown" => self.handle_shutdown(request),
@@ -277,6 +285,36 @@ impl SessionState<'_> {
         };
         let cancellation = CancellationToken::default();
         spawn_collect(
+            self.runtime.clone(),
+            request.id.clone(),
+            params,
+            cancellation.clone(),
+            self.events.clone(),
+        );
+        self.active = Some(ActiveRequest {
+            id: request.id,
+            cancellation,
+        });
+        Ok(LoopControl::Continue)
+    }
+
+    fn handle_prompt_context(
+        &mut self,
+        request: RequestFrame,
+    ) -> Result<LoopControl, UpstreamError> {
+        if self.active.is_some() {
+            send_busy(self.output, &request.id)?;
+            return Ok(LoopControl::Continue);
+        }
+        let params: PromptContextParams = match request_params(&request) {
+            Ok(params) => params,
+            Err(error) => {
+                send_error(self.output, &request.id, &error)?;
+                return Ok(LoopControl::Continue);
+            }
+        };
+        let cancellation = CancellationToken::default();
+        spawn_prompt_context(
             self.runtime.clone(),
             request.id.clone(),
             params,
@@ -414,6 +452,29 @@ fn spawn_collect(
     thread::spawn(move || {
         let result = runtime
             .collect_initialized(&params.root, &params.target, &cancellation)
+            .and_then(to_value);
+        let _ = events.send(InputEvent::OperationFinished { id, result });
+    });
+}
+
+fn spawn_prompt_context(
+    runtime: UpstreamRuntime,
+    id: String,
+    params: PromptContextParams,
+    cancellation: CancellationToken,
+    events: SyncSender<InputEvent>,
+) {
+    thread::spawn(move || {
+        let result = runtime
+            .collect_initialized(&params.root, &params.target, &cancellation)
+            .and_then(|collection| {
+                PromptContext::from_collection(collection).map_err(|error| {
+                    UpstreamOperationError::Failed(UpstreamError::external(
+                        error.code(),
+                        error.message(),
+                    ))
+                })
+            })
             .and_then(to_value);
         let _ = events.send(InputEvent::OperationFinished { id, result });
     });
@@ -748,8 +809,8 @@ mod tests {
     use std::{collections::HashSet, io::Cursor};
 
     use super::{
-        BRIDGE_API_VERSION, CollectParams, MAX_FRAME_BYTES, decode_request, read_input_frame,
-        request_params,
+        BRIDGE_API_VERSION, CollectParams, MAX_FRAME_BYTES, PromptContextParams, decode_request,
+        read_input_frame, request_params,
     };
 
     #[test]
@@ -799,6 +860,20 @@ mod tests {
         let request = decode_request(&frame, &mut seen)?;
         let Err(error) = request_params::<CollectParams>(&request) else {
             return Err("unknown collect parameter unexpectedly passed".into());
+        };
+        assert_eq!(error.code(), "pi-norm-spec/bridge/params-invalid");
+        Ok(())
+    }
+
+    #[test]
+    fn prompt_context_params_require_root_and_target() -> Result<(), Box<dyn std::error::Error>> {
+        let mut seen = HashSet::new();
+        let frame = format!(
+            r#"{{"apiVersion":"{BRIDGE_API_VERSION}","type":"request","id":"r-context","method":"promptContext","params":{{"root":"."}}}}"#
+        );
+        let request = decode_request(&frame, &mut seen)?;
+        let Err(error) = request_params::<PromptContextParams>(&request) else {
+            return Err("promptContext unexpectedly accepted a missing target".into());
         };
         assert_eq!(error.code(), "pi-norm-spec/bridge/params-invalid");
         Ok(())

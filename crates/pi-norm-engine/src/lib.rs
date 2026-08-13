@@ -7,6 +7,7 @@
 #![forbid(unsafe_code)]
 
 mod norm_protocol;
+mod prompt_context;
 mod upstream_pin;
 
 pub use norm_protocol::{
@@ -15,6 +16,9 @@ pub use norm_protocol::{
     NormConformanceSuite, NormConformanceSummary, NormDiagnostic, NormErrorDetail,
     NormErrorResponse, NormProductIdentity, NormRustApiIdentity, NormValidateResponse,
     NormValidationResult, NormValidationStatus, NormValidationSummary,
+};
+pub use prompt_context::{
+    MAX_PROMPT_CONTEXT_BYTES, PROMPT_CONTEXT_API_VERSION, PromptContext, PromptContextError,
 };
 pub use upstream_pin::{
     NORM_COLLECT_API, NORM_COMPATIBILITY_API, NORM_CONFORMANCE_API, NORM_CONTRACT_BUNDLE_API,
@@ -42,6 +46,8 @@ pub struct RuntimeIdentity {
     pub expected_norm_collect_api: &'static str,
     /// Canonical norm-spec validate protocol required by this runtime.
     pub expected_norm_validate_api: &'static str,
+    /// Ephemeral prompt-context protocol produced by this runtime.
+    pub prompt_context_api_version: &'static str,
     /// Rust package version.
     pub package_version: &'static str,
 }
@@ -55,6 +61,7 @@ pub const fn runtime_identity() -> RuntimeIdentity {
         expected_norm_compatibility_api: NORM_COMPATIBILITY_API,
         expected_norm_collect_api: NORM_COLLECT_API,
         expected_norm_validate_api: NORM_VALIDATE_API,
+        prompt_context_api_version: PROMPT_CONTEXT_API_VERSION,
         package_version: env!("CARGO_PKG_VERSION"),
     }
 }
@@ -63,7 +70,7 @@ pub const fn runtime_identity() -> RuntimeIdentity {
 mod tests {
     use super::{
         BRIDGE_API_VERSION, NORM_COLLECT_API, NORM_COMPATIBILITY_API, NORM_PRODUCT_VERSION,
-        NORM_VALIDATE_API, UpstreamPin, runtime_identity,
+        NORM_VALIDATE_API, PROMPT_CONTEXT_API_VERSION, UpstreamPin, runtime_identity,
     };
 
     #[test]
@@ -77,6 +84,10 @@ mod tests {
         );
         assert_eq!(identity.expected_norm_collect_api, NORM_COLLECT_API);
         assert_eq!(identity.expected_norm_validate_api, NORM_VALIDATE_API);
+        assert_eq!(
+            identity.prompt_context_api_version,
+            PROMPT_CONTEXT_API_VERSION
+        );
         assert_eq!(identity.package_version, "0.1.0-alpha.1");
     }
 

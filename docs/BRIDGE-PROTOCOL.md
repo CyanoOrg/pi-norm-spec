@@ -12,8 +12,8 @@ adapter and one session-scoped `pi-norm-bridge` child. It does not define
   the terminator.
 - Request IDs contain 1–128 UTF-8 bytes and are unique within one session. A
   session accepts at most 65,536 unique IDs.
-- The bridge permits one active collect or validate operation. Control requests
-  remain available while that operation runs.
+- The bridge permits one active collect, prompt-context, or validate operation.
+  Control requests remain available while that operation runs.
 
 ## Events
 
@@ -43,13 +43,16 @@ Supported methods:
 |---|---|---|
 | `status` | none | Return the active sealed payload identity. |
 | `collect` | `root`, `target` | Run the verified upstream collect protocol. |
+| `promptContext` | `root`, `target` | Collect and render `pi-norm-spec/prompt-context/v1` for ephemeral host injection. |
 | `validate` | `root` | Run strict upstream validation for all `.norm` files. |
-| `cancel` | `requestId` | Cancel exactly one active collect or validate request. |
+| `cancel` | `requestId` | Cancel exactly one active semantic request. |
 | `shutdown` | none | Cancel active work if needed, acknowledge, then exit zero. |
 
 Unknown methods, invalid parameters, a second concurrent semantic operation,
 or cancellation of a non-active request return a request-scoped error and do
-not change the bridge lifecycle.
+not change the bridge lifecycle. Prompt-context results follow
+`docs/planning/gate-d-design.md`: complete normalized content, a typed empty
+state, and no truncation or lossy TypeScript summary.
 
 ## Responses
 

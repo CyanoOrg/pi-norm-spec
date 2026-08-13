@@ -13,7 +13,8 @@ verifies the pinned release checksum before safe extraction, seals every
 extracted byte in a local payload lock, and then exercises compatibility, all
 82 conformance cases, collect, and strict validation. It then uses the
 production TypeScript client to drive the persistent JSONL bridge through exact
-readiness, collection, targeted cancellation, and acknowledged shutdown. No
+readiness, prompt-context rendering, targeted cancellation, and acknowledged
+shutdown. No
 sibling checkout, `PATH` fallback, POSIX FIFO, or custom file descriptor is
 used.
 
