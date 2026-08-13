@@ -3,11 +3,11 @@
 ## Resume here
 
 - Stage: `0.1.0-alpha.1`; Gate A, Gate B, and Gate C are complete. Gate D's
-  functional Alpha implementation and package-shaped install rehearsal are
-  locally complete. Exact behavior candidate `0e7e46d` is four-platform green;
-  the package-inclusive candidate still needs the same hosted verification.
-- Current objective: verify the package-inclusive Gate D candidate on all four
-  hosted targets without claiming Gate E production or publication.
+  functional Alpha checkpoint is complete at exact package-inclusive candidate
+  `f080395` with all four native hosted targets green.
+- Current objective: define the exact machine-evaluable enforcement subset and
+  explicit escape semantics before implementing `tool_call` blocking. This
+  does not authorize enforcement or Gate E production/publication yet.
 - D005 fixes the upstream boundary as `norm` CLI subprocesses. D006 fixes the
   first distribution path as verified platform-specific optional packages with
   the complete runtime/conformance payload. D007 fixes one pi-specific Skill
@@ -52,7 +52,7 @@
 
 ## Verification
 
-Gate D hosted behavior and local package verification on 2026-08-13:
+Gate D functional Alpha verification on 2026-08-13:
 
 - GitHub Actions run `31684071321` passed at exact commit
   `0e7e46d710c2d3c1e9218b9999d50bae635399b1`: Rust quality, extension quality,
@@ -69,10 +69,13 @@ Gate D hosted behavior and local package verification on 2026-08-13:
   native package, after which handshake, Skill loading, root/path injection,
   cold start, and the no-project-write assertion all passed.
 
-The package rehearsal is locally green on macOS arm64. Because the package
-manifest and hosted gate changed after `0e7e46d`, the functional Alpha checkpoint
-remains open until the exact package-inclusive candidate passes all four native
-jobs.
+GitHub Actions run `31685170165` then passed at exact package-inclusive commit
+`f0803952ffb25827e84110afa171b39f6d05a755`. All six jobs succeeded. Linux x64,
+macOS arm64, macOS x64, and Windows x64 each emitted the installed-package and
+package-shaped-install success markers after completing the sealed payload,
+82-case conformance, persistent bridge, real pi host, package discovery, default
+runtime resolution, Skill, injection, and cold-start checks. This closes the
+Gate D functional Alpha checkpoint without claiming production packages.
 
 Gate D local Alpha verification on 2026-08-13:
 
@@ -102,7 +105,7 @@ Gate D local Alpha verification on 2026-08-13:
   conformance, strict validation, targeted cancellation, and graceful shutdown.
 
 This is the underlying implementation evidence. The package-inclusive hosted
-condition above now governs closure of the functional Alpha checkpoint.
+run above satisfies the remaining functional Alpha condition.
 
 Gate C local implementation verification on 2026-08-13:
 
