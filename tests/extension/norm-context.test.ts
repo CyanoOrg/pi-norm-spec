@@ -144,6 +144,281 @@ test("built-in tool paths select the next provider target deterministically", as
   );
 });
 
+test("successful write validates without changing a green tool result", async () => {
+  const testHarness = harness({ cwd: "/project" });
+  registerNormContext(testHarness.pi, { resolveRuntime: () => launch("ready") });
+  await testHarness.handlers.get("session_start")?.(
+    { type: "session_start", reason: "startup" },
+    testHarness.ctx,
+  );
+
+  const result = await testHarness.handlers.get("tool_result")?.(
+    {
+      type: "tool_result",
+      toolCallId: "write-green",
+      toolName: "write",
+      input: { path: "docs/guide.md", content: "updated" },
+      content: [{ type: "text", text: "Wrote docs/guide.md" }],
+      details: undefined,
+      isError: false,
+    },
+    testHarness.ctx,
+  );
+
+  assert.equal(result, undefined);
+  assert.equal(testHarness.statuses.get("pi-norm-spec"), "norm: valid (2 files)");
+  assert.deepEqual(testHarness.notifications, []);
+  await testHarness.handlers.get("session_shutdown")?.(
+    { type: "session_shutdown", reason: "quit" },
+    testHarness.ctx,
+  );
+});
+
+test("validation findings append bounded soft feedback and preserve result state", async () => {
+  const testHarness = harness({ cwd: "/project" });
+  registerNormContext(testHarness.pi, { resolveRuntime: () => launch("validate-findings") });
+  await testHarness.handlers.get("session_start")?.(
+    { type: "session_start", reason: "startup" },
+    testHarness.ctx,
+  );
+
+  const original = { type: "text", text: "Edited docs/.norm" };
+  const result = (await testHarness.handlers.get("tool_result")?.(
+    {
+      type: "tool_result",
+      toolCallId: "edit-findings",
+      toolName: "edit",
+      input: { path: "docs/.norm", oldText: "old", newText: "new" },
+      content: [original],
+      details: { diff: "old -> new" },
+      isError: false,
+      usage: { input: 1, output: 2, cacheRead: 0, cacheWrite: 0, cost: { total: 0 } },
+    },
+    testHarness.ctx,
+  )) as { content: Array<{ type: string; text: string }>; isError?: boolean; details?: unknown; usage?: unknown };
+
+  assert.equal(result.content.length, 2);
+  assert.equal(result.content[0], original);
+  assert.match(result.content[1]?.text ?? "", /post-edit validation: soft feedback/);
+  assert.match(result.content[1]?.text ?? "", /norm-spec\/test-warning/);
+  assert.match(result.content[1]?.text ?? "", /norm-spec\/test-error/);
+  assert.match(result.content[1]?.text ?? "", /already completed/);
+  assert.equal("isError" in result, false);
+  assert.equal("details" in result, false);
+  assert.equal("usage" in result, false);
+  assert.equal(testHarness.statuses.get("pi-norm-spec"), "norm: 1 errors, 1 warnings");
+  assert.deepEqual(testHarness.notifications, [
+    {
+      message: "pi-norm-spec post-edit validation: 1 errors and 1 warnings across 2 .norm files.",
+      level: "error",
+    },
+  ]);
+
+  await testHarness.handlers.get("session_shutdown")?.(
+    { type: "session_shutdown", reason: "quit" },
+    testHarness.ctx,
+  );
+});
+
+test("post-edit trigger matrix excludes failed edits and unknown mutation contracts", async () => {
+  const testHarness = harness();
+  registerNormContext(testHarness.pi, { resolveRuntime: () => launch("validate-findings") });
+  await testHarness.handlers.get("session_start")?.(
+    { type: "session_start", reason: "startup" },
+    testHarness.ctx,
+  );
+
+  const events = [
+    { toolCallId: "read", toolName: "read", input: { path: ".norm" }, isError: false },
+    { toolCallId: "bash", toolName: "bash", input: { command: "touch .norm" }, isError: false },
+    { toolCallId: "custom", toolName: "custom_mutator", input: { path: ".norm" }, isError: false },
+    { toolCallId: "failed-edit", toolName: "edit", input: { path: ".norm" }, isError: true },
+  ];
+  for (const event of events) {
+    const result = await testHarness.handlers.get("tool_result")?.(
+      {
+        type: "tool_result",
+        ...event,
+        content: [{ type: "text", text: "original" }],
+        details: undefined,
+      },
+      testHarness.ctx,
+    );
+    assert.equal(result, undefined, `${event.toolName} must not trigger post-edit validation`);
+  }
+  assert.deepEqual(testHarness.notifications, []);
+  assert.equal(testHarness.statuses.get("pi-norm-spec"), "norm: v0.1.0-rc.1");
+
+  await testHarness.handlers.get("session_shutdown")?.(
+    { type: "session_shutdown", reason: "quit" },
+    testHarness.ctx,
+  );
+});
+
+test("validation failures remain distinct feedback and repeated UI errors are deduplicated", async () => {
+  const testHarness = harness();
+  registerNormContext(testHarness.pi, { resolveRuntime: () => launch("validate-error") });
+  await testHarness.handlers.get("session_start")?.(
+    { type: "session_start", reason: "startup" },
+    testHarness.ctx,
+  );
+
+  for (const toolCallId of ["failed-feedback-1", "failed-feedback-2"]) {
+    const result = (await testHarness.handlers.get("tool_result")?.(
+      {
+        type: "tool_result",
+        toolCallId,
+        toolName: "write",
+        input: { path: ".norm", content: "invalid" },
+        content: [{ type: "text", text: "write completed" }],
+        details: undefined,
+        isError: false,
+      },
+      testHarness.ctx,
+    )) as { content: Array<{ type: string; text: string }>; isError?: boolean };
+    assert.match(result.content.at(-1)?.text ?? "", /validation unavailable/);
+    assert.match(result.content.at(-1)?.text ?? "", /fake\/validation/);
+    assert.equal("isError" in result, false);
+  }
+  assert.equal(testHarness.statuses.get("pi-norm-spec"), "norm: validation failed");
+  assert.equal(testHarness.notifications.length, 1);
+  assert.equal(testHarness.notifications[0]?.level, "error");
+
+  await testHarness.handlers.get("session_shutdown")?.(
+    { type: "session_shutdown", reason: "quit" },
+    testHarness.ctx,
+  );
+});
+
+test("an inconsistent validation envelope is a visible protocol failure", async () => {
+  const testHarness = harness();
+  registerNormContext(testHarness.pi, { resolveRuntime: () => launch("validate-invalid") });
+  await testHarness.handlers.get("session_start")?.(
+    { type: "session_start", reason: "startup" },
+    testHarness.ctx,
+  );
+
+  const result = (await testHarness.handlers.get("tool_result")?.(
+    {
+      type: "tool_result",
+      toolCallId: "invalid-envelope",
+      toolName: "edit",
+      input: { path: ".norm", oldText: "a", newText: "b" },
+      content: [{ type: "text", text: "edit completed" }],
+      details: undefined,
+      isError: false,
+    },
+    testHarness.ctx,
+  )) as { content: Array<{ type: string; text: string }> };
+  assert.match(result.content.at(-1)?.text ?? "", /pi-norm-spec\/client\/validation-invalid/);
+  assert.equal(testHarness.statuses.get("pi-norm-spec"), "norm: validation failed");
+
+  await testHarness.handlers.get("session_shutdown")?.(
+    { type: "session_shutdown", reason: "quit" },
+    testHarness.ctx,
+  );
+});
+
+test("cancelled post-edit validation does not synthesize success or failure", async () => {
+  const controller = new AbortController();
+  const testHarness = harness({ signal: controller.signal });
+  registerNormContext(testHarness.pi, { resolveRuntime: () => launch("validate-cancel") });
+  await testHarness.handlers.get("session_start")?.(
+    { type: "session_start", reason: "startup" },
+    testHarness.ctx,
+  );
+
+  const pending = testHarness.handlers.get("tool_result")?.(
+    {
+      type: "tool_result",
+      toolCallId: "cancel-validation",
+      toolName: "write",
+      input: { path: ".norm", content: "updated" },
+      content: [{ type: "text", text: "write completed" }],
+      details: undefined,
+      isError: false,
+    },
+    testHarness.ctx,
+  );
+  setImmediate(() => controller.abort());
+  assert.equal(await pending, undefined);
+  assert.deepEqual(testHarness.notifications, []);
+  assert.equal(testHarness.statuses.get("pi-norm-spec"), "norm: v0.1.0-rc.1");
+
+  await testHarness.handlers.get("session_shutdown")?.(
+    { type: "session_shutdown", reason: "quit" },
+    testHarness.ctx,
+  );
+});
+
+test("parallel tool results serialize validation requests in completion order", async () => {
+  const testHarness = harness();
+  registerNormContext(testHarness.pi, { resolveRuntime: () => launch("validate-serial") });
+  await testHarness.handlers.get("session_start")?.(
+    { type: "session_start", reason: "startup" },
+    testHarness.ctx,
+  );
+
+  const results = (await Promise.all(
+    ["write", "edit"].map((toolName, index) =>
+      testHarness.handlers.get("tool_result")?.(
+        {
+          type: "tool_result",
+          toolCallId: `serial-${index + 1}`,
+          toolName,
+          input: { path: `${index + 1}.norm` },
+          content: [{ type: "text", text: `${toolName} completed` }],
+          details: undefined,
+          isError: false,
+        },
+        testHarness.ctx,
+      ),
+    ),
+  )) as Array<{ content: Array<{ type: string; text: string }> }>;
+
+  assert.match(results[0]?.content.at(-1)?.text ?? "", /fake\/serial-1/);
+  assert.match(results[1]?.content.at(-1)?.text ?? "", /fake\/serial-2/);
+  assert.equal(testHarness.notifications.length, 2);
+  assert.equal(testHarness.notifications.every((notice) => notice.level === "warning"), true);
+
+  await testHarness.handlers.get("session_shutdown")?.(
+    { type: "session_shutdown", reason: "quit" },
+    testHarness.ctx,
+  );
+});
+
+test("post-edit feedback caps diagnostic count and UTF-8 size", async () => {
+  const testHarness = harness();
+  registerNormContext(testHarness.pi, { resolveRuntime: () => launch("validate-many-findings") });
+  await testHarness.handlers.get("session_start")?.(
+    { type: "session_start", reason: "startup" },
+    testHarness.ctx,
+  );
+
+  const result = (await testHarness.handlers.get("tool_result")?.(
+    {
+      type: "tool_result",
+      toolCallId: "bounded-feedback",
+      toolName: "write",
+      input: { path: ".norm", content: "updated" },
+      content: [{ type: "text", text: "write completed" }],
+      details: undefined,
+      isError: false,
+    },
+    testHarness.ctx,
+  )) as { content: Array<{ type: string; text: string }> };
+  const feedback = result.content.at(-1)?.text ?? "";
+  assert.ok(Buffer.byteLength(feedback, "utf8") <= 8 * 1024);
+  assert.equal((feedback.match(/^- ERROR /gmu) ?? []).length, 8);
+  assert.match(feedback, /4 additional diagnostics omitted/);
+  assert.match(feedback, /already completed/);
+
+  await testHarness.handlers.get("session_shutdown")?.(
+    { type: "session_shutdown", reason: "quit" },
+    testHarness.ctx,
+  );
+});
+
 test("zero-convention context is typed and does not synthesize prompt guidance", async () => {
   const testHarness = harness();
   registerNormContext(testHarness.pi, { resolveRuntime: () => launch("empty-context") });

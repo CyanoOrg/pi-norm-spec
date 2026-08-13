@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, readdir, rm } from "node:fs/promises";
+import { mkdtemp, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -177,6 +177,18 @@ await withPiHost(projectRoot, async ({ agentDir, observation, runner }) => {
     ".norm",
   ]);
   assert.equal(observation.statuses.get("pi-norm-spec"), "norm: 2 @ docs/planning/status.md");
+
+  const green = await runner.emitToolResult({
+    type: "tool_result",
+    toolCallId: "alpha-write-green",
+    toolName: "write",
+    input: { path: "docs/planning/status.md", content: "unchanged fixture" },
+    content: [{ type: "text", text: "write completed" }],
+    details: undefined,
+    isError: false,
+  });
+  assert.equal(green, undefined, "green post-edit validation must not patch the tool result");
+  assert.equal(observation.statuses.get("pi-norm-spec"), "norm: valid (2 files)");
 });
 
 const emptyRoot = await mkdtemp(path.join(tmpdir(), "pi-norm-spec-empty-project-"));
@@ -199,8 +211,38 @@ try {
   await rm(emptyRoot, { recursive: true, force: true });
 }
 
+const invalidRoot = await mkdtemp(path.join(tmpdir(), "pi-norm-spec-invalid-project-"));
+try {
+  await writeFile(path.join(invalidRoot, ".norm"), "---\nmetadata: [\n---\n# Invalid\n", "utf8");
+  await withPiHost(invalidRoot, async ({ observation, runner }) => {
+    const feedback = await runner.emitToolResult({
+      type: "tool_result",
+      toolCallId: "alpha-edit-invalid",
+      toolName: "edit",
+      input: { path: ".norm", oldText: "valid", newText: "invalid" },
+      content: [{ type: "text", text: "edit completed" }],
+      details: { diff: "fixture" },
+      isError: false,
+    });
+    assert.ok(feedback, "invalid conventions must append post-edit feedback");
+    assert.ok(feedback.content, "post-edit feedback must include patched content");
+    assert.equal(feedback.isError, false, "feedback must preserve the successful edit state");
+    const text = feedback.content
+      .filter((content): content is { type: "text"; text: string } => content.type === "text")
+      .map((content) => content.text)
+      .join("\n");
+    assert.match(text, /post-edit validation: soft feedback/);
+    assert.match(text, /already completed/);
+    assert.equal(observation.statuses.get("pi-norm-spec")?.startsWith("norm: "), true);
+    assert.equal(observation.notifications.at(-1)?.level, "error");
+  });
+  assert.deepEqual(await readdir(invalidRoot), [".norm"], "feedback must not write project files");
+} finally {
+  await rm(invalidRoot, { recursive: true, force: true });
+}
+
 console.log(
   installedPackageRoot
-    ? "Installed pi package passed discovery, runtime resolution, session lifecycle, Skill loading, root and path-scoped ephemeral context, and zero-.norm onboarding."
-    : "Real pi Alpha host passed session lifecycle, Skill loading, root and path-scoped ephemeral context, and zero-.norm onboarding.",
+    ? "Installed pi package passed discovery, runtime resolution, session lifecycle, Skill loading, root and path-scoped ephemeral context, zero-.norm onboarding, and green plus finding post-edit validation."
+    : "Real pi Alpha host passed session lifecycle, Skill loading, root and path-scoped ephemeral context, zero-.norm onboarding, and green plus finding post-edit validation.",
 );
