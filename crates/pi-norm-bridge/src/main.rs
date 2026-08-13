@@ -2,7 +2,7 @@
 
 use std::{collections::BTreeMap, env, ffi::OsString, path::PathBuf, process::ExitCode};
 
-use pi_norm_bridge::{UpstreamError, UpstreamRuntime, seal_payload};
+use pi_norm_bridge::{UpstreamError, UpstreamRuntime, seal_payload, serve};
 use pi_norm_engine::{BRIDGE_API_VERSION, UpstreamPin, runtime_identity};
 use serde::Serialize;
 use serde_json::Value;
@@ -54,11 +54,23 @@ fn main() -> ExitCode {
         "upstream-verify" => run_upstream_verify(arguments),
         "upstream-collect" => run_upstream_collect(arguments),
         "upstream-validate" => run_upstream_validate(arguments),
+        "serve" => run_serve(arguments),
         _ => emit_error(
             "usage",
             &usage_error(format!("unsupported command: {command}")),
             EXIT_USAGE,
         ),
+    }
+}
+
+fn run_serve(arguments: impl Iterator<Item = OsString>) -> ExitCode {
+    let payload = match required_payload(arguments, "serve") {
+        Ok(payload) => payload,
+        Err(exit) => return exit,
+    };
+    match serve(payload) {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(_) => ExitCode::from(EXIT_OPERATION),
     }
 }
 

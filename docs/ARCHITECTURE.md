@@ -67,7 +67,8 @@ compatibility handshake only. Each collect or validate operation still runs
 the verified `norm` CLI selected by D005. Unexpected EOF, malformed output, or
 a non-zero bridge exit rejects all pending requests and leaves the adapter in a
 visible failed state; there is no silent one-shot fallback or automatic
-restart. A later explicit session start may create a fresh child.
+restart. A later explicit session start may create a fresh child. The exact
+frame and method contract is defined in `docs/BRIDGE-PROTOCOL.md`.
 
 ## Skill and cold start
 

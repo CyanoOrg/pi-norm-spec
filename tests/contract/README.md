@@ -7,8 +7,15 @@ contract belongs to norm-spec.
 A protocol mismatch or unavailable bridge is a failure. Tests must never turn
 those conditions into a successful skip or an empty ruleset.
 
-Gate B additionally runs `scripts/check-upstream-release.sh`. It downloads the
+Gate B and Gate C additionally run `scripts/check-upstream-release.sh`. It downloads the
 exact native archive selected by the compiled upstream pin, verifies the pinned
 release checksum before safe extraction, seals every extracted byte in a local
 payload lock, and then exercises compatibility, all 82 conformance cases,
-collect, and strict validation. No sibling checkout or `PATH` fallback is used.
+collect, and strict validation. It then drives the persistent JSONL bridge
+through exact readiness, collection, targeted cancellation, and acknowledged
+shutdown. No sibling checkout or `PATH` fallback is used.
+
+The language-neutral frame contract is documented in
+`docs/BRIDGE-PROTOCOL.md`. Rust tests enforce framing limits, protocol and ID
+validation, startup failure events, request-scoped parameter errors, and
+cross-platform child cancellation.

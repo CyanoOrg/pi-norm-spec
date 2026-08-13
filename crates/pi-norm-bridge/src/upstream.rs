@@ -16,6 +16,8 @@ use pi_norm_engine::{
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use sha2::{Digest, Sha256};
 
+use crate::process::{CancellationToken, ProcessOutcome, run_cancellable};
+
 /// Sealed payload lock protocol.
 pub const PAYLOAD_LOCK_API: &str = "pi-norm-spec/upstream-payload/v1";
 /// Repository-owned filename for a sealed payload lock.
@@ -361,6 +363,20 @@ pub struct UpstreamRuntime {
     payload: ResolvedPayload,
 }
 
+/// Request-scoped outcome from an initialized upstream runtime.
+pub(crate) enum UpstreamOperationError {
+    /// Cancellation was requested for this request.
+    Cancelled,
+    /// The operation failed at the verified upstream boundary.
+    Failed(UpstreamError),
+}
+
+impl From<UpstreamError> for UpstreamOperationError {
+    fn from(error: UpstreamError) -> Self {
+        Self::Failed(error)
+    }
+}
+
 impl UpstreamRuntime {
     /// Open a sealed payload without invoking it.
     ///
@@ -473,23 +489,18 @@ impl UpstreamRuntime {
         target: impl AsRef<Path>,
     ) -> Result<NormCollectResponse, UpstreamError> {
         self.handshake()?;
-        let root = canonical_project_root(project_root.as_ref())?;
-        let output = Command::new(self.payload.norm_executable())
-            .args(["collect", "--root", ".", "--target"])
-            .arg(target.as_ref())
-            .current_dir(&root)
-            .output()
-            .map_err(|error| process_unavailable("collect", &error))?;
-        require_bounded_output(&output, "collect")?;
-        if !output.status.success() {
-            return Err(upstream_command_error("collect", &output));
+        match self.collect_initialized(
+            project_root.as_ref(),
+            target.as_ref(),
+            &CancellationToken::default(),
+        ) {
+            Ok(response) => Ok(response),
+            Err(UpstreamOperationError::Failed(error)) => Err(error),
+            Err(UpstreamOperationError::Cancelled) => Err(UpstreamError::new(
+                "pi-norm-spec/upstream/cancelled",
+                "norm-spec collect was cancelled",
+            )),
         }
-        require_empty_stderr(&output, "collect")?;
-        let response: NormCollectResponse = parse_stdout(&output, "collect")?;
-        if response.api_version != NORM_COLLECT_API {
-            return Err(protocol_mismatch("collect", &response.api_version));
-        }
-        Ok(response)
     }
 
     /// Strictly validate every convention through the pinned upstream engine.
@@ -505,20 +516,66 @@ impl UpstreamRuntime {
         project_root: impl AsRef<Path>,
     ) -> Result<NormValidateResponse, UpstreamError> {
         self.handshake()?;
-        let root = canonical_project_root(project_root.as_ref())?;
-        let output = Command::new(self.payload.norm_executable())
+        match self.validate_all_initialized(project_root.as_ref(), &CancellationToken::default()) {
+            Ok(response) => Ok(response),
+            Err(UpstreamOperationError::Failed(error)) => Err(error),
+            Err(UpstreamOperationError::Cancelled) => Err(UpstreamError::new(
+                "pi-norm-spec/upstream/cancelled",
+                "norm-spec validation was cancelled",
+            )),
+        }
+    }
+
+    pub(crate) fn collect_initialized(
+        &self,
+        project_root: &Path,
+        target: &Path,
+        cancellation: &CancellationToken,
+    ) -> Result<NormCollectResponse, UpstreamOperationError> {
+        let root = canonical_project_root(project_root)?;
+        let mut command = Command::new(self.payload.norm_executable());
+        command
+            .args(["collect", "--root", ".", "--target"])
+            .arg(target)
+            .current_dir(&root);
+        let output = match run_cancellable(&mut command, "collect", cancellation)? {
+            ProcessOutcome::Completed(output) => output,
+            ProcessOutcome::Cancelled => return Err(UpstreamOperationError::Cancelled),
+        };
+        require_bounded_output(&output, "collect")?;
+        if !output.status.success() {
+            return Err(upstream_command_error("collect", &output).into());
+        }
+        require_empty_stderr(&output, "collect")?;
+        let response: NormCollectResponse = parse_stdout(&output, "collect")?;
+        if response.api_version != NORM_COLLECT_API {
+            return Err(protocol_mismatch("collect", &response.api_version).into());
+        }
+        Ok(response)
+    }
+
+    pub(crate) fn validate_all_initialized(
+        &self,
+        project_root: &Path,
+        cancellation: &CancellationToken,
+    ) -> Result<NormValidateResponse, UpstreamOperationError> {
+        let root = canonical_project_root(project_root)?;
+        let mut command = Command::new(self.payload.norm_executable());
+        command
             .args(["validate", "--all", "--root", ".", "--strict", "--json"])
-            .current_dir(&root)
-            .output()
-            .map_err(|error| process_unavailable("validate", &error))?;
+            .current_dir(&root);
+        let output = match run_cancellable(&mut command, "validate", cancellation)? {
+            ProcessOutcome::Completed(output) => output,
+            ProcessOutcome::Cancelled => return Err(UpstreamOperationError::Cancelled),
+        };
         require_bounded_output(&output, "validate")?;
         if !matches!(output.status.code(), Some(0 | 1)) {
-            return Err(upstream_command_error("validate", &output));
+            return Err(upstream_command_error("validate", &output).into());
         }
         require_empty_stderr(&output, "validate")?;
         let response: NormValidateResponse = parse_stdout(&output, "validate")?;
         if response.api_version != NORM_VALIDATE_API {
-            return Err(protocol_mismatch("validate", &response.api_version));
+            return Err(protocol_mismatch("validate", &response.api_version).into());
         }
         Ok(response)
     }

@@ -52,11 +52,12 @@ bash scripts/check-upstream-release.sh
 |---|---|
 | project workflow and quality gates | `AGENTS.md` |
 | adapter architecture | `docs/ARCHITECTURE.md` |
+| TypeScript/Rust process protocol | `docs/BRIDGE-PROTOCOL.md` |
 | rationale | `docs/decisions.md` |
 | milestones | `ROADMAP.md` |
 | shipped changes | `CHANGELOG.md` |
 | in-flight state | `docs/planning/status.md` |
-| bridge protocol fixtures | `tests/contract/` |
+| bridge protocol verification | `tests/contract/` and bridge tests |
 | `.norm` format and semantics | upstream `norm-spec` |
 
 ## Work loop

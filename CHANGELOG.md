@@ -17,3 +17,6 @@ preparation.
   complete 82-case upstream conformance through the Rust bridge.
 - Native hosted payload verification for Linux x64, macOS Apple Silicon/Intel,
   and Windows x64.
+- Session-scoped JSONL bridge lifecycle with exact readiness identity,
+  bounded framing, request correlation, targeted child cancellation, typed
+  startup/fatal failures, and acknowledged graceful shutdown.

@@ -37,13 +37,28 @@ fn identity_matches_the_versioned_fixture() {
 
 #[test]
 fn unsupported_commands_fail_with_a_stable_machine_error() {
-    let output = run_bridge(&["serve"]);
+    let output = run_bridge(&["unsupported"]);
     assert_eq!(output.status.code(), Some(2));
     assert!(output.stderr.is_empty());
     let response = parse_stdout(&output);
     assert_eq!(response["apiVersion"], "pi-norm-spec/bridge/v1");
     assert_eq!(response["status"], "error");
     assert_eq!(response["error"]["code"], "pi-norm-spec/usage");
+}
+
+#[test]
+fn server_startup_failure_is_a_typed_event() {
+    let output = run_bridge(&["serve", "--payload", "missing-payload"]);
+    assert_eq!(output.status.code(), Some(1));
+    assert!(output.stderr.is_empty());
+    let response = parse_stdout(&output);
+    assert_eq!(response["apiVersion"], "pi-norm-spec/bridge/v1");
+    assert_eq!(response["type"], "event");
+    assert_eq!(response["event"], "startupFailed");
+    assert_eq!(
+        response["error"]["code"],
+        "pi-norm-spec/payload/unavailable"
+    );
 }
 
 #[test]

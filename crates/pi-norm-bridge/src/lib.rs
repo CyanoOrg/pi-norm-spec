@@ -5,8 +5,11 @@
 
 #![forbid(unsafe_code)]
 
+mod process;
+mod server;
 mod upstream;
 
+pub use server::serve;
 pub use upstream::{
     PAYLOAD_LOCK_API, PAYLOAD_LOCK_FILE, PayloadIdentity, ResolvedPayload, UpstreamError,
     UpstreamRuntime, UpstreamVerification, seal_payload,
