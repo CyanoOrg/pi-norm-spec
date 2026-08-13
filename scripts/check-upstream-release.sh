@@ -233,4 +233,9 @@ node --experimental-strip-types scripts/check-persistent-bridge.ts \
   "$target" \
   "5c781964b6d9b11c52f29e5b6e2bbe13c25a5ee0"
 
-echo "Pinned upstream release passed checksum, sealing, identity, 82-case conformance, collect, validate, and persistent bridge lifecycle."
+node --experimental-strip-types scripts/check-pi-alpha.ts \
+  "$bridge" \
+  "$payload" \
+  "$repo_root"
+
+echo "Pinned upstream release passed checksum, sealing, identity, 82-case conformance, collect, validate, persistent bridge lifecycle, and the real pi Alpha host."
