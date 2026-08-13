@@ -41,6 +41,7 @@ npm ci
 npm run typecheck
 npm test
 bash scripts/check-public-history.sh
+bash scripts/check-upstream-release.sh
 ```
 
 ## Sources of truth
