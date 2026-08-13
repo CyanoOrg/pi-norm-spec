@@ -77,9 +77,10 @@ context is guidance, and convention validation is not presented as proof that
 an arbitrary project mutation is policy-compliant.
 
 Enforcement requires two external contract changes: norm-spec must own a
-closed, typed operation-policy declaration, and pi must expose a final immutable
-input or an equivalent last-guard/revalidation guarantee with defined parallel
-mutation behavior. Only then may Rust emit a versioned policy decision and the
+closed, typed operation-policy declaration, and pi must expose a final
+host-owned input or an equivalent non-transforming admission/revalidation
+guarantee with defined per-call parallel clearance and dispatch behavior. Only
+then may Rust emit a versioned policy decision and the
 TypeScript layer adapt it to pi. Shell parsing, custom-tool field inference, and
 private downstream `.norm` fields remain outside this architecture.
 

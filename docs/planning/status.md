@@ -9,14 +9,15 @@
   hard-enforcement subset is empty. No blocking `tool_call` handler is
   authorized for the current contracts. The approved future escape is
   exact-call only and requires final-input integrity from pi.
-- Current objective: progress the norm-spec typed operation-policy and pi host
-  prerequisites independently, while designing post-edit validation as
-  truthfully labeled soft feedback. This does not authorize enforcement or
-  Gate E production/publication yet.
+- Current objective: design post-edit validation as truthfully labeled soft
+  feedback while tracking the norm-spec typed operation-policy and pi host
+  prerequisites independently. This does not authorize enforcement or Gate E
+  production/publication yet.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
-  a testable upstream request: immutable validated final input, exact execution
-  identity, and batch-wide final preflight. It is a local draft and has not been
-  filed externally.
+  a minimal non-transforming admission-hook request. The request was posted on
+  pi issue #7092 on 2026-08-13 and accepts source-ordered clearance followed by
+  concurrent dispatch. The issue remains auto-closed; no maintainer acceptance
+  or released host capability is recorded.
 - D005 fixes the upstream boundary as `norm` CLI subprocesses. D006 fixes the
   first distribution path as verified platform-specific optional packages with
   the complete runtime/conformance payload. D007 fixes one pi-specific Skill
@@ -70,6 +71,17 @@ Gate D enforcement-scope decision on 2026-08-13:
   fields, shell parsing, custom-tool path inference, and broad bypass flags;
 - hard enforcement remains gated on both an upstream typed operation-policy
   contract and pi final-input/parallel-mutation guarantees.
+
+Pi host-prerequisite discussion on 2026-08-13:
+
+- pi-norm-spec posted a focused consumer follow-up on existing issue #7092:
+  <https://github.com/earendil-works/pi/issues/7092#issuecomment-5280143858>;
+- the request asks for a non-transforming admission phase after argument
+  transforms and revalidation, while keeping policy semantics downstream;
+- a batch-wide barrier is not required; documented source-ordered clearance
+  followed by concurrent dispatch is acceptable;
+- the issue is still auto-closed and has no maintainer response, so D010's
+  current empty hard-enforcement subset is unchanged.
 
 Gate D functional Alpha verification on 2026-08-13:
 

@@ -58,8 +58,8 @@ same public contract also states:
 - a preflight is not guaranteed to observe sibling results.
 
 A pi-norm-spec allow decision therefore cannot attest to the parameters that
-will finally execute unless pi supplies a final immutable pre-execution view or
-an equivalent ordering and revalidation guarantee. Blocking a known deny is
+will finally execute unless pi supplies a final host-owned pre-execution view
+or an equivalent ordering and revalidation guarantee. Blocking a known deny is
 safe because it short-circuits later handlers, but a complete hard-policy claim
 requires both deny and allow integrity.
 
@@ -96,9 +96,12 @@ repository may describe requirements but must not create the format privately.
 
 ### Pi host prerequisite
 
-Pi must provide a final immutable pre-execution input, handler priority with a
-last-guard guarantee, or revalidation after all mutations. The contract must
-also define how a policy observes or serializes parallel sibling mutations.
+Pi must provide a non-transforming admission phase after supported argument
+transformations and revalidation, or an equivalent final-input guarantee. The
+host must pass the admitted value to the tool and define per-call clearance and
+dispatch behavior in parallel mode. A batch-wide barrier is not required:
+source-ordered clearance followed by concurrent dispatch is acceptable when
+each call is admitted before that same call executes.
 
 ## Future decision protocol
 
@@ -149,5 +152,6 @@ approved input is the final input that executes.
 2. Record the missing typed-policy requirement in norm-spec through its own
    decision process; coordinate dependency sequencing outside either product
    roadmap.
-3. Verify or request the required final-input guarantee from pi.
+3. Track the focused admission-hook discussion on pi issue #7092; the posted
+   request does not itself satisfy the host prerequisite.
 4. Only then design the Rust policy protocol and implementation fixtures.

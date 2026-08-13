@@ -37,8 +37,8 @@ Read first:
 - `docs/planning/gate-d-design.md` for the active ephemeral-context design.
 - `docs/planning/gate-d-enforcement-design.md` for the accepted D010 hard-policy
   and future exact-call escape boundary.
-- `docs/planning/pi-final-tool-input-request.md` for the draft pi host contract
-  request required before hard enforcement.
+- `docs/planning/pi-final-tool-input-request.md` for the public pi admission-hook
+  discussion and still-pending host prerequisite.
 - `docs/ARCHITECTURE.md` for the Rust/TypeScript boundary.
 - `docs/BRIDGE-PROTOCOL.md` for the process and platform-locator contracts.
 - `docs/decisions.md` for immutable decisions.
@@ -120,8 +120,9 @@ not part of this repository.
   policy evaluation in TypeScript.
 - Use strict TypeScript with no implicit `any`.
 - Never swallow bridge errors or convert them into an empty active ruleset.
-- Treat tool-call blocking as a security boundary: reasons and escape behavior
-  require tests.
+- Treat future tool-call blocking as a host lifecycle-integrity boundary:
+  reasons and escape behavior require tests, and documentation must not present
+  it as isolation from malicious same-process extensions.
 
 ## Testing
 
