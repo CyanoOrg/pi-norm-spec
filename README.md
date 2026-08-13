@@ -9,8 +9,9 @@ does not implement the `.norm` parser or validator.
 > Status: `0.1.0-alpha.1` bootstrap. Gate B's Rust runtime path pins and verifies
 > the complete public norm-spec `0.1.0-rc.1` payload, consumes compatibility,
 > collect, and validate machine responses, and executes all 82 conformance cases.
-> Four-target hosted closure is pending; pi injection, enforcement, validation
-> feedback, and npm platform packaging remain incomplete.
+> The exact Gate B candidate is green on all four native hosted targets. Gate C
+> bridge lifecycle work is next; pi injection, enforcement, validation feedback,
+> and npm platform packaging remain incomplete.
 
 See `AGENTS.md`, `docs/ARCHITECTURE.md`, and
 `docs/planning/v0.1-execution.md` before contributing.

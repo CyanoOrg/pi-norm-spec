@@ -17,14 +17,13 @@ intentionally hybrid:
 
 ## Current state
 
-Version `0.1.0-alpha.1` is a bootstrap. Gate A is complete. Gate B's consumption,
-distribution, Skill, and cold-start decisions are recorded; its runtime slice
-now pins all four public norm-spec `0.1.0-rc.1` archive checksums, verifies a
+Version `0.1.0-alpha.1` is a bootstrap. Gate A and Gate B are complete. The Rust
+runtime pins all four public norm-spec `0.1.0-rc.1` archive checksums, verifies a
 sealed release-derived payload, executes compatibility, collect, validate, and
-all 82 conformance cases, and has local Apple Silicon evidence. Gate B remains
-open until the exact candidate passes the four native hosted payload jobs.
-Injection, enforcement, platform npm packaging, and the pi-specific Skill are
-not implemented until their later gates and end-to-end tests say so.
+all 82 conformance cases, and is verified on all four native hosted targets.
+Gate C bridge lifecycle work is next. Injection, enforcement, platform npm
+packaging, and the pi-specific Skill are not implemented until their later
+gates and end-to-end tests say so.
 
 Read first:
 

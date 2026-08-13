@@ -2,11 +2,9 @@
 
 ## Resume here
 
-- Stage: `0.1.0-alpha.1`; Gate A is complete. Gate B is locally implemented and
-  awaiting the exact candidate's four native hosted payload jobs.
-- Current objective: close Gate B by proving public norm-spec `0.1.0-rc.1`
-  checksum, provenance, compatibility, complete conformance, collect, and
-  validate behavior on Linux x64, macOS Apple Silicon/Intel, and Windows x64.
+- Stage: `0.1.0-alpha.1`; Gate A and Gate B are complete.
+- Current objective: begin Gate C by measuring the pi bridge lifecycle while
+  keeping D005's verified norm-spec CLI subprocess boundary fixed.
 - D005 fixes the upstream boundary as `norm` CLI subprocesses. D006 fixes the
   first distribution path as verified platform-specific optional packages with
   the complete runtime/conformance payload. D007 fixes one pi-specific Skill
@@ -55,9 +53,29 @@ Gate B local verification on 2026-08-13:
 - unit/black-box coverage rejects checksum drift, post-seal payload changes,
   incompatible identities, missing payloads, and unsupported commands.
 
-Hosted closure remains pending for the exact implementation candidate. CI now
-downloads and verifies the pinned public archive natively on Ubuntu 22.04,
-macOS 15 Apple Silicon, macOS 15 Intel, and Windows 2022.
+Gate B hosted verification on 2026-08-13:
+
+- GitHub Actions run `31671215142` is a completed successful push run bound to
+  exact implementation/status candidate
+  `28fb61016f55ca9121df82b59bc4c844ff6fb161`;
+- `rust-quality` passed public-history, fmt, strict Clippy, all workspace tests,
+  and rustdoc with warnings denied;
+- `extension-quality` passed clean npm installation, TypeScript typecheck, and
+  the extension test command;
+- all four native jobs passed workspace tests and the exact
+  `Verify the exact native upstream release payload` step:
+  Ubuntu 22.04 / `x86_64-unknown-linux-gnu`, macOS 15 /
+  `aarch64-apple-darwin`, macOS 15 Intel / `x86_64-apple-darwin`, and Windows
+  2022 / `x86_64-pc-windows-msvc`;
+- every native payload job downloaded its own pinned public RC archive and
+  proved checksum, safe extraction, sealed provenance and content, exact
+  compatibility, complete 82/82 conformance, collection, strict validation,
+  zero-`.norm` behavior, typed validation findings, and stable missing-target
+  failure without a `PATH` or sibling-checkout fallback.
+
+This closes Gate B. The follow-up closure commit changes documentation only;
+the tested implementation, upstream asset pins, CI workflow, and protocol
+fixtures remain exactly those from `28fb610`.
 
 Bootstrap verification on 2026-08-10:
 
@@ -90,7 +108,7 @@ Bootstrap verification on 2026-08-10:
       `0.1.0-rc.1`.
 - [x] Implement compatibility, collect, and validate machine-protocol handling.
 - [x] Exercise the complete 82-case upstream conformance bundle without skips.
-- [ ] Confirm the exact candidate's four native hosted payload jobs.
+- [x] Confirm the exact candidate's four native hosted payload jobs.
 - [ ] Measure and decide short-lived versus persistent pi bridge lifecycle.
 - [ ] Implement bridge request/response framing and cancellation.
 - [ ] Implement path-scoped ephemeral injection.
