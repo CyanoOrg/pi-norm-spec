@@ -11,11 +11,14 @@
   exact-call only and requires final-input integrity from pi.
 - D011 accepts serialized post-edit `.norm` validation as bounded soft
   feedback for successful built-in `write` and `edit` results. Implementation
-  and hosted evidence remain pending; the decision does not authorize
-  blocking, rollback, shell parsing, or project-compliance claims.
-- Current objective: implement and verify D011 while tracking the norm-spec
-  typed operation-policy and pi host prerequisites independently. This does not
-  authorize enforcement or Gate E production/publication yet.
+  candidate `193aa48` passes the TypeScript suite and full local native
+  release-derived real-host/package paths. Final hosted evidence remains
+  pending; the decision does not authorize blocking, rollback, shell parsing,
+  or project-compliance claims.
+- Current objective: confirm the final D011 branch candidate on all four hosted
+  targets while tracking the norm-spec typed operation-policy and pi host
+  prerequisites independently. This does not authorize enforcement or Gate E
+  production/publication yet.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
   a minimal non-transforming admission-hook request. The request was posted on
   pi issue #7092 on 2026-08-13 and accepts source-ordered clearance followed by
@@ -57,10 +60,11 @@
   run are complete and green.
 - GitHub repository bootstrap is complete; public visibility remains a
   maintainer checkpoint after the initial functional slice.
-- Hard enforcement and escape are intentionally not implemented under D010;
-  validation feedback and npm platform packages are also not implemented. The
-  current Skill truthfully defers bundled-CLI invocation details to the future
-  installed platform package.
+- Hard enforcement and escape are intentionally not implemented under D010.
+  D011 post-edit validation is implemented locally without blocking or rollback;
+  production npm platform packages are not implemented. The current Skill
+  truthfully defers bundled-CLI invocation details to the future installed
+  platform package.
 - The local `.opencode/skills/norm-spec/` adoption-rehearsal copy is ignored and
   is not a product resource.
 
@@ -96,6 +100,21 @@ Gate D post-edit validation decision on 2026-08-13:
   green results remain transient and the original tool result is preserved;
 - the result is not a filesystem snapshot, enforcement decision, rollback, or
   proof that an arbitrary project mutation complied with `.norm` guidance.
+
+Gate D post-edit validation local implementation on 2026-08-13:
+
+- `6697b09` registers successful built-in `write`/`edit` result handling,
+  session-local FIFO validation, exact response validation, bounded feedback,
+  cancellation, and distinct failure presentation;
+- `193aa48` expands the extension suite to 23 passing tests covering the
+  trigger matrix, green/findings, preservation, malformed/operational failure,
+  cancellation, eight-finding/8 KiB bounds, and concurrent-result FIFO order;
+- the full local `aarch64-apple-darwin` release-derived gate passed checksum,
+  sealing, exact identities, 82/82 conformance, persistent bridge lifecycle,
+  direct real-pi green/finding feedback, and the same behavior after installing
+  the packed root plus native runtime packages;
+- the local candidate is not the hosted closure point; Linux, macOS ARM/Intel,
+  and Windows must pass the final branch commit before this slice closes.
 
 Gate D functional Alpha verification on 2026-08-13:
 
@@ -321,7 +340,9 @@ Bootstrap verification on 2026-08-10:
       approve the future exact-call escape boundary (D010).
 - [ ] Coordinate the norm-spec operation-policy and pi final-input prerequisites
       before reopening typed hard enforcement and escape implementation.
-- [ ] Implement post-edit validation feedback.
+- [x] Implement post-edit validation feedback locally (D011).
+- [ ] Confirm the final D011 candidate's real-host/package path on all four
+      native hosted targets.
 - [ ] Package the bridge and verified upstream payload for each supported
       platform.
 - [ ] Verify real pi end-to-end behavior.

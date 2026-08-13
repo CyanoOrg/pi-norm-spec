@@ -27,8 +27,10 @@ implemented. Gate D's functional Alpha checkpoint is complete: exact
 package-inclusive candidate `f080395` passed the real pi `0.84.1` host and
 package-shaped isolated installation on all four native targets. D010 records
 that the current hard-enforcement subset is empty; blocking and escape are
-intentionally absent until both external prerequisites exist. Post-edit
-validation and production npm platform packages are not implemented.
+intentionally absent until both external prerequisites exist. D011 post-edit
+validation is implemented and green locally through the real pi and
+package-shaped paths; hosted verification of the final candidate remains
+pending. Production npm platform packages are not implemented.
 
 Read first:
 

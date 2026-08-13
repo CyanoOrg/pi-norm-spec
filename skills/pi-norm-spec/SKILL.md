@@ -17,9 +17,18 @@ authority; this adapter does not implement an alternative parser or validator.
   provider call. It is not added to session history.
 - Built-in read/edit/write/search/list paths select the next active target.
   Shell commands and custom-tool fields are not guessed for paths.
+- A successful built-in write or edit triggers strict whole-project `.norm`
+  validation. Green results update status without adding history; findings or
+  validation failures are appended to that completed tool result as bounded
+  soft feedback. Shell commands, custom tools, and failed edits do not trigger
+  this path.
 - Natural-language conventions are prompt guidance. Do not claim that a rule
   was mechanically enforced unless pi-norm-spec reports a typed enforcement
   decision.
+
+Post-edit feedback means the mutation already happened. It does not block,
+roll back, prove project-file compliance, or satisfy the hard-enforcement
+prerequisites.
 
 Run `/norm-status` to inspect runtime identity, the most recent target, the
 number of collected conventions, or a visible failure.

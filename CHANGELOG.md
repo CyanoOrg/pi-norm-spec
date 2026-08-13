@@ -33,3 +33,6 @@ preparation.
 - A single installed extension entry, bounded root-package contents, and a
   package-shaped isolated install gate using a native runtime tarball and the
   sealed upstream payload.
+- Serialized post-edit strict validation for successful built-in `write` and
+  `edit` results, with bounded model-visible findings, distinct runtime failure
+  feedback, cancellation, and no blocking or rollback claim.

@@ -11,8 +11,9 @@ does not implement the `.norm` parser or validator.
 > pi-specific Skill, non-destructive zero-`.norm` onboarding, and the
 > package-shaped isolated install passed the real pi `0.84.1` host on all four
 > native targets at `f080395`. The functional Alpha checkpoint is complete.
-> Enforcement, post-edit validation, and production npm platform packages
-> remain incomplete.
+> D011 post-edit validation feedback is implemented and green locally through
+> the real host and package-shaped paths; final hosted verification is pending.
+> Enforcement and production npm platform packages remain incomplete.
 
 See `AGENTS.md`, `docs/ARCHITECTURE.md`, and
 `docs/planning/v0.1-execution.md` before contributing.
