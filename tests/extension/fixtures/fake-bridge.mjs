@@ -27,11 +27,45 @@ if (mode === "startup-failure") {
   }
 
   let active;
+  let promptContextRequests = 0;
   const lines = createInterface({ input: process.stdin });
   lines.on("line", (line) => {
     const request = JSON.parse(line);
     if (request.method === "status") {
       emit({ apiVersion, type: "response", id: request.id, status: "ok", result: { healthy: true } });
+    } else if (request.method === "promptContext" && mode === "context-error") {
+      emit({
+        apiVersion,
+        type: "response",
+        id: request.id,
+        status: "error",
+        error: { code: "fake/context", message: "fake context failure", path: request.params.target },
+      });
+    } else if (request.method === "promptContext" && mode === "context-error-once" && promptContextRequests++ === 0) {
+      emit({
+        apiVersion,
+        type: "response",
+        id: request.id,
+        status: "error",
+        error: { code: "fake/context", message: "fake context failure", path: request.params.target },
+      });
+    } else if (request.method === "promptContext" && mode === "cancel") {
+      active = request.id;
+    } else if (request.method === "promptContext") {
+      const target = request.params.target;
+      const empty = mode === "empty-context";
+      emit({
+        apiVersion,
+        type: "response",
+        id: request.id,
+        status: "ok",
+        result: {
+          apiVersion: "pi-norm-spec/prompt-context/v1",
+          target,
+          conventionPaths: empty ? [] : target.startsWith("docs") ? ["docs/.norm", ".norm"] : [".norm"],
+          prompt: empty ? null : `PI_NORM_SPEC_CONTEXT_V1\ntarget=${target}\nEND_PI_NORM_SPEC_CONTEXT_V1`,
+        },
+      });
     } else if (request.method === "collect" && mode === "crash") {
       process.exit(17);
     } else if (request.method === "collect") {

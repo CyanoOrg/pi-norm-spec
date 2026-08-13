@@ -42,6 +42,25 @@ try {
     ["docs/.norm", ".norm"],
   );
 
+  const promptContext = await client.request<{
+    apiVersion: string;
+    target: string;
+    conventionPaths: string[];
+    prompt: string | null;
+  }>("promptContext", {
+    root,
+    target: "docs/planning/status.md",
+  });
+  assert.equal(promptContext.apiVersion, "pi-norm-spec/prompt-context/v1");
+  assert.equal(promptContext.target, "docs/planning/status.md");
+  assert.deepEqual(promptContext.conventionPaths, ["docs/.norm", ".norm"]);
+  const prompt = promptContext.prompt ?? "";
+  assert.match(prompt, /^PI_NORM_SPEC_CONTEXT_V1\n/);
+  const specific = prompt.indexOf('"path":"docs/.norm"');
+  const outer = prompt.indexOf('"path":".norm"');
+  assert.ok(specific >= 0 && outer > specific);
+  assert.match(prompt, /END_PI_NORM_SPEC_CONTEXT_V1$/);
+
   const controller = new AbortController();
   const validation = client.request("validate", { root }, controller.signal);
   controller.abort();
@@ -60,5 +79,5 @@ try {
 }
 
 console.log(
-  "Persistent bridge passed exact readiness, collection, targeted cancellation, and graceful shutdown.",
+  "Persistent bridge passed exact readiness, collection, prompt context, targeted cancellation, and graceful shutdown.",
 );
