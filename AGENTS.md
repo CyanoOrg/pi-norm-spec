@@ -17,15 +17,15 @@ intentionally hybrid:
 
 ## Current state
 
-Version `0.1.0-alpha.1` is a bootstrap. Gate A and Gate B are complete. The Rust
+Version `0.1.0-alpha.1` is a bootstrap. Gate A, Gate B, and Gate C are complete. The Rust
 runtime pins all four public norm-spec `0.1.0-rc.1` archive checksums, verifies a
 sealed release-derived payload, executes compatibility, collect, validate, and
 all 82 conformance cases, and is verified on all four native hosted targets.
 Gate C's session-scoped JSONL bridge, targeted cancellation, thin TypeScript
-client, ExtensionAPI lifecycle, and four-platform CI matrix are implemented and
-green locally; exact-candidate hosted verification remains open. Injection,
-enforcement, platform npm packages, and the pi-specific Skill are not
-implemented until their later gates and end-to-end tests say so.
+client, ExtensionAPI lifecycle, and exact-candidate four-platform CI matrix are
+implemented and hosted-green. Gate D path-scoped injection is next. Injection,
+enforcement, platform npm packages, and the pi-specific Skill remain
+unimplemented until their later gates and end-to-end tests say otherwise.
 
 Read first:
 

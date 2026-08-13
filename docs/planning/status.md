@@ -2,11 +2,10 @@
 
 ## Resume here
 
-- Stage: `0.1.0-alpha.1`; Gate A and Gate B are complete. Gate C implementation
-  is locally complete and awaits exact-candidate hosted verification.
-- Current objective: push the corrected Gate C candidate and confirm its Rust
-  server, TypeScript child lifecycle, and public payload path on all four
-  hosted targets before closing the gate.
+- Stage: `0.1.0-alpha.1`; Gate A, Gate B, and Gate C are complete.
+- Current objective: begin Gate D with per-turn path-scoped collection and
+  ephemeral injection, then add the D007 pi-specific Skill and non-destructive
+  zero-`.norm` onboarding path before the functional Alpha checkpoint.
 - D005 fixes the upstream boundary as `norm` CLI subprocesses. D006 fixes the
   first distribution path as verified platform-specific optional packages with
   the complete runtime/conformance payload. D007 fixes one pi-specific Skill
@@ -63,8 +62,28 @@ Gate C local implementation verification on 2026-08-13:
 - CI now runs the Node 24 client/lifecycle suite together with the native Rust
   and public-payload checks on Linux x64, macOS arm64/x64, and Windows x64.
 
-This is local implementation evidence only. Gate C remains open until the
-hosted run for the docs-inclusive candidate is complete and green on all jobs.
+Gate C hosted verification on 2026-08-13:
+
+- GitHub Actions run `31677206007` completed successfully and is bound to exact
+  implementation/status candidate
+  `b95b67ac812a1c538c2e28c75f849ab56942c1c7`;
+- `rust-quality` passed public-history scanning, formatting, strict Clippy, all
+  16 Rust tests, and rustdoc with warnings denied;
+- `extension-quality` passed clean npm installation, TypeScript typechecking,
+  and all eight Node lifecycle tests;
+- Linux x64, macOS arm64, macOS x64, and Windows x64 each passed the Node 24
+  client lifecycle, all Rust tests, and its exact native public-payload step;
+- every native payload job emitted both the production-client lifecycle result
+  and the full payload result: exact readiness, collection, targeted
+  cancellation, graceful shutdown, checksum, sealing, identity, 82-case
+  conformance, strict validation, and stable failure behavior all passed;
+- the Windows job therefore supplies the missing evidence from failed attempt
+  `31676354440`: the corrected driver ran the real Windows executable and
+  payload successfully without a FIFO or custom descriptor.
+
+This closes Gate C. The follow-up closure commit changes documentation only;
+the tested implementation, bridge client, CI workflow, and payload driver
+remain exactly those from `b95b67a`.
 
 Gate C hosted attempt on 2026-08-13:
 
@@ -180,7 +199,7 @@ Bootstrap verification on 2026-08-10:
       (D008).
 - [x] Implement bridge request/response framing, cancellation, graceful
       shutdown, and TypeScript crash visibility.
-- [ ] Confirm the exact Gate C candidate on all four hosted targets.
+- [x] Confirm the exact Gate C candidate on all four hosted targets.
 - [ ] Implement path-scoped ephemeral injection.
 - [ ] Implement the pi-specific Skill and zero-`.norm` onboarding notice.
 - [ ] Define the machine-evaluable enforcement subset before implementing hard
