@@ -1,4 +1,5 @@
 import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import type {
   ContextEvent,
@@ -18,6 +19,9 @@ const STATUS_KEY = "pi-norm-spec";
 const CONTEXT_MESSAGE_TYPE = "pi-norm-spec-context";
 const PROMPT_CONTEXT_API = "pi-norm-spec/prompt-context/v1";
 const INCOMPLETE_BEHAVIOR = "enforcement is not implemented";
+const PI_NORM_SKILL = fileURLToPath(
+  new URL("../skills/pi-norm-spec/SKILL.md", import.meta.url),
+);
 
 interface PromptContextResult {
   apiVersion: typeof PROMPT_CONTEXT_API;
@@ -37,6 +41,7 @@ class NormBridgeLifecycle {
   private contextFailure: BridgeClientError | undefined;
   private lastContext: PromptContextResult | undefined;
   private activeTarget = ".";
+  private onboardingNotified = false;
   private generation = 0;
 
   constructor(resolveRuntime: () => Promise<BridgeLaunch>) {
@@ -51,6 +56,7 @@ class NormBridgeLifecycle {
     this.contextFailure = undefined;
     this.lastContext = undefined;
     this.activeTarget = ".";
+    this.onboardingNotified = false;
     ctx.ui.setStatus(STATUS_KEY, "norm: starting");
     try {
       if (previous && previous.getStatus().state !== "failed") {
@@ -130,7 +136,10 @@ class NormBridgeLifecycle {
       this.contextFailure = undefined;
       this.lastContext = context;
       this.setContextStatus(ctx, context);
-      if (context.prompt === null) return { messages: withoutPriorContext };
+      if (context.prompt === null) {
+        this.notifyOnboarding(ctx);
+        return { messages: withoutPriorContext };
+      }
 
       return {
         messages: [
@@ -196,6 +205,15 @@ class NormBridgeLifecycle {
     }
   }
 
+  private notifyOnboarding(ctx: ExtensionContext): void {
+    if (this.onboardingNotified) return;
+    this.onboardingNotified = true;
+    ctx.ui.notify(
+      "pi-norm-spec found no .norm conventions. The pi-norm-spec Skill can guide an explicit setup; no project files were created.",
+      "info",
+    );
+  }
+
   private recordFailure(ctx: ExtensionContext, failure: BridgeClientError): void {
     if (this.failure === failure) return;
     this.failure = failure;
@@ -210,6 +228,7 @@ export function registerNormContext(pi: ExtensionAPI, options: NormContextOption
 
   pi.on("session_start", async (_event, ctx) => lifecycle.start(ctx));
   pi.on("session_shutdown", async (_event, ctx) => lifecycle.stop(ctx));
+  pi.on("resources_discover", () => ({ skillPaths: [PI_NORM_SKILL] }));
   pi.on("tool_call", (event) => lifecycle.updateTarget(event.toolName, event.input));
   pi.on("context", async (event, ctx) => lifecycle.inject(event.messages, ctx));
 

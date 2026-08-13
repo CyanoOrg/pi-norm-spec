@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 
@@ -158,12 +159,41 @@ test("zero-convention context is typed and does not synthesize prompt guidance",
   )) as { messages: unknown[] };
   assert.deepEqual(result.messages, [original]);
   assert.equal(testHarness.statuses.get("pi-norm-spec"), "norm: empty @ .");
-  assert.equal(testHarness.notifications.length, 0);
+  assert.deepEqual(testHarness.notifications, [
+    {
+      message:
+        "pi-norm-spec found no .norm conventions. The pi-norm-spec Skill can guide an explicit setup; no project files were created.",
+      level: "info",
+    },
+  ]);
+
+  await testHarness.handlers.get("context")?.(
+    { type: "context", messages: [original] },
+    testHarness.ctx,
+  );
+  assert.equal(testHarness.notifications.length, 1, "onboarding notice must be session-bounded");
 
   await testHarness.handlers.get("session_shutdown")?.(
     { type: "session_shutdown", reason: "quit" },
     testHarness.ctx,
   );
+});
+
+test("resources discovery registers only the pi-specific Skill", async () => {
+  const testHarness = harness();
+  registerNormContext(testHarness.pi, { resolveRuntime: () => launch("ready") });
+
+  const resources = (await testHarness.handlers.get("resources_discover")?.(
+    { type: "resources_discover", cwd: process.cwd(), reason: "startup" },
+    testHarness.ctx,
+  )) as { skillPaths: string[] };
+  assert.equal(resources.skillPaths.length, 1);
+  assert.match(resources.skillPaths[0] ?? "", /skills[/\\]pi-norm-spec[/\\]SKILL\.md$/);
+  const skill = await readFile(resources.skillPaths[0] ?? "", "utf8");
+  assert.match(skill, /^---\nname: pi-norm-spec\n/);
+  assert.match(skill, /does not create or modify files/i);
+  assert.match(skill, /github\.com\/CyanoOrg\/norm-spec\/blob\/v0\.1\.0-rc\.1/);
+  assert.doesNotMatch(skill, /name: norm-spec\n/);
 });
 
 test("request-scoped context failure is visible and a later success recovers", async () => {
