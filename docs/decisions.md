@@ -54,3 +54,73 @@ public release history that does not exist.
 **Rationale.** A clean `0.1` line lets the package version describe this
 implementation's maturity. Useful behavior is captured as self-contained
 protocol and end-to-end fixtures rather than inherited Git ancestry.
+
+## D005 — Consume norm-spec through its CLI machine protocols
+
+**Decision.** The Rust bridge invokes a separately versioned `norm` executable
+and consumes its machine-readable compatibility, collect, and validate
+responses. It does not link the norm-spec Rust facade or treat a sibling source
+checkout as a runtime dependency. Startup must compare every required identity,
+including product, format, machine APIs, conformance suite, case count, and
+contract digest, and fail closed on absence or mismatch.
+
+**Context.** norm-spec `0.1.0-rc.1` publishes a compiled CLI, explicit machine
+protocols, and compatibility discovery. Linking the facade would force every
+upstream upgrade through a pi bridge rebuild and would couple the two products'
+release cadence more tightly than their independent SemVer permits.
+
+**Rationale.** A subprocess boundary uses the contract norm-spec deliberately
+publishes for adapters, keeps format semantics in one engine, and makes the
+actual runtime identity observable. Gate C still measures the lifetime of the
+pi bridge process; it does not reopen the upstream CLI-versus-library decision.
+
+## D006 — Distribute a verified, platform-specific upstream payload
+
+**Decision.** The initial npm/pi distribution uses platform-specific optional
+packages and does not rely on a `norm` found on `PATH`. Each platform package
+must be assembled from one exact norm-spec GitHub Release asset and retain the
+complete verification payload needed by this adapter: `norm`,
+`norm-spec-conformance`, the exact contract bundle, release manifest, license,
+and provenance/checksum metadata. It also carries the matching
+`pi-norm-bridge` executable. Package production verifies the release checksum,
+manifest source revision, compatibility identities, and complete conformance
+suite before publication.
+
+**Context.** Bundling only two executables would leave
+`norm-spec-conformance` unusable without its exact contract directory. Looking
+up an arbitrary executable on `PATH` would also make installation dependent on
+a separate Rust/toolchain workflow and would weaken provenance.
+
+**Rationale.** A complete release-derived payload gives JavaScript ecosystem
+users a self-contained install while preserving the upstream release's
+identity and conformance evidence. A future explicit override may be decided
+separately; the first delivery path has one resolver and one failure mode.
+
+## D007 — Provide one pi-specific Skill and a non-destructive cold start
+
+**Decision.** pi-norm-spec exposes one Skill owned by this repository. It
+explains pi-specific injection, status, escape, and authoring workflows, then
+delegates format authoring and validation to the bundled `norm` CLI and links
+to upstream canonical documentation; it does not copy or surface the upstream
+canonical Skill as a second product Skill. The bundled upstream payload may
+retain canonical files for provenance, but they are not registered as pi
+resources.
+
+When a compatible runtime finds no `.norm` files, the adapter treats that as a
+valid project state: it emits one bounded onboarding notice, surfaces the
+pi-specific Skill, and never creates project files without an explicit user
+action. Missing or incompatible runtime components remain errors and must not
+be presented as the same empty-project state. Ordinary pi use does not require
+`norm` on `PATH`; distribution documentation must still provide an explicit
+way for advanced users and CI to invoke the bundled executable.
+
+**Context.** A project-local `.opencode/skills/norm-spec/` copy was useful for
+the upstream adoption rehearsal but is an untracked byte-for-byte duplicate
+that would drift if promoted into this product. Projects without conventions
+also need discoverable onboarding without turning absence into either a silent
+no-op or an error.
+
+**Rationale.** One adapter-owned cognitive surface avoids competing Skills,
+keeps host behavior downstream, and preserves norm-spec as the only authoring
+authority. A notice rather than automatic initialization keeps repository
+mutation under user control.

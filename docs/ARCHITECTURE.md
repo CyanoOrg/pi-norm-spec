@@ -13,12 +13,12 @@ extensions/norm-context.ts    event mapping, cancellation, UI
       │ JSON/JSONL
       ▼
 pi-norm-bridge                process protocol and lifecycle
-      │
-      ▼
-pi-norm-engine                policy evaluation over normalized data
-      │
-      ▼
-norm-spec                     parser, collect, validation, format authority
+      ├──────────────────────► bundled norm executable
+      │                        collect, validate, compatibility
+      │                                  │
+      │                                  │ normalized machine responses
+      ▼                                  ▼
+pi-norm-engine                summaries and policy decisions
 ```
 
 ## `pi-norm-engine`
@@ -31,7 +31,21 @@ summaries and enforceable policy decisions. It does not parse YAML or traverse
 
 Provides versioned JSON/JSONL framing between Node.js and Rust. It owns request
 correlation, protocol errors, cancellation, and process-level diagnostics. It
-must not turn failures into empty convention sets.
+must not turn failures into empty convention sets. It invokes the verified
+upstream CLI rather than linking norm-spec crates or discovering a sibling
+checkout.
+
+## Upstream runtime
+
+The adapter consumes norm-spec through the CLI machine boundary selected in
+D005. Compatibility discovery is mandatory before collect or validate output
+is trusted. Product SemVer alone is insufficient: the pinned format, machine
+APIs, suite, case count, and contract digest must all match.
+
+The initial distribution follows D006. A platform package carries the matching
+pi bridge and a release-derived norm-spec payload with both executables, the
+exact contract bundle, manifest, license, and provenance metadata. The adapter
+does not fall back to an arbitrary `norm` on `PATH`.
 
 ## TypeScript extension
 
@@ -41,10 +55,20 @@ logic. The adapter remains replaceable if pi later exposes a native plugin ABI.
 
 ## Process model
 
-Bootstrap uses a short-lived bridge command for identity. Before injection is
-implemented, choose between a persistent child process and an embedded native
-binding using measured latency, packaging, crash-isolation, and upgrade data.
-That selection requires a decision record.
+Bootstrap uses a short-lived pi bridge command for identity. Before injection
+is implemented, Gate C measures a short-lived versus persistent pi bridge child
+using latency, cancellation, crash-isolation, and shutdown evidence. D005 has
+already fixed the downstream norm-spec boundary as CLI subprocesses; Gate C
+must not replace it with a native norm-spec binding without a superseding
+decision.
+
+## Skill and cold start
+
+Only the pi-specific Skill from D007 is registered with the host. It delegates
+format work to the bundled engine and references upstream documentation instead
+of copying canonical prose. A compatible runtime with zero collected `.norm`
+files produces one onboarding notice and no project mutation. Runtime absence,
+identity mismatch, and invalid conventions remain explicit failures.
 
 ## Security properties
 
