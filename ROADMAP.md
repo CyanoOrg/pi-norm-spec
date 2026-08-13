@@ -12,9 +12,10 @@
 
 ### Beta
 
-- Immediate tool-call enforcement with structured fix hints.
 - Post-edit validation feedback.
 - Linux, macOS, and Windows packaging.
+- Track D010's upstream policy and pi host prerequisites. Typed tool-call
+  enforcement and exact-call escape are not `0.1` gates while either is absent.
 
 ### Stable
 

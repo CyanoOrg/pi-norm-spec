@@ -202,3 +202,41 @@ changes and file edits, while a context-only custom message supplies true
 ephemeral injection. Keeping normalization and rendering in Rust preserves the
 single-engine boundary and makes omission, ordering, size, and failure behavior
 testable without adding enforcement ahead of its separate Gate D decision.
+
+## D010 — Keep hard enforcement empty until both contracts are enforceable
+
+**Decision.** For the exact norm-spec `v0.1.0-rc.1` A1 contract and pi `0.84.1`
+host contract, the machine-evaluable hard-enforcement subset is empty.
+pi-norm-spec does not register a blocking `tool_call` handler for prose or
+existence declarations, add private `.norm` fields, parse shell text, or infer
+paths from arbitrary custom tools. Prompt context remains guidance, and
+post-edit validation remains a separate soft-feedback slice.
+
+Hard enforcement may be reopened only after norm-spec publishes a closed,
+typed operation-policy declaration and pi provides a final immutable
+pre-execution input, an equivalent last-guard/revalidation guarantee, and
+defined behavior for parallel sibling mutations. When those prerequisites
+exist, Rust owns the versioned policy decision; TypeScript only maps it to pi.
+
+The initial escape contract is one-call only. An escapable typed deny may offer
+`Block` or `Allow once` in a dialog-capable human UI. Approval requires a
+non-empty human reason and binds to the tool-call ID, evaluated-input digest,
+and collected-policy identity. It expires after mutation and cannot be reused
+for another call, turn, resumed session, or changed policy collection. The
+adapter records a versioned non-LLM session entry and visible status without
+writing project files. Non-interactive modes fail closed for a covered deny;
+there is no environment, startup, session-wide, project-wide, or global bypass.
+Evaluation and runtime errors are not policy denies and cannot use this escape.
+
+**Context.** The A1 fields describe required paths, free-form naming and update
+rules, document lifecycle metadata, references inside `.norm`, and other
+guidance, but they do not define a closed mapping from a typed operation to a
+stable allow or deny result. Pi handlers run in extension order, later handlers
+may mutate earlier inputs without revalidation, and sibling calls may execute
+in parallel after sequential preflight. An allow decision therefore cannot
+attest to the input that finally executes.
+
+**Rationale.** Treating prompt guidance or convention validation as runtime
+enforcement would create false assurance and duplicate upstream semantics.
+Requiring both semantic and host guarantees preserves the single Rust engine,
+makes future decisions testable, and keeps human escape exact and auditable.

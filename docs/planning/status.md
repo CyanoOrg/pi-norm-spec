@@ -5,13 +5,14 @@
 - Stage: `0.1.0-alpha.1`; Gate A, Gate B, and Gate C are complete. Gate D's
   functional Alpha checkpoint is complete at exact package-inclusive candidate
   `f080395` with all four native hosted targets green.
-- Current objective: define the exact machine-evaluable enforcement subset and
-  explicit escape semantics before implementing `tool_call` blocking. This
-  does not authorize enforcement or Gate E production/publication yet.
-- `docs/planning/gate-d-enforcement-design.md` records the current proposal:
-  the pinned A1 hard-enforcement subset is empty, and one-call human escape
-  requires a final immutable pi input. It awaits the maintainer checkpoint and
-  is not an accepted decision or implementation authorization.
+- D010 closes the enforcement-scope checkpoint: the pinned A1
+  hard-enforcement subset is empty. No blocking `tool_call` handler is
+  authorized for the current contracts. The approved future escape is
+  exact-call only and requires final-input integrity from pi.
+- Current objective: progress the norm-spec typed operation-policy and pi host
+  prerequisites independently, while designing post-edit validation as
+  truthfully labeled soft feedback. This does not authorize enforcement or
+  Gate E production/publication yet.
 - D005 fixes the upstream boundary as `norm` CLI subprocesses. D006 fixes the
   first distribution path as verified platform-specific optional packages with
   the complete runtime/conformance payload. D007 fixes one pi-specific Skill
@@ -48,13 +49,23 @@
   run are complete and green.
 - GitHub repository bootstrap is complete; public visibility remains a
   maintainer checkpoint after the initial functional slice.
-- Enforcement, validation feedback, and npm platform packages are not
-  implemented. The current Skill truthfully defers bundled-CLI invocation
-  details to the future installed platform package.
+- Hard enforcement and escape are intentionally not implemented under D010;
+  validation feedback and npm platform packages are also not implemented. The
+  current Skill truthfully defers bundled-CLI invocation details to the future
+  installed platform package.
 - The local `.opencode/skills/norm-spec/` adoption-rehearsal copy is ignored and
   is not a product resource.
 
 ## Verification
+
+Gate D enforcement-scope decision on 2026-08-13:
+
+- the maintainer approved D010's empty hard-enforcement subset and exact-call
+  future escape boundary;
+- the decision rejects blocking based on prose, private downstream `.norm`
+  fields, shell parsing, custom-tool path inference, and broad bypass flags;
+- hard enforcement remains gated on both an upstream typed operation-policy
+  contract and pi final-input/parallel-mutation guarantees.
 
 Gate D functional Alpha verification on 2026-08-13:
 
@@ -276,8 +287,10 @@ Bootstrap verification on 2026-08-10:
 - [x] Confirm the exact Gate C candidate on all four hosted targets.
 - [x] Implement path-scoped ephemeral injection.
 - [x] Implement the pi-specific Skill and zero-`.norm` onboarding notice.
-- [ ] Define the machine-evaluable enforcement subset before implementing hard
-      policy decisions and escape behavior.
+- [x] Define the current machine-evaluable hard-enforcement subset as empty and
+      approve the future exact-call escape boundary (D010).
+- [ ] Coordinate the norm-spec operation-policy and pi final-input prerequisites
+      before reopening typed hard enforcement and escape implementation.
 - [ ] Implement post-edit validation feedback.
 - [ ] Package the bridge and verified upstream payload for each supported
       platform.

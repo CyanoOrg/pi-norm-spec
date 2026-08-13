@@ -1,9 +1,8 @@
 # Gate D Enforcement and Escape Design
 
-> Status: Proposed on 2026-08-13. This document is a review artifact, not an
-> accepted decision. Escape semantics are a maintainer checkpoint. Do not
-> implement blocking or append a decision record until that checkpoint is
-> approved.
+> Status: Accepted on 2026-08-13 through D010. The empty hard-enforcement subset
+> and exact-call future escape boundary are approved. Blocking remains
+> unauthorized until the upstream and host prerequisites below exist.
 
 ## Question
 
@@ -12,7 +11,7 @@ Which normalized `.norm` declarations can pi-norm-spec enforce as hard
 claiming control over inputs that another extension may still mutate?
 
 For the exact `norm-spec/a1` and pi `0.84.1` contracts currently pinned by this
-repository, the proposed answer is: **none**. The initial hard-enforcement
+repository, the accepted answer is: **none**. The initial hard-enforcement
 subset is empty. Prompt guidance and validation remain useful, but they must
 not be relabeled as hard enforcement.
 
@@ -69,7 +68,7 @@ typed filesystem transaction, and arbitrary custom-tool fields cannot be
 guessed. A command parser or substring matcher would create a second,
 platform-sensitive language engine and is explicitly rejected.
 
-## Proposed decision
+## Accepted decision
 
 1. The hard-enforcement subset for the current pinned contracts is empty.
 2. Do not register a blocking `tool_call` handler merely to simulate
@@ -101,7 +100,7 @@ Pi must provide a final immutable pre-execution input, handler priority with a
 last-guard guarantee, or revalidation after all mutations. The contract must
 also define how a policy observes or serializes parallel sibling mutations.
 
-## Proposed future decision protocol
+## Future decision protocol
 
 When the prerequisites exist, Rust should own a versioned policy result such
 as `pi-norm-spec/policy-decision/v1`. Each result must bind:
@@ -115,7 +114,7 @@ as `pi-norm-spec/policy-decision/v1`. Each result must bind:
 TypeScript may adapt that result to pi's event shape. It must not classify
 content, reinterpret policy, or replace an evaluation error with `allow`.
 
-## Proposed escape semantics
+## Approved future escape semantics
 
 The escape is deliberately narrower than the prototype's proposed
 `--no-norm-enforce` flag:
@@ -143,14 +142,12 @@ The escape is deliberately narrower than the prototype's proposed
 These semantics cannot be implemented safely until pi can prove that the
 approved input is the final input that executes.
 
-## Acceptance path
+## Next path
 
-1. Maintainer approves, rejects, or amends this proposed empty-subset and
-   exact-call escape boundary.
-2. If approved, append D010 to `docs/decisions.md` and update architecture and
-   status without adding a blocking handler.
-3. Record the missing typed-policy requirement in norm-spec through its own
+1. D010 and the stable architecture record the approved empty subset without
+   adding a blocking handler.
+2. Record the missing typed-policy requirement in norm-spec through its own
    decision process; coordinate dependency sequencing outside either product
    roadmap.
-4. Verify or request the required final-input guarantee from pi.
-5. Only then design the Rust policy protocol and implementation fixtures.
+3. Verify or request the required final-input guarantee from pi.
+4. Only then design the Rust policy protocol and implementation fixtures.

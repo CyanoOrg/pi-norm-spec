@@ -18,13 +18,14 @@ pi-norm-bridge                process protocol and lifecycle
       │                                  │
       │                                  │ normalized machine responses
       ▼                                  ▼
-pi-norm-engine                summaries and policy decisions
+pi-norm-engine                prompt context; future typed policy
 ```
 
 ## `pi-norm-engine`
 
 Consumes normalized, versioned norm-spec data and calculates active prompt
-summaries and enforceable policy decisions. It does not parse YAML or traverse
+context. It may calculate enforceable policy decisions only after the D010
+upstream and host prerequisites exist. It does not parse YAML or traverse
 `.norm` inheritance itself.
 
 For Gate D it produces `pi-norm-spec/prompt-context/v1`: a deterministic,
@@ -68,6 +69,26 @@ Path-bearing built-in tool calls select the next target; shell text and custom
 tool fields are not guessed. TypeScript validates the bridge result envelope
 but does not parse, reorder, summarize, or classify conventions.
 
+## Enforcement boundary
+
+D010 records an empty hard-enforcement subset for the currently pinned A1 and
+pi contracts. No blocking `tool_call` handler is registered. Existing prompt
+context is guidance, and convention validation is not presented as proof that
+an arbitrary project mutation is policy-compliant.
+
+Enforcement requires two external contract changes: norm-spec must own a
+closed, typed operation-policy declaration, and pi must expose a final immutable
+input or an equivalent last-guard/revalidation guarantee with defined parallel
+mutation behavior. Only then may Rust emit a versioned policy decision and the
+TypeScript layer adapt it to pi. Shell parsing, custom-tool field inference, and
+private downstream `.norm` fields remain outside this architecture.
+
+A future human escape is bound to one denied call, its evaluated-input digest,
+and its policy collection. It requires a visible, non-empty human reason and is
+recorded as a non-LLM session entry. No environment, startup, session, project,
+or global bypass is permitted. The escape is not implemented while the hard
+subset is empty.
+
 ## Process model
 
 D008 selects one persistent pi bridge child per active pi session. The adapter
@@ -103,8 +124,10 @@ those remain Gate E.
 
 ## Security properties
 
-- A bridge failure is visible and disables enforcement explicitly.
-- Blocking decisions include stable codes and actionable reasons.
-- Any escape flag is explicit, observable, and tested.
+- A bridge failure is visible and never becomes an empty convention set.
+- The current empty hard-enforcement subset is explicit; prompt guidance is not
+  labeled as blocking protection.
+- Future blocking requires upstream-owned stable codes and actionable reasons.
+- Future escape is exact-call, visible, auditable, and has no broad bypass.
 - Untrusted `.norm` content never becomes a shell command.
 - Paths are canonicalized by the upstream engine before policy evaluation.
