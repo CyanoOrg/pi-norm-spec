@@ -5,6 +5,7 @@ import type {
   ContextEvent,
   ExtensionAPI,
   ExtensionContext,
+  ToolResultEvent,
 } from "@earendil-works/pi-coding-agent";
 
 import {
@@ -14,6 +15,13 @@ import {
   type BridgeLaunch,
 } from "./bridge-client.ts";
 import { resolvePlatformRuntime } from "./runtime-resolver.ts";
+import {
+  parseValidationResponse,
+  presentValidation,
+  presentValidationFailure,
+  shouldValidateAfterTool,
+  type ToolResultContentPatch,
+} from "./validation-feedback.ts";
 
 const STATUS_KEY = "pi-norm-spec";
 const CONTEXT_MESSAGE_TYPE = "pi-norm-spec-context";
@@ -42,6 +50,8 @@ class NormBridgeLifecycle {
   private lastContext: PromptContextResult | undefined;
   private activeTarget = ".";
   private onboardingNotified = false;
+  private validationFailure: BridgeClientError | undefined;
+  private validationTail: Promise<void> = Promise.resolve();
   private generation = 0;
 
   constructor(resolveRuntime: () => Promise<BridgeLaunch>) {
@@ -57,6 +67,8 @@ class NormBridgeLifecycle {
     this.lastContext = undefined;
     this.activeTarget = ".";
     this.onboardingNotified = false;
+    this.validationFailure = undefined;
+    this.validationTail = Promise.resolve();
     ctx.ui.setStatus(STATUS_KEY, "norm: starting");
     try {
       if (previous && previous.getStatus().state !== "failed") {
@@ -88,6 +100,7 @@ class NormBridgeLifecycle {
     ++this.generation;
     const client = this.client;
     this.client = undefined;
+    this.validationTail = Promise.resolve();
     ctx.ui.setStatus(STATUS_KEY, undefined);
     if (!client || client.getStatus().state === "failed") return;
     try {
@@ -167,6 +180,43 @@ class NormBridgeLifecycle {
     }
   }
 
+  async validateAfterTool(
+    event: ToolResultEvent,
+    ctx: ExtensionContext,
+  ): Promise<ToolResultContentPatch | undefined> {
+    if (!shouldValidateAfterTool(event)) return undefined;
+    const generation = this.generation;
+    return this.enqueueValidation(async () => {
+      if (generation !== this.generation) return undefined;
+      const client = this.client;
+      if (!client || client.getStatus().state !== "ready") {
+        const failure =
+          this.failure ??
+          new BridgeClientError(
+            "pi-norm-spec/client/validation-unavailable",
+            "the verified bridge is not ready for post-edit validation",
+          );
+        return this.recordValidationFailure(ctx, event, failure);
+      }
+
+      try {
+        const value = await client.request<unknown>("validate", { root: ctx.cwd }, ctx.signal);
+        if (generation !== this.generation) return undefined;
+        const response = parseValidationResponse(value);
+        this.validationFailure = undefined;
+        const presentation = presentValidation(response, event.content);
+        ctx.ui.setStatus(STATUS_KEY, presentation.status);
+        if (presentation.notice) {
+          ctx.ui.notify(presentation.notice.message, presentation.notice.level);
+        }
+        return presentation.patch;
+      } catch (error) {
+        if (error instanceof BridgeRequestCancelledError) return undefined;
+        return this.recordValidationFailure(ctx, event, asBridgeError(error));
+      }
+    });
+  }
+
   status(): string {
     const status = this.client?.getStatus();
     if (this.failure) {
@@ -205,6 +255,30 @@ class NormBridgeLifecycle {
     }
   }
 
+  private recordValidationFailure(
+    ctx: ExtensionContext,
+    event: ToolResultEvent,
+    failure: BridgeClientError,
+  ): ToolResultContentPatch {
+    const repeated = sameFailure(this.validationFailure, failure);
+    this.validationFailure = failure;
+    const presentation = presentValidationFailure(failure, event.content);
+    ctx.ui.setStatus(STATUS_KEY, presentation.status);
+    if (!repeated && presentation.notice) {
+      ctx.ui.notify(presentation.notice.message, presentation.notice.level);
+    }
+    return presentation.patch ?? { content: event.content };
+  }
+
+  private enqueueValidation<T>(task: () => Promise<T>): Promise<T> {
+    const result = this.validationTail.then(task, task);
+    this.validationTail = result.then(
+      () => undefined,
+      () => undefined,
+    );
+    return result;
+  }
+
   private notifyOnboarding(ctx: ExtensionContext): void {
     if (this.onboardingNotified) return;
     this.onboardingNotified = true;
@@ -230,6 +304,7 @@ export function registerNormContext(pi: ExtensionAPI, options: NormContextOption
   pi.on("session_shutdown", async (_event, ctx) => lifecycle.stop(ctx));
   pi.on("resources_discover", () => ({ skillPaths: [PI_NORM_SKILL] }));
   pi.on("tool_call", (event) => lifecycle.updateTarget(event.toolName, event.input));
+  pi.on("tool_result", (event, ctx) => lifecycle.validateAfterTool(event, ctx));
   pi.on("context", async (event, ctx) => lifecycle.inject(event.messages, ctx));
 
   pi.registerCommand("norm-status", {
