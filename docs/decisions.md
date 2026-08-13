@@ -158,3 +158,47 @@ compatibility discovery from turn and tool paths while retaining process-level
 fault isolation. Explicit readiness, request correlation, targeted
 cancellation, and fail-closed exit handling make the longer lifetime
 observable instead of hiding it behind adapter state.
+
+## D009 — Recollect one active path and inject it only into the current context
+
+**Decision.** The adapter uses pi's `context` event, which runs before each
+provider turn, to request a fresh prompt context for one active project path.
+It appends one hidden `custom` message only to the event's returned message
+copy. It does not use `before_agent_start.message`, `sendMessage`, or another
+session-writing API for conventions.
+
+The active target starts at `.` relative to the session working directory.
+Path-bearing built-in tool calls update the target for the next provider turn:
+`read` and `edit` use their file path, `write` uses the new file's parent, and
+`grep`, `find`, and `ls` use their explicit path or `.`. `bash` commands and
+custom tools are not parsed or guessed for paths. If one assistant message
+preflights several path-bearing calls, pi's source-order preflight makes the
+last such call the next active target. The TypeScript layer passes the session
+working directory and target to the bridge without walking for `.norm` files;
+the canonical upstream collector resolves, contains, and orders the paths.
+
+The bridge returns `pi-norm-spec/prompt-context/v1`. Rust constructs it from
+the normalized `norm-spec/collect/v1` response and preserves every convention's
+path, complete JSON frontmatter, complete Markdown body, and most-specific-first
+order. It does not infer policy or perform lossy language summarization. The
+rendered UTF-8 prompt is limited to 256 KiB and fails with a stable error rather
+than truncating conventions. A zero-convention response is a typed empty
+context; D007 owns its one-time onboarding presentation.
+
+Collection, protocol, containment, cancellation, and size failures never
+become an empty injected ruleset. They are visible adapter failures. A later
+successful context request may recover the presentation state without
+restarting the already-compatible bridge.
+
+**Context.** Earlier exploration treated `before_agent_start` as though it ran
+before every model call. In the pinned pi `0.84.1` ExtensionAPI it runs once
+before an agent loop, while `context` runs before every provider turn and
+modifies a deep copy of messages. Tool-call preflight is the first reliable
+host event that exposes structured built-in paths; natural-language prompt and
+shell-command path inference would be ambiguous and unsafe.
+
+**Rationale.** Recollection keeps conventions current after tool-driven path
+changes and file edits, while a context-only custom message supplies true
+ephemeral injection. Keeping normalization and rendering in Rust preserves the
+single-engine boundary and makes omission, ordering, size, and failure behavior
+testable without adding enforcement ahead of its separate Gate D decision.

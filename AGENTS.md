@@ -31,6 +31,7 @@ Read first:
 
 - `docs/planning/status.md` for live state.
 - `docs/planning/v0.1-execution.md` for the active plan.
+- `docs/planning/gate-d-design.md` for the active ephemeral-context design.
 - `docs/ARCHITECTURE.md` for the Rust/TypeScript boundary.
 - `docs/BRIDGE-PROTOCOL.md` for the process and platform-locator contracts.
 - `docs/decisions.md` for immutable decisions.
