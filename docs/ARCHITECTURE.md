@@ -27,6 +27,11 @@ Consumes normalized, versioned norm-spec data and calculates active prompt
 summaries and enforceable policy decisions. It does not parse YAML or traverse
 `.norm` inheritance itself.
 
+For Gate D it produces `pi-norm-spec/prompt-context/v1`: a deterministic,
+bounded projection containing the complete normalized frontmatter and Markdown
+body for every collected convention. It preserves upstream ordering and fails
+instead of truncating or performing a lossy natural-language summary.
+
 ## `pi-norm-bridge`
 
 Provides versioned JSON/JSONL framing between Node.js and Rust. It owns request
@@ -56,6 +61,13 @@ current Node platform and architecture, validates its versioned `runtime.json`,
 and passes explicit bridge and payload paths to the client; it does not search
 `PATH`. The adapter remains replaceable if pi later exposes a native plugin ABI.
 
+D009 maps pi's `context` event to a fresh `promptContext` bridge request before
+every provider turn. The adapter appends one hidden custom message only to the
+event's returned message copy, so conventions do not enter session history.
+Path-bearing built-in tool calls select the next target; shell text and custom
+tool fields are not guessed. TypeScript validates the bridge result envelope
+but does not parse, reorder, summarize, or classify conventions.
+
 ## Process model
 
 D008 selects one persistent pi bridge child per active pi session. The adapter
@@ -66,12 +78,13 @@ newline-delimited JSON, explicit frame kinds, unique IDs, and terminal
 terminating the bridge.
 
 The initialized bridge caches sealed-payload verification and the exact
-compatibility handshake only. Each collect or validate operation still runs
-the verified `norm` CLI selected by D005. Unexpected EOF, malformed output, or
-a non-zero bridge exit rejects all pending requests and leaves the adapter in a
-visible failed state; there is no silent one-shot fallback or automatic
-restart. A later explicit session start may create a fresh child. The exact
-frame and method contract is defined in `docs/BRIDGE-PROTOCOL.md`.
+compatibility handshake only. Each collect, prompt-context, or validate
+operation still runs the verified `norm` CLI selected by D005. Unexpected EOF,
+malformed output, or a non-zero bridge exit rejects all pending requests and
+leaves the adapter in a visible failed state; there is no silent one-shot
+fallback or automatic restart. A later explicit session start may create a
+fresh child. The exact frame and method contract is defined in
+`docs/BRIDGE-PROTOCOL.md`.
 
 ## Skill and cold start
 

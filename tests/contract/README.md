@@ -14,9 +14,10 @@ extracted byte in a local payload lock, and then exercises compatibility, all
 82 conformance cases, collect, and strict validation. It then uses the
 production TypeScript client to drive the persistent JSONL bridge through exact
 readiness, prompt-context rendering, targeted cancellation, and acknowledged
-shutdown. No
-sibling checkout, `PATH` fallback, POSIX FIFO, or custom file descriptor is
-used.
+shutdown. It also drives the extension through pi's real AgentSession and
+ExtensionRunner lifecycle for Skill loading, root/path injection, and cold
+start. No sibling checkout, `PATH` fallback, POSIX FIFO, or custom file
+descriptor is used.
 
 The language-neutral frame contract is documented in
 `docs/BRIDGE-PROTOCOL.md`. Rust tests enforce framing limits, protocol and ID
@@ -24,4 +25,5 @@ validation, startup failure events, request-scoped parameter errors, and
 cross-platform child cancellation. TypeScript tests use an isolated fake child
 to prove ready/request/shutdown correlation, exact AbortSignal cancellation,
 startup failure, malformed output, crash visibility, ExtensionAPI lifecycle
-hooks, and the absence of silent restart.
+hooks, path-scoped context injection, cold-start behavior, and the absence of
+silent restart.

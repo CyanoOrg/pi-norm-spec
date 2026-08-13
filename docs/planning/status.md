@@ -2,10 +2,11 @@
 
 ## Resume here
 
-- Stage: `0.1.0-alpha.1`; Gate A, Gate B, and Gate C are complete.
-- Current objective: begin Gate D with per-turn path-scoped collection and
-  ephemeral injection, then add the D007 pi-specific Skill and non-destructive
-  zero-`.norm` onboarding path before the functional Alpha checkpoint.
+- Stage: `0.1.0-alpha.1`; Gate A, Gate B, and Gate C are complete. Gate D's
+  functional Alpha implementation is locally complete and awaits exact-candidate
+  four-platform hosted verification plus a packaged-install rehearsal.
+- Current objective: verify the Gate D candidate on all four hosted targets,
+  then stage a real package-shaped install without claiming Gate E publication.
 - D005 fixes the upstream boundary as `norm` CLI subprocesses. D006 fixes the
   first distribution path as verified platform-specific optional packages with
   the complete runtime/conformance payload. D007 fixes one pi-specific Skill
@@ -23,6 +24,14 @@
   events, and acknowledged shutdown. The thin TypeScript client owns one child
   per ExtensionAPI session, rejects pending work on malformed output or crash,
   and never silently restarts or falls back.
+- D009 adds `pi-norm-spec/prompt-context/v1`. Rust renders every normalized
+  convention without loss or reordering and fails above 256 KiB instead of
+  truncating. Pi's `context` event recollects before every provider turn and
+  appends one hidden custom message only to the event copy; built-in tool paths
+  select the next target.
+- The adapter registers one pi-specific Skill. A compatible zero-`.norm`
+  project receives one session-bounded onboarding notice and no project write;
+  runtime and collection failures remain distinct visible errors.
 - The platform resolver recognizes four versioned optional-package locators,
   but the platform packages themselves remain Gate E work. Their current
   absence is a visible runtime startup failure rather than a `PATH` fallback.
@@ -30,12 +39,45 @@
   run are complete and green.
 - GitHub repository bootstrap is complete; public visibility remains a
   maintainer checkpoint after the initial functional slice.
-- Injection, enforcement, validation feedback, npm platform packages, and the
-  pi-specific Skill are not implemented.
+- Enforcement, validation feedback, and npm platform packages are not
+  implemented. The current Skill truthfully defers bundled-CLI invocation
+  details to the future installed platform package.
 - The local `.opencode/skills/norm-spec/` adoption-rehearsal copy is ignored and
   is not a product resource.
 
 ## Verification
+
+Gate D local Alpha verification on 2026-08-13:
+
+- D009 and `docs/planning/gate-d-design.md` bind the implementation to pi
+  `0.84.1`'s actual lifecycle: `context` runs before each provider turn, while
+  `before_agent_start` does not provide per-turn ephemeral injection;
+- implementation commits `cf61b08`, `fbd4f33`, and `6321532` add Rust-owned
+  prompt rendering, TypeScript path-scoped context injection, the single Skill,
+  and non-destructive cold start; `4f0cc53` adds the real pi Alpha host gate and
+  `0c96c6a` proves that cold start leaves the project directory untouched;
+- Rust tests cover exact content/order, deterministic rendering, typed empty
+  state, 256 KiB fail-closed behavior, bridge parameters, and existing process
+  guarantees; all 21 workspace tests pass;
+- all 15 Node tests pass and cover root injection, path mapping, replacement of
+  prior ephemeral messages, cancellation, visible/recoverable failures,
+  notification deduplication, one-notice empty state, and single-Skill resource
+  discovery;
+- the production client and new bridge method passed against the sealed public
+  macOS arm64 `v0.1.0-rc.1` payload with both applicable conventions in exact
+  most-specific-first order;
+- the pinned real `@earendil-works/pi-coding-agent` host loaded the extension
+  through `DefaultResourceLoader`, bound an `AgentSession`, emitted the actual
+  ExtensionRunner lifecycle, parsed exactly one Skill, injected root context,
+  recollected `docs/.norm` then `.norm` after a read target, and produced one
+  zero-`.norm` notice without creating project files;
+- the same run retained checksum, sealing, exact identity, complete 82/82
+  conformance, strict validation, targeted cancellation, and graceful shutdown.
+
+This is local implementation evidence. The functional Alpha checkpoint remains
+open until an exact docs-inclusive candidate passes the same native payload and
+real-pi host gate on Linux x64, macOS arm64/x64, and Windows x64, followed by a
+package-shaped install rehearsal.
 
 Gate C local implementation verification on 2026-08-13:
 
@@ -200,8 +242,8 @@ Bootstrap verification on 2026-08-10:
 - [x] Implement bridge request/response framing, cancellation, graceful
       shutdown, and TypeScript crash visibility.
 - [x] Confirm the exact Gate C candidate on all four hosted targets.
-- [ ] Implement path-scoped ephemeral injection.
-- [ ] Implement the pi-specific Skill and zero-`.norm` onboarding notice.
+- [x] Implement path-scoped ephemeral injection.
+- [x] Implement the pi-specific Skill and zero-`.norm` onboarding notice.
 - [ ] Define the machine-evaluable enforcement subset before implementing hard
       policy decisions and escape behavior.
 - [ ] Implement post-edit validation feedback.

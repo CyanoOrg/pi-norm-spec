@@ -23,3 +23,10 @@ preparation.
 - Thin TypeScript bridge client and ExtensionAPI session lifecycle with
   platform-runtime resolution, AbortSignal cancellation, visible startup/crash
   failures, and no automatic fallback or restart.
+- Versioned `pi-norm-spec/prompt-context/v1` rendering with complete normalized
+  conventions, deterministic ordering, a typed empty state, and fail-closed
+  size limits.
+- Per-provider-turn path-scoped injection through pi's non-persistent `context`
+  event, with built-in tool target tracking and visible recoverable failures.
+- One pi-specific Skill, bounded zero-`.norm` onboarding without project writes,
+  and a real pi `0.84.1` AgentSession/ExtensionRunner Alpha gate.
