@@ -1,5 +1,13 @@
 {
-  "bridgeApiVersion": "pi-norm-spec/bridge/v1",
-  "expectedNormCollectApi": "norm-spec/collect/v1",
-  "packageVersion": "0.1.0-alpha.1"
+  "apiVersion": "pi-norm-spec/bridge/v1",
+  "operation": "identity",
+  "status": "ok",
+  "result": {
+    "bridgeApiVersion": "pi-norm-spec/bridge/v1",
+    "expectedNormProductVersion": "0.1.0-rc.1",
+    "expectedNormCompatibilityApi": "norm-spec/compatibility/v1",
+    "expectedNormCollectApi": "norm-spec/collect/v1",
+    "expectedNormValidateApi": "norm-spec/validate/v1",
+    "packageVersion": "0.1.0-alpha.1"
+  }
 }

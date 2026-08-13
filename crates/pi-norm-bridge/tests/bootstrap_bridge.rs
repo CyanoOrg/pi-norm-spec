@@ -1,6 +1,8 @@
-//! Black-box bootstrap tests for the Rust bridge process.
+//! Black-box tests for one-shot bridge diagnostics.
 
 use std::process::{Command, Output};
+
+use serde_json::Value;
 
 fn run_bridge(args: &[&str]) -> Output {
     match Command::new(env!("CARGO_BIN_EXE_pi-norm-bridge"))
@@ -12,18 +14,62 @@ fn run_bridge(args: &[&str]) -> Output {
     }
 }
 
-#[test]
-fn identity_is_versioned_and_machine_readable() {
-    let output = run_bridge(&["identity"]);
-    assert!(output.status.success());
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains(r#""bridgeApiVersion":"pi-norm-spec/bridge/v1""#));
-    assert!(stdout.contains(r#""expectedNormCollectApi":"norm-spec/collect/v1""#));
+fn parse_stdout(output: &Output) -> Value {
+    match serde_json::from_slice(&output.stdout) {
+        Ok(value) => value,
+        Err(error) => panic!("bridge stdout was not JSON: {error}"),
+    }
 }
 
 #[test]
-fn unsupported_runtime_requests_fail_explicitly() {
+fn identity_matches_the_versioned_fixture() {
+    let output = run_bridge(&["identity"]);
+    assert!(output.status.success());
+    assert!(output.stderr.is_empty());
+    let expected: Value = match serde_json::from_str(include_str!(
+        "../../../tests/contract/expected/identity.json"
+    )) {
+        Ok(value) => value,
+        Err(error) => panic!("identity fixture was invalid: {error}"),
+    };
+    assert_eq!(parse_stdout(&output), expected);
+}
+
+#[test]
+fn unsupported_commands_fail_with_a_stable_machine_error() {
     let output = run_bridge(&["serve"]);
     assert_eq!(output.status.code(), Some(2));
-    assert!(String::from_utf8_lossy(&output.stderr).contains("not implemented yet"));
+    assert!(output.stderr.is_empty());
+    let response = parse_stdout(&output);
+    assert_eq!(response["apiVersion"], "pi-norm-spec/bridge/v1");
+    assert_eq!(response["status"], "error");
+    assert_eq!(response["error"]["code"], "pi-norm-spec/usage");
+}
+
+#[test]
+fn upstream_pin_exposes_the_exact_public_asset() {
+    let output = run_bridge(&["upstream-pin", "--target", "aarch64-apple-darwin"]);
+    assert!(output.status.success());
+    assert!(output.stderr.is_empty());
+    let response = parse_stdout(&output);
+    assert_eq!(response["operation"], "upstream.pin");
+    assert_eq!(response["result"]["target"], "aarch64-apple-darwin");
+    assert_eq!(
+        response["result"]["sha256"],
+        "a51712eac951aaf1e543548a000ebce62174f3038e5b45606ba7f5b3a5f82dee"
+    );
+}
+
+#[test]
+fn missing_payload_never_becomes_an_empty_success() {
+    let output = run_bridge(&["upstream-verify", "--payload", "missing-payload"]);
+    assert_eq!(output.status.code(), Some(1));
+    assert!(output.stderr.is_empty());
+    let response = parse_stdout(&output);
+    assert_eq!(response["status"], "error");
+    assert_eq!(
+        response["error"]["code"],
+        "pi-norm-spec/payload/unavailable"
+    );
+    assert!(response.get("result").is_none());
 }
