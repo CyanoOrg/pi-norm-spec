@@ -2,27 +2,62 @@
 
 ## Resume here
 
-- Stage: `0.1.0-alpha.1`; Gate A is complete and Gate B implementation is next.
-- Current objective: consume public norm-spec `0.1.0-rc.1` through its CLI
-  machine protocols, verify the exact release-derived payload, and fail closed
-  on incompatible identity without duplicating `.norm` semantics.
+- Stage: `0.1.0-alpha.1`; Gate A is complete. Gate B is locally implemented and
+  awaiting the exact candidate's four native hosted payload jobs.
+- Current objective: close Gate B by proving public norm-spec `0.1.0-rc.1`
+  checksum, provenance, compatibility, complete conformance, collect, and
+  validate behavior on Linux x64, macOS Apple Silicon/Intel, and Windows x64.
 - D005 fixes the upstream boundary as `norm` CLI subprocesses. D006 fixes the
   first distribution path as verified platform-specific optional packages with
   the complete runtime/conformance payload. D007 fixes one pi-specific Skill
   and a non-destructive, one-notice cold start.
-- `package.json` now records the exact product, format, machine API, suite,
-  case-count, digest, and bridge identities to be enforced by Gate B. This is a
-  declared contract, not evidence that the handshake is implemented.
+- `package.json` records the exact product, format, machine API, suite,
+  case-count, digest, and bridge identities. The Rust engine now embeds the
+  corresponding release tag, exact source revision, four public asset names,
+  and four SHA-256 values.
+- The Rust bridge resolves only a sealed payload: it verifies exact inventory,
+  every payload byte, the retained release checksum line, release manifest,
+  source revision, contract lock, and every locked contract file before process
+  execution. There is no `PATH` or sibling-checkout fallback.
+- One-shot bridge diagnostics now expose stable machine envelopes for exact
+  asset discovery, payload sealing/verification, collect, and strict validate.
+  Gate C still owns the production bridge lifecycle and request framing.
 - The private GitHub repository, initial `main` push, and first hosted Actions
   run are complete and green.
 - GitHub repository bootstrap is complete; public visibility remains a
   maintainer checkpoint after the initial functional slice.
-- Injection, enforcement, validation feedback, platform payloads, and the
+- Injection, enforcement, validation feedback, npm platform packages, and the
   pi-specific Skill are not implemented.
 - The local `.opencode/skills/norm-spec/` adoption-rehearsal copy is ignored and
   is not a product resource.
 
 ## Verification
+
+Gate B local verification on 2026-08-13:
+
+- the embedded upstream pin identifies tag `v0.1.0-rc.1`, source revision
+  `5c781964b6d9b11c52f29e5b6e2bbe13c25a5ee0`, exact compatibility identity,
+  and immutable checksums for all four native GitHub Release archives;
+- the public `aarch64-apple-darwin` archive and sibling checksum were downloaded
+  into an isolated temporary directory; the archive SHA matched
+  `a51712eac951aaf1e543548a000ebce62174f3038e5b45606ba7f5b3a5f82dee`;
+- safe single-root extraction, no link entries, exact release inventory,
+  manifest/source/contract identity, every contract file digest, and sealed
+  full-payload inventory/digests passed;
+- `norm compatibility` matched the exact compiled pin and
+  `norm-spec-conformance` returned pass/complete with 82 declared, 82 executed,
+  82 passed, zero failed, and zero not executed;
+- bridge collect returned `docs/.norm` then `.norm`; strict validation returned
+  two files, zero errors, and zero warnings;
+- a zero-`.norm` project returned a valid empty collection, an invalid project
+  returned a completed typed validation response with findings, and a missing
+  target returned a stable bridge error rather than an empty ruleset;
+- unit/black-box coverage rejects checksum drift, post-seal payload changes,
+  incompatible identities, missing payloads, and unsupported commands.
+
+Hosted closure remains pending for the exact implementation candidate. CI now
+downloads and verifies the pinned public archive natively on Ubuntu 22.04,
+macOS 15 Apple Silicon, macOS 15 Intel, and Windows 2022.
 
 Bootstrap verification on 2026-08-10:
 
@@ -51,9 +86,11 @@ Bootstrap verification on 2026-08-10:
 
 ## Open work
 
-- [ ] Resolve and verify the exact platform payload for norm-spec `0.1.0-rc.1`.
-- [ ] Implement compatibility, collect, and validate machine-protocol handling.
-- [ ] Exercise the complete 82-case upstream conformance bundle without skips.
+- [x] Resolve and locally verify the exact platform payload for norm-spec
+      `0.1.0-rc.1`.
+- [x] Implement compatibility, collect, and validate machine-protocol handling.
+- [x] Exercise the complete 82-case upstream conformance bundle without skips.
+- [ ] Confirm the exact candidate's four native hosted payload jobs.
 - [ ] Measure and decide short-lived versus persistent pi bridge lifecycle.
 - [ ] Implement bridge request/response framing and cancellation.
 - [ ] Implement path-scoped ephemeral injection.

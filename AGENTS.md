@@ -17,11 +17,14 @@ intentionally hybrid:
 
 ## Current state
 
-Version `0.1.0-alpha.1` is a bootstrap. Gate A and the Gate B consumption,
-distribution, Skill, and cold-start decisions are complete. The Rust bridge and
-TypeScript entry still expose identity/status only; upstream handshake,
-injection, enforcement, and packaging are not complete until the execution plan
-and end-to-end tests say so.
+Version `0.1.0-alpha.1` is a bootstrap. Gate A is complete. Gate B's consumption,
+distribution, Skill, and cold-start decisions are recorded; its runtime slice
+now pins all four public norm-spec `0.1.0-rc.1` archive checksums, verifies a
+sealed release-derived payload, executes compatibility, collect, validate, and
+all 82 conformance cases, and has local Apple Silicon evidence. Gate B remains
+open until the exact candidate passes the four native hosted payload jobs.
+Injection, enforcement, platform npm packaging, and the pi-specific Skill are
+not implemented until their later gates and end-to-end tests say so.
 
 Read first:
 

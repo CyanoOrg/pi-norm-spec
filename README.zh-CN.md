@@ -5,8 +5,10 @@
 Rust 负责约束计算和版本化 bridge；TypeScript 只负责接入 pi ExtensionAPI。
 本仓库不重新实现 `.norm` parser、collect 或 validator。
 
-> 当前状态：`0.1.0-alpha.1` 启动阶段。只有身份与状态骨架，正式注入、拦截、
-> 修改后反馈和分发尚未完成。
+> 当前状态：`0.1.0-alpha.1` 启动阶段。Gate B 的 Rust runtime 路径已 pin 并验证
+> 完整的公开 norm-spec `0.1.0-rc.1` payload，消费 compatibility、collect、
+> validate 机器响应，并执行全部 82 个 conformance case。四目标 hosted 收口仍待
+> 完成；pi 注入、拦截、修改后反馈和 npm 平台分发尚未完成。
 
 参与开发前请阅读 `AGENTS.md`、`docs/ARCHITECTURE.md` 和
 `docs/planning/v0.1-execution.md`。
