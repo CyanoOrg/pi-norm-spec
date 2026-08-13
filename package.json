@@ -5,13 +5,14 @@
   "license": "MIT",
   "author": "Wade",
   "keywords": ["pi-package", "norm-spec"],
+  "files": ["extensions", "skills"],
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "npm run typecheck && node --experimental-strip-types --test tests/extension/*.test.ts"
   },
   "pi": {
-    "extensions": ["./extensions"]
+    "extensions": ["./extensions/norm-context.ts"]
   },
   "normSpec": {
     "productCompat": "=0.1.0-rc.1",
