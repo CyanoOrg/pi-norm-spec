@@ -2,10 +2,11 @@
 
 ## Resume here
 
-- Stage: `0.1.0-alpha.1`; Gate A and Gate B are complete.
-- Current objective: implement the D008 session-scoped bridge lifecycle and
-  JSONL request protocol while keeping D005's verified norm-spec CLI
-  subprocess boundary fixed.
+- Stage: `0.1.0-alpha.1`; Gate A and Gate B are complete. Gate C implementation
+  is locally complete and awaits exact-candidate hosted verification.
+- Current objective: push the Gate C candidate and confirm its Rust server,
+  TypeScript child lifecycle, and public payload path on all four hosted
+  targets before closing the gate.
 - D005 fixes the upstream boundary as `norm` CLI subprocesses. D006 fixes the
   first distribution path as verified platform-specific optional packages with
   the complete runtime/conformance payload. D007 fixes one pi-specific Skill
@@ -18,10 +19,14 @@
   every payload byte, the retained release checksum line, release manifest,
   source revision, contract lock, and every locked contract file before process
   execution. There is no `PATH` or sibling-checkout fallback.
-- One-shot bridge diagnostics now expose stable machine envelopes for exact
-  asset discovery, payload sealing/verification, collect, and strict validate.
-  D008 now selects one observable bridge child per active pi session; Gate C
-  still owns its production request framing and TypeScript client.
+- The production bridge now exposes bounded JSONL frames, unique request IDs,
+  one active semantic operation, targeted cancellation, typed startup/fatal
+  events, and acknowledged shutdown. The thin TypeScript client owns one child
+  per ExtensionAPI session, rejects pending work on malformed output or crash,
+  and never silently restarts or falls back.
+- The platform resolver recognizes four versioned optional-package locators,
+  but the platform packages themselves remain Gate E work. Their current
+  absence is a visible runtime startup failure rather than a `PATH` fallback.
 - The private GitHub repository, initial `main` push, and first hosted Actions
   run are complete and green.
 - GitHub repository bootstrap is complete; public visibility remains a
@@ -32,6 +37,30 @@
   is not a product resource.
 
 ## Verification
+
+Gate C local implementation verification on 2026-08-13:
+
+- implementation candidate
+  `1de1ba2f306400eb691d97083e4a06e161d81512` contains D008, the Rust server,
+  thin TypeScript client, ExtensionAPI lifecycle, and four-platform CI lanes;
+- `cargo fmt --check`, strict workspace Clippy, 16 Rust tests, and rustdoc with
+  warnings denied passed; cancellation tests terminate only the target child;
+- a clean `npm ci --ignore-scripts` installed 148 packages and audited 149 with
+  zero vulnerabilities; TypeScript typecheck and all eight Node tests passed;
+- Node tests prove exact ready/request/shutdown correlation, AbortSignal
+  cancellation, startup failure, malformed output, pending-work rejection on
+  child exit, UI/status visibility, and no silent restart;
+- a real TypeScript client used the sealed public macOS arm64 payload, observed
+  exact `v0.1.0-rc.1` readiness, collected both applicable `.norm` files,
+  cancelled validation by request ID, and reached `stopped` after shutdown;
+- the full native release check again passed checksum, safe extraction, sealed
+  identity, 82/82 conformance, collect, validate, ready, targeted cancellation,
+  and graceful shutdown without a sibling checkout or `PATH` fallback;
+- CI now runs the Node 24 client/lifecycle suite together with the native Rust
+  and public-payload checks on Linux x64, macOS arm64/x64, and Windows x64.
+
+This is local implementation evidence only. Gate C remains open until the
+hosted run for the docs-inclusive candidate is complete and green on all jobs.
 
 Gate C lifecycle measurement on 2026-08-13:
 
@@ -127,7 +156,9 @@ Bootstrap verification on 2026-08-10:
 - [x] Confirm the exact candidate's four native hosted payload jobs.
 - [x] Measure and decide short-lived versus persistent pi bridge lifecycle
       (D008).
-- [ ] Implement bridge request/response framing and cancellation.
+- [x] Implement bridge request/response framing, cancellation, graceful
+      shutdown, and TypeScript crash visibility.
+- [ ] Confirm the exact Gate C candidate on all four hosted targets.
 - [ ] Implement path-scoped ephemeral injection.
 - [ ] Implement the pi-specific Skill and zero-`.norm` onboarding notice.
 - [ ] Define the machine-evaluable enforcement subset before implementing hard

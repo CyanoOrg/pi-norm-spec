@@ -7,13 +7,13 @@
 - Governance, architecture, and bridge contracts.
 - Rust engine consumes canonical norm-spec output.
 - Thin TypeScript extension starts and reports bridge identity.
+- Session-scoped bridge lifecycle, targeted cancellation, and crash visibility.
 - Path-scoped ephemeral injection works end to end.
 
 ### Beta
 
 - Immediate tool-call enforcement with structured fix hints.
 - Post-edit validation feedback.
-- Bridge lifecycle, cancellation, and crash recovery.
 - Linux, macOS, and Windows packaging.
 
 ### Stable
