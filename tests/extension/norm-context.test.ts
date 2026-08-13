@@ -190,10 +190,10 @@ test("resources discovery registers only the pi-specific Skill", async () => {
   assert.equal(resources.skillPaths.length, 1);
   assert.match(resources.skillPaths[0] ?? "", /skills[/\\]pi-norm-spec[/\\]SKILL\.md$/);
   const skill = await readFile(resources.skillPaths[0] ?? "", "utf8");
-  assert.match(skill, /^---\nname: pi-norm-spec\n/);
+  assert.match(skill, /^---\r?\nname: pi-norm-spec\r?\n/);
   assert.match(skill, /does not create or modify files/i);
   assert.match(skill, /github\.com\/CyanoOrg\/norm-spec\/blob\/v0\.1\.0-rc\.1/);
-  assert.doesNotMatch(skill, /name: norm-spec\n/);
+  assert.doesNotMatch(skill, /name: norm-spec\r?\n/);
 });
 
 test("request-scoped context failure is visible and a later success recovers", async () => {
