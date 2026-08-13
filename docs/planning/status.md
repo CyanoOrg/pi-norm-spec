@@ -4,9 +4,9 @@
 
 - Stage: `0.1.0-alpha.1`; Gate A and Gate B are complete. Gate C implementation
   is locally complete and awaits exact-candidate hosted verification.
-- Current objective: push the Gate C candidate and confirm its Rust server,
-  TypeScript child lifecycle, and public payload path on all four hosted
-  targets before closing the gate.
+- Current objective: push the corrected Gate C candidate and confirm its Rust
+  server, TypeScript child lifecycle, and public payload path on all four
+  hosted targets before closing the gate.
 - D005 fixes the upstream boundary as `norm` CLI subprocesses. D006 fixes the
   first distribution path as verified platform-specific optional packages with
   the complete runtime/conformance payload. D007 fixes one pi-specific Skill
@@ -41,8 +41,9 @@
 Gate C local implementation verification on 2026-08-13:
 
 - implementation candidate
-  `1de1ba2f306400eb691d97083e4a06e161d81512` contains D008, the Rust server,
-  thin TypeScript client, ExtensionAPI lifecycle, and four-platform CI lanes;
+  `9099547ba41533cec0e99e64555241c8b8cf2920` contains D008, the Rust server,
+  thin TypeScript client, ExtensionAPI lifecycle, four-platform CI lanes, and
+  the cross-platform real-payload driver;
 - `cargo fmt --check`, strict workspace Clippy, 16 Rust tests, and rustdoc with
   warnings denied passed; cancellation tests terminate only the target child;
 - a clean `npm ci --ignore-scripts` installed 148 packages and audited 149 with
@@ -56,11 +57,32 @@ Gate C local implementation verification on 2026-08-13:
 - the full native release check again passed checksum, safe extraction, sealed
   identity, 82/82 conformance, collect, validate, ready, targeted cancellation,
   and graceful shutdown without a sibling checkout or `PATH` fallback;
+- the real-payload lifecycle check now reuses the production TypeScript
+  `BridgeClient`; it has no POSIX FIFO or custom file-descriptor dependency and
+  remains included in TypeScript typechecking;
 - CI now runs the Node 24 client/lifecycle suite together with the native Rust
   and public-payload checks on Linux x64, macOS arm64/x64, and Windows x64.
 
 This is local implementation evidence only. Gate C remains open until the
 hosted run for the docs-inclusive candidate is complete and green on all jobs.
+
+Gate C hosted attempt on 2026-08-13:
+
+- GitHub Actions run `31676354440` was bound to exact candidate
+  `0a26e76b7b3082008e72f4b14a6688481bc403cf`;
+- `rust-quality`, `extension-quality`, Linux x64, macOS arm64, and macOS x64
+  completed successfully; the Windows job also passed the Node lifecycle suite
+  and all 16 Rust tests;
+- the Windows native-payload step exited `141` without emitting a payload or
+  bridge assertion. The same step passed on all three Unix runners. The failed
+  candidate's lifecycle driver was the only part using POSIX `mkfifo` and
+  custom descriptors, so this run does not establish Windows persistent-payload
+  behavior and does not identify a Rust protocol or upstream identity failure;
+- `9099547` removes that Git Bash FIFO/descriptor path and drives the exact
+  sealed payload through the production TypeScript client. The replacement
+  passed locally together with checksum, sealing, 82/82 conformance, collect,
+  validate, targeted cancellation, and graceful shutdown. Hosted confirmation
+  of the corrected exact candidate remains required.
 
 Gate C lifecycle measurement on 2026-08-13:
 
