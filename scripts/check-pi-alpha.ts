@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, readdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -175,6 +175,7 @@ try {
       },
     ]);
   });
+  assert.deepEqual(await readdir(emptyRoot), [], "cold start must not create project files");
 } finally {
   await rm(emptyRoot, { recursive: true, force: true });
 }
