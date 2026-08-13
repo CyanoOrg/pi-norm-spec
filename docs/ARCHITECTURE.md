@@ -69,6 +69,26 @@ Path-bearing built-in tool calls select the next target; shell text and custom
 tool fields are not guessed. TypeScript validates the bridge result envelope
 but does not parse, reorder, summarize, or classify conventions.
 
+## Post-edit validation feedback
+
+D011 maps successful built-in `write` and `edit` results to the existing
+bridge `validate` method. The adapter serializes these requests in session-local
+FIFO order so the persistent bridge retains its one-active-operation contract.
+In pi's parallel mode this follows tool completion order. A validation observes
+the filesystem state present when it runs; it is not a transactional snapshot.
+
+Green validation updates transient UI status only. Findings or validation
+runtime/protocol failures append bounded text to the completed tool result for
+model-visible, session-persistent feedback, while preserving the original
+result's error state, details, and usage. Cancellation does not become a false
+validation result. Bash, user shell, custom tools, failed edits, and non-mutating
+built-ins do not trigger this path.
+
+This validates `.norm` declarations through the canonical upstream engine. It
+does not decide whether an arbitrary file mutation complied with free-form
+conventions, block or revert effects, or satisfy D010's hard-enforcement
+prerequisites.
+
 ## Enforcement boundary
 
 D010 records an empty hard-enforcement subset for the currently pinned A1 and

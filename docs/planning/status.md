@@ -9,10 +9,13 @@
   hard-enforcement subset is empty. No blocking `tool_call` handler is
   authorized for the current contracts. The approved future escape is
   exact-call only and requires final-input integrity from pi.
-- Current objective: design post-edit validation as truthfully labeled soft
-  feedback while tracking the norm-spec typed operation-policy and pi host
-  prerequisites independently. This does not authorize enforcement or Gate E
-  production/publication yet.
+- D011 accepts serialized post-edit `.norm` validation as bounded soft
+  feedback for successful built-in `write` and `edit` results. Implementation
+  and hosted evidence remain pending; the decision does not authorize
+  blocking, rollback, shell parsing, or project-compliance claims.
+- Current objective: implement and verify D011 while tracking the norm-spec
+  typed operation-policy and pi host prerequisites independently. This does not
+  authorize enforcement or Gate E production/publication yet.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
   a minimal non-transforming admission-hook request. The request was posted on
   pi issue #7092 on 2026-08-13 and accepts source-ordered clearance followed by
@@ -82,6 +85,17 @@ Pi host-prerequisite discussion on 2026-08-13:
   followed by concurrent dispatch is acceptable;
 - the issue is still auto-closed and has no maintainer response, so D010's
   current empty hard-enforcement subset is unchanged.
+
+Gate D post-edit validation decision on 2026-08-13:
+
+- D011 limits automatic validation to successful built-in `write` and `edit`
+  results and reuses the sealed bridge `validate` operation;
+- requests are serialized in session-local completion order so the bridge's
+  one-active-operation contract remains intact;
+- findings and operational failures become bounded tool-result feedback, while
+  green results remain transient and the original tool result is preserved;
+- the result is not a filesystem snapshot, enforcement decision, rollback, or
+  proof that an arbitrary project mutation complied with `.norm` guidance.
 
 Gate D functional Alpha verification on 2026-08-13:
 

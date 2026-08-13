@@ -240,3 +240,42 @@ attest to the input that finally executes.
 enforcement would create false assurance and duplicate upstream semantics.
 Requiring both semantic and host guarantees preserves the single Rust engine,
 makes future decisions testable, and keeps human escape exact and auditable.
+
+## D011 — Surface serialized post-edit convention validation as soft feedback
+
+**Decision.** After a successful built-in pi `write` or `edit` result,
+pi-norm-spec requests strict whole-project `.norm` validation through the
+existing persistent bridge and canonical norm-spec `validate` machine
+protocol. Failed tool results, reads, searches, shell commands, user shell
+commands, and custom tools do not trigger validation. The adapter does not
+parse command text, infer custom-tool paths, block the completed call, or
+attempt rollback.
+
+Post-edit requests are serialized in session-local FIFO order because the
+bridge permits one active semantic operation. In parallel tool mode this is
+completion order, not assistant source order. Each request observes the
+filesystem state available when that validation runs; it is not a snapshot and
+does not prove that a completed mutation complied with project policy.
+
+A green validation updates transient status and does not modify the tool
+result. Findings append bounded, deterministic text to the successful tool
+result so the model and session record retain actionable feedback. An
+operational or protocol failure appends a distinct unavailable-feedback note
+and remains visibly attributable without changing the original tool result's
+`isError`, `details`, or usage. Cancellation produces neither a false success
+nor a synthetic failure. Feedback includes at most eight diagnostics and at
+most 8 KiB of UTF-8 text.
+
+**Context.** Pi `0.84.1` emits `tool_result` after execution and before the
+final tool-result message, and handlers may patch that message. Parallel tool
+results arrive in completion order and may overlap. The existing bridge already
+supports strict `validate --all` through the pinned, sealed norm-spec payload,
+but accepts only one active collect, prompt-context, or validate operation.
+
+**Rationale.** Reusing the canonical validation response preserves D002 and
+D005, while result-local text gives the agent a chance to repair invalid
+`.norm` declarations. The narrow trigger matrix avoids pretending that A1 can
+validate arbitrary project mutations or that opaque shell/custom tools have a
+known path contract. Explicit bounds and FIFO execution keep feedback
+observable without weakening the bridge lifecycle or relabeling it as hard
+enforcement.

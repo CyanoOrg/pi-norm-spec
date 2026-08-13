@@ -37,6 +37,8 @@ Read first:
 - `docs/planning/gate-d-design.md` for the active ephemeral-context design.
 - `docs/planning/gate-d-enforcement-design.md` for the accepted D010 hard-policy
   and future exact-call escape boundary.
+- `docs/planning/gate-d-post-edit-validation-design.md` for D011's soft
+  post-edit feedback contract.
 - `docs/planning/pi-final-tool-input-request.md` for the public pi admission-hook
   discussion and still-pending host prerequisite.
 - `docs/ARCHITECTURE.md` for the Rust/TypeScript boundary.
