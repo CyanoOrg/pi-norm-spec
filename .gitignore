@@ -1,6 +1,7 @@
 /target/
 /node_modules/
 /dist/
+/.opencode/
 **/*.rs.bk
 .DS_Store
 .idea/

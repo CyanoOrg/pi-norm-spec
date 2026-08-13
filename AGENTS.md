@@ -17,9 +17,11 @@ intentionally hybrid:
 
 ## Current state
 
-Version `0.1.0-alpha.1` is a bootstrap. The Rust bridge and TypeScript entry
-expose identity/status only. Injection and enforcement are not complete until
-the execution plan and end-to-end tests say so.
+Version `0.1.0-alpha.1` is a bootstrap. Gate A and the Gate B consumption,
+distribution, Skill, and cold-start decisions are complete. The Rust bridge and
+TypeScript entry still expose identity/status only; upstream handshake,
+injection, enforcement, and packaging are not complete until the execution plan
+and end-to-end tests say so.
 
 Read first:
 
@@ -123,6 +125,8 @@ private pi fields here.
 ## `.norm` awareness
 
 Before operating in a directory, collect `.norm` files to the repository root
-and honor them. Until the Rust norm-spec CLI is self-hosting, perform that
-collection directly from the filesystem and use the upstream specification and
-contract fixtures as the format authority.
+and honor them through the canonical Rust CLI. Verify `norm compatibility`, use
+`norm collect` for inheritance, and use `norm validate` for validation. Do not
+replace a missing or incompatible engine with a manual filesystem walk, parser,
+or empty convention set; the upstream specification and contract bundle remain
+the format authority.

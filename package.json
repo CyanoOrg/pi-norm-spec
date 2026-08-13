@@ -14,9 +14,16 @@
     "extensions": ["./extensions"]
   },
   "normSpec": {
+    "productCompat": "=0.1.0-rc.1",
     "formatCompat": ["norm-spec/a1"],
-    "productCompat": ">=0.1.0-alpha.1 <0.2.0",
+    "compatibilityApi": "norm-spec/compatibility/v1",
     "collectApi": "norm-spec/collect/v1",
+    "validateApi": "norm-spec/validate/v1",
+    "contractBundleApi": "norm-spec/contract-bundle/v1",
+    "conformanceApi": "norm-spec/conformance/v1",
+    "conformanceSuite": "norm-spec/a1-cli/v1",
+    "conformanceCaseCount": 82,
+    "contractDigest": "sha256:3d94441e9cde3ef9489618bdb8fbf37f6979331bea099acadf0136b65df7e2eb",
     "bridgeApi": "pi-norm-spec/bridge/v1"
   },
   "peerDependencies": {
