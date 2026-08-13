@@ -10,15 +10,15 @@
   authorized for the current contracts. The approved future escape is
   exact-call only and requires final-input integrity from pi.
 - D011 accepts serialized post-edit `.norm` validation as bounded soft
-  feedback for successful built-in `write` and `edit` results. Implementation
-  candidate `193aa48` passes the TypeScript suite and full local native
-  release-derived real-host/package paths. Final hosted evidence remains
-  pending; the decision does not authorize blocking, rollback, shell parsing,
-  or project-compliance claims.
-- Current objective: confirm the final D011 branch candidate on all four hosted
-  targets while tracking the norm-spec typed operation-policy and pi host
-  prerequisites independently. This does not authorize enforcement or Gate E
-  production/publication yet.
+  feedback for successful built-in `write` and `edit` results. Exact candidate
+  `e74c4e1` passed the TypeScript suite and full release-derived
+  real-host/package paths on all four native hosted targets. The decision does
+  not authorize blocking, rollback, shell parsing, or project-compliance
+  claims.
+- Current objective: land the completed D011 slice, then prepare the remaining
+  Gate E distribution work while tracking the norm-spec typed operation-policy
+  and pi host prerequisites independently. This does not authorize enforcement
+  or production/publication yet.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
   a minimal non-transforming admission-hook request. The request was posted on
   pi issue #7092 on 2026-08-13 and accepts source-ordered clearance followed by
@@ -61,7 +61,7 @@
 - GitHub repository bootstrap is complete; public visibility remains a
   maintainer checkpoint after the initial functional slice.
 - Hard enforcement and escape are intentionally not implemented under D010.
-  D011 post-edit validation is implemented locally without blocking or rollback;
+  D011 post-edit validation is complete without blocking or rollback;
   production npm platform packages are not implemented. The current Skill
   truthfully defers bundled-CLI invocation details to the future installed
   platform package.
@@ -115,6 +115,25 @@ Gate D post-edit validation local implementation on 2026-08-13:
   the packed root plus native runtime packages;
 - the local candidate is not the hosted closure point; Linux, macOS ARM/Intel,
   and Windows must pass the final branch commit before this slice closes.
+
+Gate D post-edit validation hosted verification on 2026-08-13:
+
+- GitHub Actions run `31707315003` completed successfully and is bound to exact
+  implementation/status candidate
+  `e74c4e170623093b58394a9dac88c46a685610c3`;
+- `rust-quality` passed public-history scanning, formatting, strict Clippy, all
+  21 Rust tests, and rustdoc; `extension-quality` passed clean npm installation,
+  TypeScript typechecking, and all 23 extension tests;
+- Linux x64, macOS arm64, macOS x64, and Windows x64 each passed the TypeScript
+  bridge lifecycle, all Rust tests, and the exact native upstream release
+  payload gate;
+- every native job therefore retained checksum and sealing verification, exact
+  identities, 82/82 conformance, persistent bridge lifecycle, the real pi
+  Alpha host, green/finding post-edit feedback, and package-shaped installation.
+
+This closes D011. The follow-up closure commit changes documentation only; the
+tested implementation, extension, tests, and release-derived gate remain
+exactly those from `e74c4e1`.
 
 Gate D functional Alpha verification on 2026-08-13:
 
@@ -341,7 +360,7 @@ Bootstrap verification on 2026-08-10:
 - [ ] Coordinate the norm-spec operation-policy and pi final-input prerequisites
       before reopening typed hard enforcement and escape implementation.
 - [x] Implement post-edit validation feedback locally (D011).
-- [ ] Confirm the final D011 candidate's real-host/package path on all four
+- [x] Confirm the final D011 candidate's real-host/package path on all four
       native hosted targets.
 - [ ] Package the bridge and verified upstream payload for each supported
       platform.

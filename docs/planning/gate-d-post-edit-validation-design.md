@@ -1,8 +1,8 @@
 # Gate D Post-Edit Validation Design
 
-> Status: Accepted on 2026-08-13 through D011. Implementation candidate
-> `193aa48` is green locally through the real pi and package-shaped paths;
-> hosted evidence for the final branch candidate remains pending.
+> Status: Complete on 2026-08-13 through D011. Exact candidate `e74c4e1`
+> passed the real pi and package-shaped paths on all four native hosted
+> targets in GitHub Actions run `31707315003`.
 
 ## Goal
 
