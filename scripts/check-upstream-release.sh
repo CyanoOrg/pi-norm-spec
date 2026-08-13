@@ -49,10 +49,6 @@ fi
 
 check_root="$(mktemp -d)"
 cleanup() {
-  if [[ "${server_pid:-}" =~ ^[0-9]+$ ]] && kill -0 "$server_pid" 2>/dev/null; then
-    kill "$server_pid" 2>/dev/null || true
-    wait "$server_pid" 2>/dev/null || true
-  fi
   if [[ -n "${check_root:-}" && -d "$check_root" ]]; then
     rm -rf -- "$check_root"
   fi
@@ -216,66 +212,11 @@ if [[ "$missing_status" -eq 0 \
   exit 1
 fi
 
-server_input="$check_root/bridge.stdin"
-server_output="$check_root/bridge.stdout"
-mkfifo "$server_input" "$server_output"
-"$bridge" serve --payload "$payload" <"$server_input" >"$server_output" &
-server_pid=$!
-exec 7>"$server_input"
-exec 8<"$server_output"
-if ! read -r -t 30 -u 8 server_ready \
-  || [[ "$server_ready" != *'"type":"event"'* \
-  || "$server_ready" != *'"event":"ready"'* \
-  || "$server_ready" != *'"apiVersion":"norm-spec/compatibility/v1"'* \
-  || "$server_ready" != *'"sourceRevision":"5c781964b6d9b11c52f29e5b6e2bbe13c25a5ee0"'* ]]; then
-  echo "persistent bridge did not emit the exact ready identity" >&2
-  exit 1
-fi
-
-printf '%s\n' \
-  '{"apiVersion":"pi-norm-spec/bridge/v1","type":"request","id":"collect-1","method":"collect","params":{"root":".","target":"docs/planning/status.md"}}' \
-  >&7
-if ! read -r -t 30 -u 8 server_collection \
-  || [[ "$server_collection" != *'"id":"collect-1"'* \
-  || "$server_collection" != *'"status":"ok"'* \
-  || "$server_collection" != *'"apiVersion":"norm-spec/collect/v1"'* \
-  || "$server_collection" != *'"path":"docs/.norm"'* \
-  || "$server_collection" != *'"path":".norm"'* ]]; then
-  echo "persistent bridge collection did not preserve the exact upstream result" >&2
-  exit 1
-fi
-
-printf '%s\n' \
-  '{"apiVersion":"pi-norm-spec/bridge/v1","type":"request","id":"validate-cancelled","method":"validate","params":{"root":"."}}' \
-  '{"apiVersion":"pi-norm-spec/bridge/v1","type":"request","id":"cancel-1","method":"cancel","params":{"requestId":"validate-cancelled"}}' \
-  >&7
-if ! read -r -t 30 -u 8 cancellation_ack \
-  || ! read -r -t 30 -u 8 cancellation_result; then
-  echo "persistent bridge cancellation did not produce two terminal responses" >&2
-  exit 1
-fi
-combined_cancellation="$cancellation_ack$cancellation_result"
-if [[ "$combined_cancellation" != *'"id":"cancel-1","status":"ok"'* \
-  || "$combined_cancellation" != *'"accepted":true'* \
-  || "$combined_cancellation" != *'"id":"validate-cancelled","status":"cancelled"'* ]]; then
-  echo "persistent bridge did not cancel the targeted request" >&2
-  exit 1
-fi
-
-printf '%s\n' \
-  '{"apiVersion":"pi-norm-spec/bridge/v1","type":"request","id":"shutdown-1","method":"shutdown"}' \
-  >&7
-if ! read -r -t 30 -u 8 shutdown_ack \
-  || [[ "$shutdown_ack" != *'"id":"shutdown-1","status":"ok"'* ]]; then
-  echo "persistent bridge did not acknowledge graceful shutdown" >&2
-  exit 1
-fi
-exec 7>&-
-exec 8<&-
-if ! wait "$server_pid"; then
-  echo "persistent bridge did not exit successfully after shutdown" >&2
-  exit 1
-fi
-server_pid=""
+node --experimental-strip-types scripts/check-persistent-bridge.ts \
+  "$bridge" \
+  "$payload" \
+  "$repo_root" \
+  "$target" \
+  "5c781964b6d9b11c52f29e5b6e2bbe13c25a5ee0"
 
 echo "Pinned upstream release passed checksum, sealing, identity, 82-case conformance, collect, validate, and persistent bridge lifecycle."
