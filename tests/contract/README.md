@@ -18,4 +18,7 @@ shutdown. No sibling checkout or `PATH` fallback is used.
 The language-neutral frame contract is documented in
 `docs/BRIDGE-PROTOCOL.md`. Rust tests enforce framing limits, protocol and ID
 validation, startup failure events, request-scoped parameter errors, and
-cross-platform child cancellation.
+cross-platform child cancellation. TypeScript tests use an isolated fake child
+to prove ready/request/shutdown correlation, exact AbortSignal cancellation,
+startup failure, malformed output, crash visibility, ExtensionAPI lifecycle
+hooks, and the absence of silent restart.

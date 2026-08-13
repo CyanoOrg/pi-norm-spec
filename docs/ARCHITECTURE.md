@@ -51,7 +51,10 @@ does not fall back to an arbitrary `norm` on `PATH`.
 
 Registers pi events and commands, projects event inputs into bridge requests,
 and renders structured responses. It never parses `.norm` or duplicates policy
-logic. The adapter remains replaceable if pi later exposes a native plugin ABI.
+logic. A platform resolver selects only the exact optional package for the
+current Node platform and architecture, validates its versioned `runtime.json`,
+and passes explicit bridge and payload paths to the client; it does not search
+`PATH`. The adapter remains replaceable if pi later exposes a native plugin ABI.
 
 ## Process model
 

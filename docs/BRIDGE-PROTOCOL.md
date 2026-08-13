@@ -71,3 +71,19 @@ acknowledgement.
 The adapter must reject all pending promises on `startupFailed`, `fatal`,
 malformed output, unexpected EOF, or non-zero exit. It must not synthesize an
 empty collection, start a one-shot fallback, or silently restart the child.
+
+## Platform runtime locator
+
+The TypeScript resolver maps the four supported Node platform/architecture
+pairs to `pi-norm-spec-linux-x64`, `pi-norm-spec-darwin-arm64`,
+`pi-norm-spec-darwin-x64`, or `pi-norm-spec-win32-x64`. Each optional package
+exports `runtime.json` with this contract:
+
+```json
+{"apiVersion":"pi-norm-spec/platform-runtime/v1","bridge":"bin/pi-norm-bridge","payload":"upstream"}
+```
+
+`bridge` and `payload` are non-empty portable relative paths with no empty,
+`.` or `..` component. The resolver constructs explicit package-local paths;
+missing packages, unsupported platforms, invalid metadata, and unsafe paths
+are typed startup failures. Gate E owns producing and publishing these packages.

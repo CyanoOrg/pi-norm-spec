@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "npm run typecheck"
+    "test": "npm run typecheck && node --experimental-strip-types --test tests/extension/*.test.ts"
   },
   "pi": {
     "extensions": ["./extensions"]
@@ -24,12 +24,14 @@
     "conformanceSuite": "norm-spec/a1-cli/v1",
     "conformanceCaseCount": 82,
     "contractDigest": "sha256:3d94441e9cde3ef9489618bdb8fbf37f6979331bea099acadf0136b65df7e2eb",
-    "bridgeApi": "pi-norm-spec/bridge/v1"
+    "bridgeApi": "pi-norm-spec/bridge/v1",
+    "platformRuntimeApi": "pi-norm-spec/platform-runtime/v1"
   },
   "peerDependencies": {
     "@earendil-works/pi-coding-agent": "*"
   },
   "devDependencies": {
+    "@types/node": "22.19.19",
     "@earendil-works/pi-coding-agent": "0.84.1",
     "typescript": "7.0.2"
   }

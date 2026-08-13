@@ -20,3 +20,6 @@ preparation.
 - Session-scoped JSONL bridge lifecycle with exact readiness identity,
   bounded framing, request correlation, targeted child cancellation, typed
   startup/fatal failures, and acknowledged graceful shutdown.
+- Thin TypeScript bridge client and ExtensionAPI session lifecycle with
+  platform-runtime resolution, AbortSignal cancellation, visible startup/crash
+  failures, and no automatic fallback or restart.
