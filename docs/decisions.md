@@ -124,3 +124,37 @@ no-op or an error.
 keeps host behavior downstream, and preserves norm-spec as the only authoring
 authority. A notice rather than automatic initialization keeps repository
 mutation under user control.
+
+## D008 — Keep one observable bridge child per active pi session
+
+**Decision.** The TypeScript adapter starts one persistent `pi-norm-bridge`
+child for an active pi session and stops it during `session_shutdown`. The
+child verifies the sealed payload and completes the exact compatibility
+handshake before emitting a versioned `ready` event. Subsequent requests use
+newline-delimited JSON with explicit frame kinds and request IDs. Cancellation
+targets an individual request; graceful shutdown acknowledges the control
+request before exiting. A malformed frame, startup failure, unexpected EOF, or
+non-zero child exit rejects pending work and becomes visible adapter state. The
+adapter does not silently start a second runtime, fall back to one-shot mode,
+or return an empty convention set.
+
+The persistent pi bridge continues to invoke the verified `norm` executable as
+a subprocess for each semantic operation. This decision caches only sealed
+payload verification and the compatibility handshake; it does not cache
+project conventions or move format behavior across the D005 boundary.
+
+**Context.** A 2026-08-13 lifecycle spike used the sealed public
+`v0.1.0-rc.1` macOS arm64 payload and repeated the same collection against this
+repository. After warm-up, 24 one-shot bridge collections had a 41.18 ms
+median and 45.08 ms p95; 24 requests through one initialized child had a
+4.69 ms median and 5.28 ms p95. Forced child termination became observable in
+1.41 ms, a replacement reached `ready` in 36.90 ms, and acknowledged graceful
+shutdown completed in 0.70 ms. The spike remained outside product history.
+Both models package the same executable and verified payload, so lifecycle
+does not change the platform-package inventory selected in D006.
+
+**Rationale.** A session-scoped child removes repeated payload hashing and
+compatibility discovery from turn and tool paths while retaining process-level
+fault isolation. Explicit readiness, request correlation, targeted
+cancellation, and fail-closed exit handling make the longer lifetime
+observable instead of hiding it behind adapter state.

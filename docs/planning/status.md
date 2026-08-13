@@ -3,8 +3,9 @@
 ## Resume here
 
 - Stage: `0.1.0-alpha.1`; Gate A and Gate B are complete.
-- Current objective: begin Gate C by measuring the pi bridge lifecycle while
-  keeping D005's verified norm-spec CLI subprocess boundary fixed.
+- Current objective: implement the D008 session-scoped bridge lifecycle and
+  JSONL request protocol while keeping D005's verified norm-spec CLI
+  subprocess boundary fixed.
 - D005 fixes the upstream boundary as `norm` CLI subprocesses. D006 fixes the
   first distribution path as verified platform-specific optional packages with
   the complete runtime/conformance payload. D007 fixes one pi-specific Skill
@@ -19,7 +20,8 @@
   execution. There is no `PATH` or sibling-checkout fallback.
 - One-shot bridge diagnostics now expose stable machine envelopes for exact
   asset discovery, payload sealing/verification, collect, and strict validate.
-  Gate C still owns the production bridge lifecycle and request framing.
+  D008 now selects one observable bridge child per active pi session; Gate C
+  still owns its production request framing and TypeScript client.
 - The private GitHub repository, initial `main` push, and first hosted Actions
   run are complete and green.
 - GitHub repository bootstrap is complete; public visibility remains a
@@ -30,6 +32,20 @@
   is not a product resource.
 
 ## Verification
+
+Gate C lifecycle measurement on 2026-08-13:
+
+- a temporary spike used the sealed public `v0.1.0-rc.1` macOS arm64 payload
+  bound to source revision `5c781964b6d9b11c52f29e5b6e2bbe13c25a5ee0`;
+- after warm-up, 24 equivalent one-shot collect operations measured 41.18 ms
+  median / 45.08 ms p95, while one initialized child measured 4.69 ms median /
+  5.28 ms p95 for 24 JSONL requests;
+- forced child termination was visible in 1.41 ms, replacement handshake to
+  ready took 36.90 ms, and acknowledged graceful shutdown took 0.70 ms;
+- D008 therefore selects a session-scoped child with explicit readiness,
+  request IDs, targeted cancellation, fail-closed crash visibility, and no
+  silent restart or one-shot fallback. D005's per-operation `norm` CLI process
+  boundary remains unchanged.
 
 Gate B local verification on 2026-08-13:
 
@@ -109,7 +125,8 @@ Bootstrap verification on 2026-08-10:
 - [x] Implement compatibility, collect, and validate machine-protocol handling.
 - [x] Exercise the complete 82-case upstream conformance bundle without skips.
 - [x] Confirm the exact candidate's four native hosted payload jobs.
-- [ ] Measure and decide short-lived versus persistent pi bridge lifecycle.
+- [x] Measure and decide short-lived versus persistent pi bridge lifecycle
+      (D008).
 - [ ] Implement bridge request/response framing and cancellation.
 - [ ] Implement path-scoped ephemeral injection.
 - [ ] Implement the pi-specific Skill and zero-`.norm` onboarding notice.

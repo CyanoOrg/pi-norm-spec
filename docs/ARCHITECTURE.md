@@ -55,12 +55,19 @@ logic. The adapter remains replaceable if pi later exposes a native plugin ABI.
 
 ## Process model
 
-Bootstrap uses a short-lived pi bridge command for identity. Before injection
-is implemented, Gate C measures a short-lived versus persistent pi bridge child
-using latency, cancellation, crash-isolation, and shutdown evidence. D005 has
-already fixed the downstream norm-spec boundary as CLI subprocesses; Gate C
-must not replace it with a native norm-spec binding without a superseding
-decision.
+D008 selects one persistent pi bridge child per active pi session. The adapter
+starts it on `session_start`, waits for a versioned `ready` event, and requests
+an acknowledged shutdown on `session_shutdown`. Requests and responses use
+newline-delimited JSON, explicit frame kinds, unique IDs, and terminal
+`ok`/`error`/`cancelled` states. Cancellation targets one request rather than
+terminating the bridge.
+
+The initialized bridge caches sealed-payload verification and the exact
+compatibility handshake only. Each collect or validate operation still runs
+the verified `norm` CLI selected by D005. Unexpected EOF, malformed output, or
+a non-zero bridge exit rejects all pending requests and leaves the adapter in a
+visible failed state; there is no silent one-shot fallback or automatic
+restart. A later explicit session start may create a fresh child.
 
 ## Skill and cold start
 
