@@ -94,6 +94,13 @@ of copying canonical prose. A compatible runtime with zero collected `.norm`
 files produces one onboarding notice and no project mutation. Runtime absence,
 identity mismatch, and invalid conventions remain explicit failures.
 
+Gate D rehearses the distribution boundary with unpublished temporary
+tarballs: npm installs the bounded root package and one native runtime package
+into an isolated consumer, then pi discovers the installed extension from its
+manifest and the adapter resolves the sibling runtime package normally. This
+is installation evidence, not production package assembly or publication;
+those remain Gate E.
+
 ## Security properties
 
 - A bridge failure is visible and disables enforcement explicitly.

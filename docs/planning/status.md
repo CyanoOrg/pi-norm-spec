@@ -3,10 +3,11 @@
 ## Resume here
 
 - Stage: `0.1.0-alpha.1`; Gate A, Gate B, and Gate C are complete. Gate D's
-  functional Alpha implementation is locally complete and awaits exact-candidate
-  four-platform hosted verification plus a packaged-install rehearsal.
-- Current objective: verify the Gate D candidate on all four hosted targets,
-  then stage a real package-shaped install without claiming Gate E publication.
+  functional Alpha implementation and package-shaped install rehearsal are
+  locally complete. Exact behavior candidate `0e7e46d` is four-platform green;
+  the package-inclusive candidate still needs the same hosted verification.
+- Current objective: verify the package-inclusive Gate D candidate on all four
+  hosted targets without claiming Gate E production or publication.
 - D005 fixes the upstream boundary as `norm` CLI subprocesses. D006 fixes the
   first distribution path as verified platform-specific optional packages with
   the complete runtime/conformance payload. D007 fixes one pi-specific Skill
@@ -35,6 +36,10 @@
 - The platform resolver recognizes four versioned optional-package locators,
   but the platform packages themselves remain Gate E work. Their current
   absence is a visible runtime startup failure rather than a `PATH` fallback.
+- The Gate D rehearsal creates unpublished temporary root/platform tarballs,
+  installs them into an isolated consumer, and deletes them afterward. It does
+  not establish production optional-dependency manifests or publishable native
+  package assembly.
 - The private GitHub repository, initial `main` push, and first hosted Actions
   run are complete and green.
 - GitHub repository bootstrap is complete; public visibility remains a
@@ -46,6 +51,28 @@
   is not a product resource.
 
 ## Verification
+
+Gate D hosted behavior and local package verification on 2026-08-13:
+
+- GitHub Actions run `31684071321` passed at exact commit
+  `0e7e46d710c2d3c1e9218b9999d50bae635399b1`: Rust quality, extension quality,
+  Linux x64, macOS arm64, macOS x64, and Windows x64 all succeeded;
+- every native job completed the sealed public payload step, including all 82
+  conformance cases, persistent bridge lifecycle, and the real pi Alpha host;
+- `19ee72f` narrows the root tarball to eight runtime/documentation files and
+  declares only `extensions/norm-context.ts` as the pi extension entry;
+- `2b8f8ca` stages an unpublished native runtime package from the verified
+  bridge and complete sealed payload, packs both packages, rejects root-package
+  development files, and installs the tarballs into an isolated consumer;
+- the real pi package manager discovered exactly one extension from the
+  installed root package. Its default resolver found the installed sibling
+  native package, after which handshake, Skill loading, root/path injection,
+  cold start, and the no-project-write assertion all passed.
+
+The package rehearsal is locally green on macOS arm64. Because the package
+manifest and hosted gate changed after `0e7e46d`, the functional Alpha checkpoint
+remains open until the exact package-inclusive candidate passes all four native
+jobs.
 
 Gate D local Alpha verification on 2026-08-13:
 
@@ -74,10 +101,8 @@ Gate D local Alpha verification on 2026-08-13:
 - the same run retained checksum, sealing, exact identity, complete 82/82
   conformance, strict validation, targeted cancellation, and graceful shutdown.
 
-This is local implementation evidence. The functional Alpha checkpoint remains
-open until an exact docs-inclusive candidate passes the same native payload and
-real-pi host gate on Linux x64, macOS arm64/x64, and Windows x64, followed by a
-package-shaped install rehearsal.
+This is the underlying implementation evidence. The package-inclusive hosted
+condition above now governs closure of the functional Alpha checkpoint.
 
 Gate C local implementation verification on 2026-08-13:
 

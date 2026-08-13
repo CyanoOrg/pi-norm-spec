@@ -30,3 +30,6 @@ preparation.
   event, with built-in tool target tracking and visible recoverable failures.
 - One pi-specific Skill, bounded zero-`.norm` onboarding without project writes,
   and a real pi `0.84.1` AgentSession/ExtensionRunner Alpha gate.
+- A single installed extension entry, bounded root-package contents, and a
+  package-shaped isolated install gate using a native runtime tarball and the
+  sealed upstream payload.

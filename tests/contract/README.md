@@ -16,8 +16,10 @@ production TypeScript client to drive the persistent JSONL bridge through exact
 readiness, prompt-context rendering, targeted cancellation, and acknowledged
 shutdown. It also drives the extension through pi's real AgentSession and
 ExtensionRunner lifecycle for Skill loading, root/path injection, and cold
-start. No sibling checkout, `PATH` fallback, POSIX FIFO, or custom file
-descriptor is used.
+start. Finally it packs bounded root and temporary native runtime packages,
+installs them in an isolated consumer, and repeats the real-host path through
+pi package discovery and the default runtime resolver. No sibling checkout,
+`PATH` fallback, POSIX FIFO, or custom file descriptor is used.
 
 The language-neutral frame contract is documented in
 `docs/BRIDGE-PROTOCOL.md`. Rust tests enforce framing limits, protocol and ID

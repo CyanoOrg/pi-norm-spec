@@ -23,9 +23,11 @@ verifies a sealed release-derived payload, executes compatibility, collect,
 validate, and all 82 conformance cases, and is verified on all four native
 hosted targets. Gate D's path-scoped prompt context, context-only pi injection,
 single pi-specific Skill, and non-destructive zero-`.norm` onboarding are
-implemented and green locally against the real pi `0.84.1` host; exact-candidate
-four-platform hosted verification remains open. Enforcement, post-edit
-validation, and platform npm packages are not implemented.
+implemented. Exact behavior candidate `0e7e46d` passed the real pi `0.84.1`
+host on all four native targets. A package-shaped isolated install is also
+green locally; its package-inclusive candidate still requires four-platform
+hosted verification. Enforcement, post-edit validation, and production npm
+platform packages are not implemented.
 
 Read first:
 
