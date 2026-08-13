@@ -57,10 +57,24 @@ trap cleanup EXIT
 
 archive="$check_root/$asset"
 checksum="$archive.sha256"
-curl --proto '=https' --tlsv1.2 --fail --location --silent --show-error \
-  "$url" --output "$archive"
-curl --proto '=https' --tlsv1.2 --fail --location --silent --show-error \
-  "$url.sha256" --output "$checksum"
+download() {
+  local source_url="$1"
+  local destination="$2"
+  local partial="$destination.partial"
+
+  curl --proto '=https' --tlsv1.2 --fail --location --silent --show-error \
+    --connect-timeout 20 \
+    --max-time 180 \
+    --retry 4 \
+    --retry-all-errors \
+    --retry-delay 2 \
+    --retry-max-time 180 \
+    "$source_url" --output "$partial"
+  mv "$partial" "$destination"
+}
+
+download "$url" "$archive"
+download "$url.sha256" "$checksum"
 
 checksum_line="$(tr -d '\r\n' <"$checksum")"
 if [[ "$checksum_line" != "$expected_sha  $asset" ]]; then
