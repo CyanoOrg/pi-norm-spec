@@ -7,6 +7,7 @@ import {
   DefaultResourceLoader,
   ModelRuntime,
   SessionManager,
+  SettingsManager,
   createAgentSession,
   loadSkills,
   type ExtensionUIContext,
@@ -14,9 +15,11 @@ import {
 
 import { registerNormContext } from "../extensions/norm-context.ts";
 
-const [bridge, payload, projectRoot] = process.argv.slice(2);
+const [bridge, payload, projectRoot, installedPackageRoot] = process.argv.slice(2);
 if (!bridge || !payload || !projectRoot) {
-  throw new Error("usage: check-pi-alpha.ts <bridge> <payload> <project-root>");
+  throw new Error(
+    "usage: check-pi-alpha.ts <bridge> <payload> <project-root> [installed-package-root]",
+  );
 }
 
 interface Observation {
@@ -26,21 +29,27 @@ interface Observation {
 
 async function withPiHost<T>(cwd: string, run: (host: PiHost) => Promise<T>): Promise<T> {
   const agentDir = await mkdtemp(path.join(tmpdir(), "pi-norm-spec-agent-"));
+  const settingsManager = installedPackageRoot
+    ? SettingsManager.inMemory({ packages: [installedPackageRoot] })
+    : undefined;
   const resourceLoader = new DefaultResourceLoader({
     cwd,
     agentDir,
-    extensionFactories: [
-      {
-        name: "pi-norm-spec-alpha-e2e",
-        factory: (pi) =>
-          registerNormContext(pi, {
-            resolveRuntime: async () => ({
-              command: bridge,
-              args: ["serve", "--payload", payload],
-            }),
-          }),
-      },
-    ],
+    settingsManager,
+    extensionFactories: installedPackageRoot
+      ? []
+      : [
+          {
+            name: "pi-norm-spec-alpha-e2e",
+            factory: (pi) =>
+              registerNormContext(pi, {
+                resolveRuntime: async () => ({
+                  command: bridge,
+                  args: ["serve", "--payload", payload],
+                }),
+              }),
+          },
+        ],
     noPromptTemplates: true,
     noThemes: true,
     noContextFiles: true,
@@ -48,6 +57,15 @@ async function withPiHost<T>(cwd: string, run: (host: PiHost) => Promise<T>): Pr
   let session: Awaited<ReturnType<typeof createAgentSession>>["session"] | undefined;
   try {
     await resourceLoader.reload();
+    if (installedPackageRoot) {
+      const extensions = resourceLoader.getExtensions();
+      assert.deepEqual(extensions.errors, []);
+      assert.equal(extensions.extensions.length, 1);
+      assert.equal(
+        path.resolve(extensions.extensions[0]?.resolvedPath ?? ""),
+        path.resolve(installedPackageRoot, "extensions", "norm-context.ts"),
+      );
+    }
     const modelRuntime = await ModelRuntime.create({
       allowModelNetwork: false,
       modelsPath: null,
@@ -66,6 +84,7 @@ async function withPiHost<T>(cwd: string, run: (host: PiHost) => Promise<T>): Pr
       modelRuntime,
       noTools: "all",
       resourceLoader,
+      settingsManager,
       sessionManager: SessionManager.inMemory(cwd),
       sessionStartEvent: { type: "session_start", reason: "startup" },
     });
@@ -181,5 +200,7 @@ try {
 }
 
 console.log(
-  "Real pi Alpha host passed session lifecycle, Skill loading, root and path-scoped ephemeral context, and zero-.norm onboarding.",
+  installedPackageRoot
+    ? "Installed pi package passed discovery, runtime resolution, session lifecycle, Skill loading, root and path-scoped ephemeral context, and zero-.norm onboarding."
+    : "Real pi Alpha host passed session lifecycle, Skill loading, root and path-scoped ephemeral context, and zero-.norm onboarding.",
 );

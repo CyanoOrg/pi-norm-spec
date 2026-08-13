@@ -15,11 +15,21 @@ if [[ -z "$target" ]]; then
 fi
 
 case "$target" in
-  x86_64-unknown-linux-gnu|aarch64-apple-darwin|x86_64-apple-darwin)
+  x86_64-unknown-linux-gnu)
     exe_suffix=""
+    platform_package="pi-norm-spec-linux-x64"
+    ;;
+  aarch64-apple-darwin)
+    exe_suffix=""
+    platform_package="pi-norm-spec-darwin-arm64"
+    ;;
+  x86_64-apple-darwin)
+    exe_suffix=""
+    platform_package="pi-norm-spec-darwin-x64"
     ;;
   x86_64-pc-windows-msvc)
     exe_suffix=".exe"
+    platform_package="pi-norm-spec-win32-x64"
     ;;
   *)
     echo "unsupported upstream release target: $target" >&2
@@ -238,4 +248,68 @@ node --experimental-strip-types scripts/check-pi-alpha.ts \
   "$payload" \
   "$repo_root"
 
-echo "Pinned upstream release passed checksum, sealing, identity, 82-case conformance, collect, validate, persistent bridge lifecycle, and the real pi Alpha host."
+package_rehearsal="$check_root/package-rehearsal"
+tarball_root="$package_rehearsal/tarballs"
+npm_cache="$package_rehearsal/npm-cache"
+mkdir -p "$tarball_root"
+
+node --experimental-strip-types scripts/stage-package-rehearsal.ts \
+  "$package_rehearsal" \
+  "$repo_root" \
+  "$bridge" \
+  "$payload" \
+  "$target"
+
+npm pack "$repo_root" \
+  --ignore-scripts \
+  --pack-destination "$tarball_root" \
+  --cache "$npm_cache"
+npm pack "$package_rehearsal/platform-package" \
+  --ignore-scripts \
+  --pack-destination "$tarball_root" \
+  --cache "$npm_cache"
+
+root_package_archive="$tarball_root/pi-norm-spec-0.1.0-alpha.1.tgz"
+platform_package_archive="$tarball_root/$platform_package-0.1.0-alpha.1.tgz"
+if [[ ! -f "$root_package_archive" || ! -f "$platform_package_archive" ]]; then
+  echo "package rehearsal did not produce the expected root and platform tarballs" >&2
+  exit 1
+fi
+
+root_package_inventory="$package_rehearsal/root-package.inventory"
+tar -tzf "$root_package_archive" >"$root_package_inventory"
+for expected_entry in \
+  package/package.json \
+  package/extensions/norm-context.ts \
+  package/extensions/runtime-resolver.ts \
+  package/extensions/bridge-client.ts \
+  package/skills/pi-norm-spec/SKILL.md; do
+  if ! grep -Fxq "$expected_entry" "$root_package_inventory"; then
+    echo "root package omitted required runtime entry: $expected_entry" >&2
+    exit 1
+  fi
+done
+if grep -Eq '^package/(crates|scripts|tests)/' "$root_package_inventory"; then
+  echo "root package included development-only crates, scripts, or tests" >&2
+  exit 1
+fi
+
+npm install \
+  --prefix "$package_rehearsal/consumer" \
+  --ignore-scripts \
+  --legacy-peer-deps \
+  --no-audit \
+  --no-fund \
+  --package-lock=false \
+  --cache "$npm_cache" \
+  "$root_package_archive" \
+  "$platform_package_archive"
+
+installed_package="$package_rehearsal/consumer/node_modules/pi-norm-spec"
+node --experimental-strip-types scripts/check-pi-alpha.ts \
+  "$bridge" \
+  "$payload" \
+  "$repo_root" \
+  "$installed_package"
+
+echo "Pinned upstream release passed checksum, sealing, identity, 82-case conformance, collect, validate, persistent bridge lifecycle, the real pi Alpha host, and package-shaped installation."
