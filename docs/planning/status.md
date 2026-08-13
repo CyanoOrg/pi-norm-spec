@@ -13,6 +13,10 @@
   prerequisites independently, while designing post-edit validation as
   truthfully labeled soft feedback. This does not authorize enforcement or
   Gate E production/publication yet.
+- `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
+  a testable upstream request: immutable validated final input, exact execution
+  identity, and batch-wide final preflight. It is a local draft and has not been
+  filed externally.
 - D005 fixes the upstream boundary as `norm` CLI subprocesses. D006 fixes the
   first distribution path as verified platform-specific optional packages with
   the complete runtime/conformance payload. D007 fixes one pi-specific Skill

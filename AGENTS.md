@@ -37,6 +37,8 @@ Read first:
 - `docs/planning/gate-d-design.md` for the active ephemeral-context design.
 - `docs/planning/gate-d-enforcement-design.md` for the accepted D010 hard-policy
   and future exact-call escape boundary.
+- `docs/planning/pi-final-tool-input-request.md` for the draft pi host contract
+  request required before hard enforcement.
 - `docs/ARCHITECTURE.md` for the Rust/TypeScript boundary.
 - `docs/BRIDGE-PROTOCOL.md` for the process and platform-locator contracts.
 - `docs/decisions.md` for immutable decisions.
