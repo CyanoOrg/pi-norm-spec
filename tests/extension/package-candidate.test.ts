@@ -211,17 +211,28 @@ async function npmPack(
   artifactRoot: string,
   npmCache: string,
 ): Promise<void> {
-  await execFileAsync(process.platform === "win32" ? "npm.cmd" : "npm", [
-    "pack",
-    packageRoot,
-    "--ignore-scripts",
-    "--pack-destination",
-    artifactRoot,
-    "--cache",
-    npmCache,
-  ], {
-    cwd: repoRoot,
-    encoding: "utf8",
-    maxBuffer: 4 * 1024 * 1024,
-  });
+  const npmExecPath = process.env.npm_execpath;
+  if (process.platform === "win32" && npmExecPath === undefined) {
+    throw new Error("npm_execpath is required to run package candidate tests on Windows");
+  }
+  const command = npmExecPath === undefined ? "npm" : process.execPath;
+  const args = npmExecPath === undefined ? [] : [npmExecPath];
+  await execFileAsync(
+    command,
+    [
+      ...args,
+      "pack",
+      packageRoot,
+      "--ignore-scripts",
+      "--pack-destination",
+      artifactRoot,
+      "--cache",
+      npmCache,
+    ],
+    {
+      cwd: repoRoot,
+      encoding: "utf8",
+      maxBuffer: 4 * 1024 * 1024,
+    },
+  );
 }
