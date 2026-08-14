@@ -2,9 +2,10 @@
 
 ## Resume here
 
-- Stage: `0.1.0-alpha.1`; Gate A, Gate B, and Gate C are complete. Gate D's
-  functional Alpha checkpoint is complete at exact package-inclusive candidate
-  `f080395` with all four native hosted targets green.
+- Stage: private `0.1.0-alpha.1` development identity; Gate A, Gate B, and Gate
+  C are complete. Gate D's functional Alpha checkpoint is complete at exact
+  package-inclusive candidate `f080395` with all four native hosted targets
+  green.
 - D010 closes the enforcement-scope checkpoint: the pinned A1
   hard-enforcement subset is empty. No blocking `tool_call` handler is
   authorized for the current contracts. The approved future escape is
@@ -15,10 +16,15 @@
   real-host/package paths on all four native hosted targets. The decision does
   not authorize blocking, rollback, shell parsing, or project-compliance
   claims.
-- Current objective: land the completed D011 slice, then prepare the remaining
-  Gate E distribution work while tracking the norm-spec typed operation-policy
-  and pi host prerequisites independently. This does not authorize enforcement
-  or production/publication yet.
+- D012 fixes the Gate E production topology as one root package and four exact,
+  same-version native optional packages, plus release manifests, a bundled-CLI
+  launcher, retained candidate artifacts, real `pi install` gates, and a first
+  public `0.1.0-beta.1` rehearsal. Implementation and every external action
+  remain pending.
+- Current objective: implement E1's package contract and strict identities while
+  tracking the norm-spec typed operation-policy and pi host prerequisites
+  independently. This does not authorize enforcement, public visibility,
+  tagging, or publication.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
   a minimal non-transforming admission-hook request. The request was posted on
   pi issue #7092 on 2026-08-13 and accepts source-ordered clearance followed by
@@ -56,6 +62,10 @@
   installs them into an isolated consumer, and deletes them afterward. It does
   not establish production optional-dependency manifests or publishable native
   package assembly.
+- D012 converts that proven shape into a production contract without treating
+  rehearsal tarballs as release candidates. All five package names were absent
+  from npm when checked on 2026-08-14, but that is not ownership or reservation
+  evidence and must be rechecked at release preparation.
 - The private GitHub repository, initial `main` push, and first hosted Actions
   run are complete and green.
 - GitHub repository bootstrap is complete; public visibility remains a
@@ -134,6 +144,24 @@ Gate D post-edit validation hosted verification on 2026-08-13:
 This closes D011. The follow-up closure commit changes documentation only; the
 tested implementation, extension, tests, and release-derived gate remain
 exactly those from `e74c4e1`.
+
+Gate E distribution decision on 2026-08-14:
+
+- D012 selects root `pi-norm-spec` plus Linux x64 glibc, macOS arm64/x64, and
+  Windows x64 optional packages at one exact version;
+- source-controlled publish inputs and versioned root/platform release
+  manifests must bind the full pi revision, package/runtime APIs, target, and
+  exact norm-spec release asset before the sealed bridge handshake;
+- the root package exposes a non-semantic launcher for bundled `norm` and
+  conformance access without a shell, parser, filesystem fallback, or `PATH`;
+- fixed native jobs must retain five tarballs and checksums, aggregate-verify
+  their identity, and then use isolated `PI_CODING_AGENT_DIR` roots for the real
+  version-pinned pi package-manager path;
+- `0.1.0-beta.1` is the first public rehearsal. Visibility, rulesets, tag,
+  GitHub Pre-release, npm ownership, platform-first publication, and root
+  publication remain individual maintainer checkpoints;
+- D010 remains unchanged: Gate E verifies the absence of false enforcement
+  claims and does not wait for or simulate hard blocking.
 
 Gate D functional Alpha verification on 2026-08-13:
 
@@ -362,6 +390,13 @@ Bootstrap verification on 2026-08-10:
 - [x] Implement post-edit validation feedback locally (D011).
 - [x] Confirm the final D011 candidate's real-host/package path on all four
       native hosted targets.
-- [ ] Package the bridge and verified upstream payload for each supported
-      platform.
-- [ ] Verify real pi end-to-end behavior.
+- [x] Define the production five-package distribution and first public beta
+      rehearsal contract (D012).
+- [ ] Implement E1 source-controlled package manifests, release identities,
+      libc-aware resolution, and bundled executable access.
+- [ ] Produce and aggregate-verify retained E2 root plus four native package
+      candidates and checksums.
+- [ ] Verify the E3 version-pinned real `pi install` path on all four native
+      targets, including injection and post-edit feedback without blocking.
+- [ ] Complete E4 release/security review and stop at the public beta human
+      checkpoints.

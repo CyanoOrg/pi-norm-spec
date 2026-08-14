@@ -17,7 +17,8 @@ intentionally hybrid:
 
 ## Current state
 
-Version `0.1.0-alpha.1` is a bootstrap. Gate A, Gate B, and Gate C are complete.
+Version `0.1.0-alpha.1` is the current private development identity. Gate A,
+Gate B, and Gate C are complete.
 The Rust runtime pins all four public norm-spec `0.1.0-rc.1` archive checksums,
 verifies a sealed release-derived payload, executes compatibility, collect,
 validate, and all 82 conformance cases, and is verified on all four native
@@ -30,7 +31,9 @@ that the current hard-enforcement subset is empty; blocking and escape are
 intentionally absent until both external prerequisites exist. D011 post-edit
 validation is complete: exact candidate `e74c4e1` passed the real pi and
 package-shaped paths on all four native hosted targets. Production npm
-platform packages are not implemented.
+platform packages are not implemented. D012 defines the five-package Gate E
+contract and selects `0.1.0-beta.1` as the first public distribution rehearsal;
+implementation and every visibility/publication action remain pending.
 
 Read first:
 
@@ -41,6 +44,8 @@ Read first:
   and future exact-call escape boundary.
 - `docs/planning/gate-d-post-edit-validation-design.md` for D011's soft
   post-edit feedback contract.
+- `docs/planning/gate-e-distribution-design.md` for D012's production package,
+  artifact, installation, and beta-release gates.
 - `docs/planning/pi-final-tool-input-request.md` for the public pi admission-hook
   discussion and still-pending host prerequisite.
 - `docs/ARCHITECTURE.md` for the Rust/TypeScript boundary.

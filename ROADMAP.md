@@ -14,6 +14,9 @@
 
 - Post-edit validation feedback.
 - Linux, macOS, and Windows packaging.
+- First public distribution rehearsal as `v0.1.0-beta.1` after the exact
+  five-package candidate, real pi installation, release-quality, and security
+  gates pass. Visibility and publication remain maintainer checkpoints.
 - Track D010's upstream policy and pi host prerequisites. Typed tool-call
   enforcement and exact-call escape are not `0.1` gates while either is absent.
 
