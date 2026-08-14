@@ -50,7 +50,7 @@ export async function verifyPackageArchive(
   assert.ok(archiveStat.isFile() && !archiveStat.isSymbolicLink(), `unsafe archive: ${archive}`);
   assert.ok(archiveStat.size > 0 && archiveStat.size <= MAX_ARCHIVE_BYTES, `archive size is outside bounds: ${archive}`);
 
-  const members = (await runTar(["-tzf", archive]))
+  const members = (await runTar(archive, ["-tzf"]))
     .split(/\r?\n/u)
     .filter((member) => member.length > 0)
     .map((member) => member.replace(/^\.\//u, ""));
@@ -59,7 +59,7 @@ export async function verifyPackageArchive(
     assert.equal(isSafeMember(member), true, `package archive contains unsafe path: ${member}`);
     assert.equal(member === "package" || member.startsWith("package/"), true, `package archive escaped its root: ${member}`);
   }
-  const verbose = await runTar(["-tvzf", archive]);
+  const verbose = await runTar(archive, ["-tvzf"]);
   assert.equal(
     verbose.split(/\r?\n/u).some((line) => /^[lh]/u.test(line.trimStart())),
     false,
@@ -358,23 +358,40 @@ function isSafeMember(member: string): boolean {
 }
 
 async function readTarJson(archive: string, member: string): Promise<unknown> {
-  return JSON.parse(await runTar(["-xOzf", archive, member]));
+  return JSON.parse(await runTar(archive, ["-xOzf", member]));
 }
 
 async function readTarBuffer(archive: string, member: string): Promise<Buffer> {
-  const { stdout } = await execFileAsync("tar", ["-xOzf", archive, member], {
+  const invocation = tarInvocation(archive, ["-xOzf", member]);
+  const { stdout } = await execFileAsync("tar", invocation.args, {
+    cwd: invocation.cwd,
     encoding: "buffer",
     maxBuffer: MAX_ARCHIVE_BYTES,
   });
   return stdout;
 }
 
-async function runTar(args: readonly string[]): Promise<string> {
-  const { stdout } = await execFileAsync("tar", [...args], {
+async function runTar(archive: string, args: readonly string[]): Promise<string> {
+  const invocation = tarInvocation(archive, args);
+  const { stdout } = await execFileAsync("tar", invocation.args, {
+    cwd: invocation.cwd,
     encoding: "utf8",
     maxBuffer: 4 * 1024 * 1024,
   });
   return stdout;
+}
+
+function tarInvocation(archive: string, args: readonly string[]): {
+  cwd: string;
+  args: string[];
+} {
+  const [operation, ...members] = args;
+  assert.ok(operation, "tar operation is required");
+  // GNU tar treats a Windows drive-letter colon as remote archive syntax.
+  return {
+    cwd: path.dirname(archive),
+    args: [operation, path.basename(archive), ...members],
+  };
 }
 
 async function sha256File(file: string): Promise<string> {
