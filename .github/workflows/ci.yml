@@ -69,6 +69,7 @@ jobs:
           retention-days: 14
 
   cross-platform:
+    name: cross-platform (${{ matrix.os }}, ${{ matrix.target }})
     strategy:
       fail-fast: false
       matrix:
