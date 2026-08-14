@@ -5,6 +5,12 @@ Read `AGENTS.md` before opening a change.
 A contribution must preserve the core boundary: format parsing and validation
 belong upstream in norm-spec; pi event adaptation belongs here.
 
+External contributors should fork the public repository, create one
+purpose-focused branch, and open a pull request. Commits must be signed and use
+Conventional Commit prefixes. The protected `main` branch requires linear
+history, passing CI, one approving review, and resolved review threads.
+Workflows from external contributors require explicit maintainer approval.
+
 Run before review:
 
 ```bash

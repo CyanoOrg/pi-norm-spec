@@ -331,3 +331,40 @@ platform-first publication, and explicit partial-release handling prevent a
 root package from advertising missing or rebuilt runtimes. A beta rehearsal is
 honest about the first public npm/pi distribution without weakening the already
 verified functional Alpha or prematurely claiming stable delivery.
+
+## D013 — Open the canonical repository under release-grade protections
+
+**Decision.** `CyanoOrg/pi-norm-spec` is the canonical public collaboration
+repository. Public visibility is authorized independently from product
+publication. It does not publish the `0.1.0-alpha.1` development identity,
+create a tag or GitHub Release, claim npm ownership, or authorize any npm
+package upload.
+
+The default branch is protected against deletion and non-fast-forward updates,
+requires linear signed history, required hosted checks, and a reviewed pull
+request for non-admin changes. `v*` release tags cannot be updated or deleted.
+Actions use a read-only default token, full-SHA action references, an explicit
+action allowlist, and maintainer approval for every external contributor's
+workflow. Private vulnerability reporting, secret scanning, and push
+protection are enabled.
+
+Admin bypass is limited to fast-forwarding an already reviewed exact candidate
+whose required evidence is green. It is not authority to ignore a failed gate,
+rewrite public history, mutate a release tag, publish packages, or grant a
+workflow broader credentials.
+
+**Context.** The repository's independent history, community files, public
+license, pinned CI actions, and sensitive-history scan were already complete.
+Before visibility changed, every reachable commit, 24 available historical
+Actions logs, all remote refs, and retained artifact metadata were reviewed;
+no credentials, private workspace data, extra branch-only history, tags, or
+retained artifacts were found. The remaining private-repository Actions quota
+then prevented six jobs from starting even though the same exact source
+revision had passed all six jobs on its feature branch.
+
+**Rationale.** Public visibility matches D003's canonical collaboration model
+and D012's eventual beta distribution without conflating source availability
+with a product release. Immediate branch, tag, workflow, and vulnerability
+protections preserve the evidence and trust boundaries already required for
+the published upstream norm-spec project while allowing standard public hosted
+runners to verify E2's five-package candidate set.

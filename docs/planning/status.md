@@ -2,10 +2,10 @@
 
 ## Resume here
 
-- Stage: private `0.1.0-alpha.1` development identity; Gate A, Gate B, and Gate
-  C are complete. Gate D's functional Alpha checkpoint is complete at exact
-  package-inclusive candidate `f080395` with all four native hosted targets
-  green.
+- Stage: public source repository with an unpublished `0.1.0-alpha.1`
+  pre-release development identity; Gate A, Gate B, and Gate C are complete.
+  Gate D's functional Alpha checkpoint is complete at exact package-inclusive
+  candidate `f080395` with all four native hosted targets green.
 - D010 closes the enforcement-scope checkpoint: the pinned A1
   hard-enforcement subset is empty. No blocking `tool_call` handler is
   authorized for the current contracts. The approved future escape is
@@ -22,11 +22,13 @@
   public `0.1.0-beta.1` rehearsal. E1 is complete and its closure commit
   `dd9ce84` is on `main`. E2 implementation candidate `6b924e6` passes the
   exact local root and macOS arm64 artifact paths; full hosted artifact-set
-  confirmation remains pending. E3-E4 and every external action remain pending.
+  confirmation remains pending. D013 opens the protected canonical GitHub
+  repository; E3-E4, tags, Releases, npm ownership, and publication remain
+  pending.
 - Current objective: host-verify the branch tip containing E2 implementation
   `6b924e6` across the root job, four fixed native jobs, and the aggregate
-  candidate-set job. This does not authorize enforcement, public visibility,
-  tagging, or publication.
+  candidate-set job. This does not authorize enforcement, tagging, a GitHub
+  Release, npm ownership, or publication.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
   a minimal non-transforming admission-hook request. The request was posted on
   pi issue #7092 on 2026-08-13 and accepts source-ordered clearance followed by
@@ -68,10 +70,9 @@
   rehearsal tarballs as release candidates. All five package names were absent
   from npm when checked on 2026-08-14, but that is not ownership or reservation
   evidence and must be rechecked at release preparation.
-- The private GitHub repository, initial `main` push, and first hosted Actions
-  run are complete and green.
-- GitHub repository bootstrap is complete; public visibility remains a
-  maintainer checkpoint after the initial functional slice.
+- The canonical GitHub repository is public. Active rulesets protect `main`
+  and immutable `v*` tags; Actions use pinned selected dependencies, a
+  read-only token, and approval for every external contributor workflow.
 - Hard enforcement and escape are intentionally not implemented under D010.
   D011 post-edit validation is complete without blocking or rollback. E1 is
   complete and E2 implementation is locally green, but no npm package is
@@ -260,6 +261,32 @@ Gate E E2 local implementation on 2026-08-14:
   the four-platform E2 closure. The exact branch commit still requires hosted
   root, Linux, macOS ARM/Intel, Windows, artifact upload/download, and aggregate
   inventory confirmation.
+
+Open-source visibility checkpoint on 2026-08-14:
+
+- the maintainer approved D013 and changed `CyanoOrg/pi-norm-spec` from private
+  to public without creating a tag, GitHub Release, npm package, or publication
+  credential;
+- pre-public review covered every reachable commit, all remote refs, 24
+  available historical Actions logs, and artifact metadata. The remaining
+  quota-failed run had no steps or logs. No credential, private workspace term,
+  extra branch-only commit, tag, or retained artifact was found;
+- the access surface contains three expected administrators and no deploy key,
+  webhook, Actions secret, or deployment. The public description now states
+  path-scoped context and validation feedback without a false enforcement
+  claim;
+- active ruleset `main-protection` (`20838523`) blocks deletion and force
+  pushes, requires linear signed history, one approving review with resolved
+  threads for non-admin changes, and the existing six hosted checks;
+- active ruleset `release-tag-immutable` (`20838531`) blocks deletion, update,
+  and non-fast-forward movement for `refs/tags/v*`;
+- Actions allow GitHub-owned actions and `dtolnay/rust-toolchain` only, require
+  full-SHA references, grant a read-only default token that cannot approve pull
+  requests, and require approval for all external-contributor workflows;
+- private vulnerability reporting, Dependabot security updates, secret
+  scanning, and push protection are enabled. The E2 root and aggregate checks
+  remain candidates for the required-check set only after their exact public
+  hosted contexts pass once.
 
 Gate D functional Alpha verification on 2026-08-13:
 
@@ -464,8 +491,14 @@ Bootstrap verification on 2026-08-10:
 - [x] Private GitHub repository creation, initial `main` push, and first hosted
       Actions run.
 - [x] Node 24 Action pins verified green on GitHub without annotations.
-- [ ] Configure `main` protection when repository visibility or the
-      organization plan permits it.
+- [x] Review reachable history, historical Actions logs, remote refs, retained
+      artifacts, collaborators, keys, hooks, secrets, and deployments before
+      public visibility.
+- [x] Open the canonical GitHub repository without publishing a package.
+- [x] Protect signed linear `main` and immutable `v*` tags with active rulesets.
+- [x] Restrict Actions, external workflows, and workflow-token permissions;
+      enable private vulnerability reporting, secret scanning, and push
+      protection.
 
 ## Open work
 

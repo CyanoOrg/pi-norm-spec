@@ -1,7 +1,8 @@
 # Gate E Distribution Design
 
-> Status: Accepted on 2026-08-14 through D012. Implementation, public
-> visibility, tagging, and publication remain separate checkpoints.
+> Status: Accepted on 2026-08-14 through D012. D013 completed the separately
+> approved public-visibility checkpoint; implementation closure, tagging, and
+> publication remain separate checkpoints.
 
 ## Goal
 

@@ -45,3 +45,6 @@ preparation.
 - Clean-revision root/native package candidate assembly with final tarball
   checksums, raw hosted artifacts, sealed-payload verification, and a versioned
   five-package aggregate inventory without publication credentials.
+- Public GitHub collaboration with protected linear signed `main`, immutable
+  `v*` tags, approval-gated external workflows, private vulnerability
+  reporting, secret scanning, and push protection.

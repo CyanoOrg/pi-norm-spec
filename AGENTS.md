@@ -17,8 +17,8 @@ intentionally hybrid:
 
 ## Current state
 
-Version `0.1.0-alpha.1` is the current private development identity. Gate A,
-Gate B, and Gate C are complete.
+Version `0.1.0-alpha.1` is the current unpublished pre-release development
+identity. Gate A, Gate B, and Gate C are complete.
 The Rust runtime pins all four public norm-spec `0.1.0-rc.1` archive checksums,
 verifies a sealed release-derived payload, executes compatibility, collect,
 validate, and all 82 conformance cases, and is verified on all four native
@@ -38,9 +38,11 @@ selection, bundled launcher, and production-shaped package installation gates
 on all four native hosted targets. E2 implementation candidate `6b924e6` adds
 clean-revision root/native candidates, exact checksums, raw hosted artifacts,
 and aggregate five-package verification; its root and macOS arm64 paths are
-green locally, while full hosted E2 closure remains pending. E3 real `pi
-install`, E4 release review, and every visibility/publication action remain
-pending.
+green locally, while full hosted E2 closure remains pending. The canonical
+GitHub repository is public under D013 with protected `main`, immutable `v*`
+tags, read-only CI permissions, and private vulnerability reporting. E3 real
+`pi install`, E4 release review, and every tag, Release, and npm publication
+action remain pending.
 
 Read first:
 
@@ -103,6 +105,21 @@ Do not create `develop` or long-lived release branches.
 Use Conventional Commits: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`,
 `chore:`, `perf:`, `build:`, and `ci:`. Each commit has one semantic purpose.
 Stage explicitly, never with `git add -A`, and run `git diff --cached --check`.
+
+### Public contribution flow
+
+`CyanoOrg/pi-norm-spec` is public. The default branch is governed by the active
+`main-protection` ruleset: deletion and force pushes are blocked, history must
+remain linear, commits must be signed, required CI checks must pass, and
+non-admin changes require a pull request with one approval and resolved review
+threads. The active `release-tag-immutable` ruleset blocks updates and deletion
+of `v*` tags.
+
+External contributors work from a fork and open a pull request. Workflows from
+all external contributors require maintainer approval and run with a read-only
+token and no repository secrets. Maintainers use a short-lived in-repository
+branch; everyday merges preserve linear history. Admin bypass is reserved for
+an already reviewed exact candidate, never for skipping failed evidence.
 
 ## Versioning and releases
 
