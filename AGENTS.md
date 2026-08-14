@@ -108,18 +108,32 @@ Stage explicitly, never with `git add -A`, and run `git diff --cached --check`.
 
 ### Public contribution flow
 
-`CyanoOrg/pi-norm-spec` is public. The default branch is governed by the active
-`main-protection` ruleset: deletion and force pushes are blocked, history must
-remain linear, commits must be signed, required CI checks must pass, and
-all changes require a pull request with one approval and resolved review
-threads. The active ruleset has no bypass actor. The active
-`release-tag-immutable` ruleset blocks updates and deletion of `v*` tags.
+`CyanoOrg/pi-norm-spec` is public. D014 adopts layered default-branch
+protection: `main-integrity` blocks deletion and non-fast-forward updates and
+requires linear signed history; `main-quality` requires the exact strict CI
+checks; and `main-review` requires a pull request with one approval, stale
+review dismissal, and resolved review threads. Integrity and quality have no
+bypass. Only the `norm-release-managers` team may bypass the review layer. The
+separate `release-tag-immutable` ruleset blocks updates and deletion of `v*`
+tags and has no bypass. Until the D014 live migration is read back and verified,
+the active monolithic `main-protection` ruleset remains authoritative with no
+bypass actor.
+
+The repository uses the organization teams `norm-maintainers` (Maintain),
+`norm-release-managers` (Maintain), and `norm-automation` (Write). Automation
+identities must not belong to the release-manager team. Reusing these teams in
+another repository does not share required checks, approvals, release identity,
+or publication authority.
 
 External contributors work from a fork and open a pull request. Workflows from
 all external contributors require maintainer approval and run with a read-only
 token and no repository secrets. Maintainers use a short-lived in-repository
-branch; everyday merges preserve linear history. Any future admin bypass needs
-separate explicit authorization and must never be used to skip failed evidence.
+branch; everyday merges preserve linear history. An exact-candidate
+fast-forward may use the review-only release-manager bypass only after its pull
+request is approved, all review threads are resolved, all required checks are
+green on the exact signed head, and the candidate is not behind `main`. The
+bypass never permits failed evidence, history rewrites, unsigned commits, or
+release-tag mutation.
 
 ## Versioning and releases
 

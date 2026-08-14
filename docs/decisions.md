@@ -368,3 +368,56 @@ with a product release. Immediate branch, tag, workflow, and vulnerability
 protections preserve the evidence and trust boundaries already required for
 the published upstream norm-spec project while allowing standard public hosted
 runners to verify E2's five-package candidate set.
+
+## D014 — Layer protected-main governance around organization teams
+
+**Decision.** `CyanoOrg/pi-norm-spec` uses three organization-level teams with
+repository-scoped permissions: `norm-maintainers` has Maintain,
+`norm-release-managers` has Maintain, and `norm-automation` has Write. The
+organization-management account may remain in the human teams. Automation
+identities belong only to `norm-automation`; they must not belong to
+`norm-release-managers` or receive a ruleset bypass. A temporary direct Admin
+grant used to configure protections is removed after the coordinated repository
+migrations are verified.
+
+Protection of `main` is split into three active repository rulesets with the
+same default-branch target. `main-integrity` blocks deletion and non-fast-forward
+updates and requires linear, signed history. `main-quality` requires the exact
+repository-specific hosted checks with strict branch freshness.
+`main-review` requires a pull request, one approving review, stale-review
+dismissal, and resolved review threads. Integrity and quality have no bypass
+actors. Only the `norm-release-managers` team has an always bypass on the review
+layer. The immutable `v*` tag ruleset remains separate and has no bypass.
+
+Normal changes continue through pull requests. A release manager may use the
+review-layer bypass only to fast-forward an exact signed candidate to `main`
+after its pull request is approved, all review threads are resolved, every
+required check is green on that exact head, and the candidate is not behind
+`main`. This exception preserves the reviewed candidate SHA when GitHub's merge
+methods would create or rewrite a commit. It does not authorize skipping failed
+evidence, force-pushing, unsigned commits, moving or deleting a release tag, or
+performing a product release.
+
+The existing monolithic `main-protection` ruleset remains active until all
+three replacement rulesets have been created, read back, and confirmed in the
+effective rules for `main`; it is then disabled rather than deleted. The shared
+organization teams may also be attached to upstream norm-spec, but each
+repository independently owns its required checks, approvals, release identity,
+ruleset migration, and publication decisions.
+
+**Context.** D013 correctly limited Admin bypass to an already reviewed,
+hosted-green exact candidate, but one monolithic ruleset could only express a
+bypass across every contained protection. GitHub's rebase and squash merge
+paths do not preserve the exact candidate commit identity needed by retained
+archives, source manifests, and later tags. Repository-role Admin bypass would
+also apply to more actors and more rules than the exact-promotion workflow
+requires. The organization now provides reusable human-maintainer,
+release-manager, and automation teams, while repository rulesets remain
+available independently on both public repositories.
+
+**Rationale.** Layering makes GitHub's enforcement match the intended authority:
+release managers can bypass only the PR mechanism needed for exact
+fast-forward promotion, while signed linear history, non-fast-forward
+protection, exact CI, and immutable release tags remain mechanically
+unbypassable. Team-scoped authority is auditable and reusable without coupling
+pi-norm-spec's product gates or releases to another repository.

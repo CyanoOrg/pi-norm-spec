@@ -25,8 +25,15 @@
   candidates, and aggregate five-package inventory and retained all eleven
   review artifacts. D013 opens the protected canonical GitHub repository;
   E3-E4, tags, Releases, npm ownership, and publication remain pending.
-- Current objective: integrate the E2 branch through the protected pull-request
-  path with all eight required checks, then implement E3's isolated,
+- D014 accepts three organization teams and layered `main` integrity, quality,
+  and review rules. Only the human release-manager team may bypass the review
+  layer for an already approved, exact hosted-green fast-forward; integrity,
+  strict CI, and immutable tags have no bypass. The live migration remains
+  pending, so the monolithic `main-protection` ruleset is still authoritative.
+- Current objective: host-verify this D014 governance record, create and read
+  back the three replacement rulesets without relaxing the active monolith,
+  verify effective `main` protection, and then disable the monolith. Afterward,
+  integrate the reviewed exact E2 candidate and implement E3's isolated,
   version-pinned real `pi install` gate on all four native targets. This does
   not authorize enforcement, tagging, a GitHub Release, npm ownership, or
   publication.
@@ -74,6 +81,9 @@
 - The canonical GitHub repository is public. Active rulesets protect `main`
   and immutable `v*` tags; Actions use pinned selected dependencies, a
   read-only token, and approval for every external contributor workflow.
+- The active `main-protection` ruleset still contains all integrity, review,
+  signature, and eight strict status-check rules with no bypass actor. D014's
+  three-layer replacement is an accepted migration target, not yet live state.
 - Hard enforcement and escape are intentionally not implemented under D010.
   D011 post-edit validation is complete without blocking or rollback. E1 is
   complete and E2 hosted aggregation is closed, but no npm package is
@@ -317,6 +327,32 @@ Gate E E2 hosted verification on 2026-08-14:
   `package-root-candidate` and `package-candidate-set`. Its bypass list remains
   empty. This closes E2 without claiming E3, tagging, a GitHub Release, npm
   ownership, or publication.
+
+D014 governance design and pre-migration evidence on 2026-08-14:
+
+- the maintainer confirmed that `norm-release-managers` contains the two human
+  maintainer identities and excludes `cyano-bot`; `cyano-bot` belongs to
+  `norm-automation`. The active fine-grained token cannot enumerate
+  organization membership, so this membership boundary is maintainer-attested
+  rather than API-read evidence;
+- the repository API confirms linked teams `norm-maintainers` (`18981923`) and
+  `norm-release-managers` (`18981934`) with Maintain, plus `norm-automation`
+  (`18981945`) with Write;
+- the pre-migration effective `main` rules still come only from active
+  `main-protection` (`20838523`): deletion, non-fast-forward, linear history,
+  signed commits, the reviewed-PR rule, and all eight strict hosted checks. Its
+  bypass list is empty and the active `cyano-bot` identity reports that it can
+  never bypass the ruleset;
+- `release-tag-immutable` (`20838531`) remains active with deletion, update,
+  and non-fast-forward protection and no bypass. It is outside the migration;
+- `bravetwo`, `cyano-org`, and `cyano-bot` currently retain direct Admin while
+  the two repository migrations are configured. D014 requires the automation
+  identity to return to Write after both repositories' layered rules are read
+  back and verified;
+- migration keeps the monolith active while `main-integrity`, `main-quality`,
+  and `main-review` are created and checked. The monolith is disabled only
+  after effective protection is equivalent; it is retained for rollback and
+  audit rather than deleted.
 
 Gate D functional Alpha verification on 2026-08-13:
 
