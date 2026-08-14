@@ -35,8 +35,11 @@ five-package Gate E contract and selects `0.1.0-beta.1` as the first public
 distribution rehearsal. E1 is complete: exact candidate `486be76` passed
 source-controlled package-contract, strict release identity, glibc-aware
 selection, bundled launcher, and production-shaped package installation gates
-on all four native hosted targets. E2 retained candidate artifacts, E3 real
-`pi install`, E4 release review, and every visibility/publication action remain
+on all four native hosted targets. E2 implementation candidate `6b924e6` adds
+clean-revision root/native candidates, exact checksums, raw hosted artifacts,
+and aggregate five-package verification; its root and macOS arm64 paths are
+green locally, while full hosted E2 closure remains pending. E3 real `pi
+install`, E4 release review, and every visibility/publication action remain
 pending.
 
 Read first:

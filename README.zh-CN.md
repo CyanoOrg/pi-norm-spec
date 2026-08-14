@@ -13,8 +13,9 @@ Rust 负责约束计算和版本化 bridge；TypeScript 只负责接入 pi Exten
 > package-shaped 路径已通过四个 native hosted target。D012 已定义生产包契约和
 > 首个公开 beta 演练。E1 的 source-controlled package inputs、严格 release
 > identity、glibc-aware resolver 和 bundled launcher 已在精确候选 `486be76`
-> 完成，六个 hosted job 与四个 native package 路径全部通过。E2 retained
-> artifacts 仍待完成；拦截不在当前契约内。
+> 完成，六个 hosted job 与四个 native package 路径全部通过。E2 实现候选
+> `6b924e6` 已加入精确 retained artifacts、checksums 与聚合集合验证；root 和
+> macOS arm64 路径已在本地通过，四平台 hosted closure 仍待完成；拦截不在当前契约内。
 
 参与开发前请阅读 `AGENTS.md`、`docs/ARCHITECTURE.md` 和
 `docs/planning/v0.1-execution.md`。

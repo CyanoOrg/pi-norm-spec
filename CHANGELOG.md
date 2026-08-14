@@ -42,3 +42,6 @@ preparation.
   identity matching before bridge launch, with no runtime or `PATH` fallback.
 - A shared package resolver and `pi-norm-spec/package-runtime/v1` launcher for
   explicit bundled `norm` and conformance execution without a shell.
+- Clean-revision root/native package candidate assembly with final tarball
+  checksums, raw hosted artifacts, sealed-payload verification, and a versioned
+  five-package aggregate inventory without publication credentials.

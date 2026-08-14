@@ -58,7 +58,12 @@ same-version native optional packages. Linux x64 is explicitly glibc-only.
 Source-controlled publish manifests and versioned root/platform release
 manifests bind the pi source revision, package/APIs, target, and exact upstream
 Release asset before the existing sealed-payload handshake runs. Candidate CI
-produces review tarballs but has no publication authority.
+constructs the root once and one platform package on each fixed native runner.
+It uploads each final tarball and checksum without re-archiving. A separate
+read-only job requires exactly those ten files, rechecks the source and package
+manifests, safe inventories, sealed upstream lock and file digests, and writes
+one `pi-norm-spec/package-candidate/v1` aggregate inventory. Candidate CI has no
+publication authority.
 
 ## TypeScript extension
 

@@ -19,11 +19,14 @@
 - D012 fixes the Gate E production topology as one root package and four exact,
   same-version native optional packages, plus release manifests, a bundled-CLI
   launcher, retained candidate artifacts, real `pi install` gates, and a first
-  public `0.1.0-beta.1` rehearsal. E1 is complete at exact candidate `486be76`;
-  E2-E4 and every external action remain pending.
-- Current objective: fast-forward the E1 closure to `main`, then begin E2's
-  retained native candidate artifacts from that clean baseline. This does not
-  authorize enforcement, public visibility, tagging, or publication.
+  public `0.1.0-beta.1` rehearsal. E1 is complete and its closure commit
+  `dd9ce84` is on `main`. E2 implementation candidate `6b924e6` passes the
+  exact local root and macOS arm64 artifact paths; full hosted artifact-set
+  confirmation remains pending. E3-E4 and every external action remain pending.
+- Current objective: host-verify the branch tip containing E2 implementation
+  `6b924e6` across the root job, four fixed native jobs, and the aggregate
+  candidate-set job. This does not authorize enforcement, public visibility,
+  tagging, or publication.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
   a minimal non-transforming admission-hook request. The request was posted on
   pi issue #7092 on 2026-08-13 and accepts source-ordered clearance followed by
@@ -57,10 +60,10 @@
 - The shared package resolver recognizes exactly four versioned optional
   packages, rejects Linux without positive glibc evidence, matches strict
   root/platform release identities, and then resolves only package-local paths.
-- The lower-level rehearsal now stages unpublished temporary root/platform
-  tarballs from the production publish inputs, installs them into an isolated
-  consumer, exercises the launcher, and deletes them afterward. It does not
-  retain five candidate artifacts or establish E2 publication evidence.
+- The lower-level rehearsal and retained candidates now share one production
+  staging implementation. A clean exact revision can retain the root or one
+  native package plus checksum; hosted aggregation requires exactly all five
+  archives and five checksum files before emitting the versioned inventory.
 - D012 converts that proven shape into a production contract without treating
   rehearsal tarballs as release candidates. All five package names were absent
   from npm when checked on 2026-08-14, but that is not ownership or reservation
@@ -70,9 +73,10 @@
 - GitHub repository bootstrap is complete; public visibility remains a
   maintainer checkpoint after the initial functional slice.
 - Hard enforcement and escape are intentionally not implemented under D010.
-  D011 post-edit validation is complete without blocking or rollback. E1
-  package sources are implemented but no npm package is published; E2 retained
-  artifacts and E3 real `pi install` evidence remain pending.
+  D011 post-edit validation is complete without blocking or rollback. E1 is
+  complete and E2 implementation is locally green, but no npm package is
+  published; E2 hosted aggregation and E3 real `pi install` evidence remain
+  pending.
 - The local `.opencode/skills/norm-spec/` adoption-rehearsal copy is ignored and
   is not a product resource.
 
@@ -215,6 +219,47 @@ Gate E E1 hosted verification on 2026-08-14:
 - this closes E1 without retaining candidate tarballs or claiming `pi install`,
   public visibility, npm ownership, tagging, release creation, publication, or
   hard enforcement. Those remain E2-E4 or D010 checkpoints.
+
+Gate E E1 `main` closure on 2026-08-14:
+
+- `dd9ce84f11ad3f89e9802a50f66984bd85c78b62` is the exact E1 closure commit
+  now on `main`;
+- branch run `31779946288` passed all six jobs at that exact SHA before the
+  fast-forward;
+- main run `31780514641` attempt 1 failed before any runner started: all six
+  jobs have zero steps and no runner assignment. This is not contradictory
+  code/test evidence, but the main-run rerun remains an explicit hosted
+  infrastructure checkpoint.
+
+Gate E E2 local implementation on 2026-08-14:
+
+- exact implementation candidate
+  `6b924e6874f26feb42edafe78374d707add041f7` replaces duplicated rehearsal
+  staging with one root/platform staging implementation and adds clean-tree
+  root/native candidate builders;
+- each retained archive is verified after final `npm pack` for safe bounded
+  inventory, exact source manifest and release identity, native target, sealed
+  upstream release manifest and payload-lock inventory, every locked file
+  digest, and the exact upstream archive checksum line;
+- `pi-norm-spec/package-candidate/v1` aggregate verification requires exactly
+  five tarballs plus five exact checksum files, binds every file digest and
+  size to the full source revision and package/upstream identities, and writes
+  a new inventory without publication credentials;
+- all 31 TypeScript/Extension/package tests pass, including complete synthetic
+  five-package aggregation and checksum-drift rejection. Rust formatting,
+  strict Clippy, all 21 Rust tests, and rustdoc with warnings denied also pass;
+- the exact commit produced and verified a 17,515-byte root candidate with
+  SHA-256 `81cb179dda7d345d0c96fc97f185b8d06c8a8271d4e429f30603c17a3e358745`;
+- the exact macOS arm64 release-derived path produced and verified a
+  4,068,956-byte native candidate with SHA-256
+  `e814a0cbcc14fb38e8ec57e4675ec88734dd05edabb580f5f7c9e67f13dfb359`,
+  after checksum, sealing, 82/82 conformance, persistent bridge, real pi host,
+  isolated installation, runtime identity, bundled compatibility, and bundled
+  conformance all passed;
+- these ignored local files prove the production root and one native path, not
+  the four-platform E2 closure. The exact branch commit still requires hosted
+  root, Linux, macOS ARM/Intel, Windows, artifact upload/download, and aggregate
+  inventory confirmation.
 
 Gate D functional Alpha verification on 2026-08-13:
 
@@ -445,10 +490,12 @@ Bootstrap verification on 2026-08-10:
       native hosted targets.
 - [x] Define the production five-package distribution and first public beta
       rehearsal contract (D012).
-- [ ] Implement E1 source-controlled package manifests, release identities,
+- [x] Implement E1 source-controlled package manifests, release identities,
       libc-aware resolution, and bundled executable access.
-- [ ] Produce and aggregate-verify retained E2 root plus four native package
-      candidates and checksums.
+- [x] Implement E2 production staging, clean-revision root/native candidate
+      retention, final checksums, and exact aggregate-set verification.
+- [ ] Confirm the exact E2 candidate's retained root plus four native package
+      candidates, checksums, and aggregate inventory through hosted CI.
 - [ ] Verify the E3 version-pinned real `pi install` path on all four native
       targets, including injection and post-edit feedback without blocking.
 - [ ] Complete E4 release/security review and stop at the public beta human

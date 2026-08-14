@@ -18,8 +18,10 @@ does not implement the `.norm` parser or validator.
 > rehearsal. E1's source-controlled package inputs, strict release identity,
 > glibc-aware resolver, and bundled launcher are complete at exact candidate
 > `486be76`, with all six hosted jobs and four native package paths green.
-> E2 retained artifacts remain pending. Enforcement remains outside the current
-> contract.
+> E2 implementation candidate `6b924e6` adds exact retained artifacts,
+> checksums, and aggregate-set verification; its root and macOS arm64 paths are
+> green locally, while four-platform hosted closure remains pending.
+> Enforcement remains outside the current contract.
 
 See `AGENTS.md`, `docs/ARCHITECTURE.md`, and
 `docs/planning/v0.1-execution.md` before contributing.
