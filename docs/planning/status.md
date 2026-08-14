@@ -163,6 +163,23 @@ Gate E distribution decision on 2026-08-14:
 - D010 remains unchanged: Gate E verifies the absence of false enforcement
   claims and does not wait for or simulate hard blocking.
 
+Gate E distribution design local verification on 2026-08-14:
+
+- `9692f18` records D012, the stable architecture/protocol boundary, and the
+  complete E1-E4 design; `435ee72` synchronizes the repository entry points,
+  Roadmap, execution plan, and current objective;
+- direct npm registry requests returned HTTP 404 for the selected root and four
+  platform names; this proves only current absence and grants no ownership;
+- the pinned pi `0.84.1` package-manager documentation and implementation were
+  checked for versioned npm installation, isolated package roots, dependency
+  installation, and `PI_CODING_AGENT_DIR` test isolation;
+- `cargo fmt --check`, strict workspace Clippy, all 21 Rust tests, rustdoc with
+  warnings denied, TypeScript typechecking, and all 23 Extension tests passed;
+- strict canonical validation returned two files, zero errors, and zero
+  warnings; the public-history and branch whitespace checks passed;
+- this is local design evidence only. The exact branch candidate still requires
+  hosted Rust, Extension, Linux, macOS ARM/Intel, and Windows confirmation.
+
 Gate D functional Alpha verification on 2026-08-13:
 
 - GitHub Actions run `31684071321` passed at exact commit
