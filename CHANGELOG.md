@@ -36,3 +36,9 @@ preparation.
 - Serialized post-edit strict validation for successful built-in `write` and
   `edit` results, with bounded model-visible findings, distinct runtime failure
   feedback, cancellation, and no blocking or rollback claim.
+- Source-controlled manifests and package documentation for one root plus four
+  exact-version native optional packages, including Linux x64 glibc metadata.
+- Strict `pi-norm-spec/package-release/v1` generation and root/platform
+  identity matching before bridge launch, with no runtime or `PATH` fallback.
+- A shared package resolver and `pi-norm-spec/package-runtime/v1` launcher for
+  explicit bundled `norm` and conformance execution without a shell.

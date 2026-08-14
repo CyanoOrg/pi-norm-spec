@@ -15,8 +15,10 @@ does not implement the `.norm` parser or validator.
 > D011 post-edit validation feedback is complete at exact candidate `e74c4e1`:
 > the real host and package-shaped paths passed on all four native hosted
 > targets. D012 defines the production package contract and first public beta
-> rehearsal; implementation remains pending. Enforcement remains outside the
-> current contract.
+> rehearsal. E1's source-controlled package inputs, strict release identity,
+> glibc-aware resolver, and bundled launcher are implemented locally at
+> `034528a`; four-target hosted confirmation remains pending. Enforcement
+> remains outside the current contract.
 
 See `AGENTS.md`, `docs/ARCHITECTURE.md`, and
 `docs/planning/v0.1-execution.md` before contributing.

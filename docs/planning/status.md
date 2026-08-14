@@ -19,12 +19,11 @@
 - D012 fixes the Gate E production topology as one root package and four exact,
   same-version native optional packages, plus release manifests, a bundled-CLI
   launcher, retained candidate artifacts, real `pi install` gates, and a first
-  public `0.1.0-beta.1` rehearsal. Implementation and every external action
-  remain pending.
-- Current objective: implement E1's package contract and strict identities while
-  tracking the norm-spec typed operation-policy and pi host prerequisites
-  independently. This does not authorize enforcement, public visibility,
-  tagging, or publication.
+  public `0.1.0-beta.1` rehearsal. E1 is implemented locally; hosted
+  confirmation, E2-E4, and every external action remain pending.
+- Current objective: confirm the exact E1 package-contract candidate on all six
+  hosted jobs, then begin E2 only after the branch is green. This does not
+  authorize enforcement, public visibility, tagging, or publication.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
   a minimal non-transforming admission-hook request. The request was posted on
   pi issue #7092 on 2026-08-13 and accepts source-ordered clearance followed by
@@ -55,13 +54,13 @@
 - The adapter registers one pi-specific Skill. A compatible zero-`.norm`
   project receives one session-bounded onboarding notice and no project write;
   runtime and collection failures remain distinct visible errors.
-- The platform resolver recognizes four versioned optional-package locators,
-  but the platform packages themselves remain Gate E work. Their current
-  absence is a visible runtime startup failure rather than a `PATH` fallback.
-- The Gate D rehearsal creates unpublished temporary root/platform tarballs,
-  installs them into an isolated consumer, and deletes them afterward. It does
-  not establish production optional-dependency manifests or publishable native
-  package assembly.
+- The shared package resolver recognizes exactly four versioned optional
+  packages, rejects Linux without positive glibc evidence, matches strict
+  root/platform release identities, and then resolves only package-local paths.
+- The lower-level rehearsal now stages unpublished temporary root/platform
+  tarballs from the production publish inputs, installs them into an isolated
+  consumer, exercises the launcher, and deletes them afterward. It does not
+  retain five candidate artifacts or establish E2 publication evidence.
 - D012 converts that proven shape into a production contract without treating
   rehearsal tarballs as release candidates. All five package names were absent
   from npm when checked on 2026-08-14, but that is not ownership or reservation
@@ -71,10 +70,9 @@
 - GitHub repository bootstrap is complete; public visibility remains a
   maintainer checkpoint after the initial functional slice.
 - Hard enforcement and escape are intentionally not implemented under D010.
-  D011 post-edit validation is complete without blocking or rollback;
-  production npm platform packages are not implemented. The current Skill
-  truthfully defers bundled-CLI invocation details to the future installed
-  platform package.
+  D011 post-edit validation is complete without blocking or rollback. E1
+  package sources are implemented but no npm package is published; E2 retained
+  artifacts and E3 real `pi install` evidence remain pending.
 - The local `.opencode/skills/norm-spec/` adoption-rehearsal copy is ignored and
   is not a product resource.
 
@@ -179,6 +177,27 @@ Gate E distribution design local verification on 2026-08-14:
   warnings; the public-history and branch whitespace checks passed;
 - this is local design evidence only. The exact branch candidate still requires
   hosted Rust, Extension, Linux, macOS ARM/Intel, and Windows confirmation.
+
+Gate E E1 local implementation on 2026-08-14:
+
+- `034528a` adds five source-controlled publish manifests and package docs, with
+  one exact root optional-dependency set and Linux `libc=glibc` metadata;
+- the shared JavaScript resolver generates and strictly parses bounded
+  `pi-norm-spec/package-release/v1` root/platform identities, rejects unknown
+  libc, package absence, unsafe paths, malformed manifests, and identity drift,
+  and passes only explicit package-local paths to the TypeScript adapter;
+- the source-controlled launcher emits `pi-norm-spec/package-runtime/v1` or
+  directly spawns bundled `norm`/conformance without a shell. A real installed
+  run exposed a macOS `/var` versus `/private/var` main-module comparison bug;
+  the committed thin bin wrapper removes that path-identity dependency;
+- TypeScript plus checked JavaScript and all 29 Extension/package tests pass.
+  The exact `034528a` macOS arm64 release-derived run also passed checksum,
+  sealing, 82/82 conformance, persistent bridge, real pi Alpha behavior,
+  production-shaped root/platform inventories, isolated installation, runtime
+  identity, bundled compatibility, and bundled full conformance;
+- the two temporary tarballs were deleted after the local run. This is E1
+  implementation evidence, not E2 retained-candidate or publication evidence;
+  all six hosted jobs remain required before E1 closes.
 
 Gate D functional Alpha verification on 2026-08-13:
 

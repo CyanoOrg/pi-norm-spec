@@ -98,3 +98,26 @@ version, full pi source revision, target, package/runtime APIs, and the exact
 upstream pin across those manifests before launch. Linux resolution is
 glibc-specific; musl and an unidentified libc are unsupported rather than a
 request to search for another executable.
+
+The root release envelope has `kind=root` and exactly one entry for each of the
+four supported packages. A platform envelope has `kind=platform` and exactly
+one package identity. Both carry the same product, full source revision, API,
+tested-host, and complete pinned upstream identity; the selected package
+version and Rust target must match the root entry. Unknown or missing fields,
+non-full revisions, malformed digests, unsupported target sets, or any common
+identity drift are rejected before `runtime.json` is used. Manifests are
+bounded to 64 KiB.
+
+The shared resolver returns package-local bridge, payload, `norm`, and
+`norm-spec-conformance` paths. The launcher exposes `runtime`, `norm`, and
+`conformance`. `runtime` emits a one-line
+`pi-norm-spec/package-runtime/v1` success envelope containing the matched
+product, source, platform package, API, host, and upstream identities. The
+other operations directly spawn the bundled executable with the supplied argv,
+inherited streams, and `shell=false`.
+
+Stable pre-launch failures include `unsupported-platform`,
+`package-unavailable`, `root-release-invalid`, `platform-release-invalid`,
+`release-invalid`, `identity-mismatch`, `locator-invalid`, and
+`locator-unsafe` under the `pi-norm-spec/runtime/` namespace. None retries
+through another package or `PATH`.

@@ -11,7 +11,9 @@ Rust 负责约束计算和版本化 bridge；TypeScript 只负责接入 pi Exten
 > 通过真实 pi `0.84.1` host 的四平台验证，functional Alpha checkpoint 已完成。
 > D011 修改后软验证反馈已在精确候选 `e74c4e1` 完成：真实 host 与
 > package-shaped 路径已通过四个 native hosted target。D012 已定义生产包契约和
-> 首个公开 beta 演练，具体实现仍待完成；拦截不在当前契约内。
+> 首个公开 beta 演练。E1 的 source-controlled package inputs、严格 release
+> identity、glibc-aware resolver 和 bundled launcher 已在 `034528a` 本地完成；
+> 四平台 hosted 确认仍待完成。拦截不在当前契约内。
 
 参与开发前请阅读 `AGENTS.md`、`docs/ARCHITECTURE.md` 和
 `docs/planning/v0.1-execution.md`。

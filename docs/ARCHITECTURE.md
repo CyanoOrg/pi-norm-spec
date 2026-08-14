@@ -64,9 +64,10 @@ produces review tarballs but has no publication authority.
 
 Registers pi events and commands, projects event inputs into bridge requests,
 and renders structured responses. It never parses `.norm` or duplicates policy
-logic. A platform resolver selects only the exact optional package for the
-current Node platform and architecture, validates its versioned `runtime.json`,
-and passes explicit bridge and payload paths to the client; it does not search
+logic. The shared package resolver selects only the exact optional package for
+the current Node platform, architecture, and supported libc; matches strict
+root/platform release identities; validates its versioned `runtime.json`; and
+passes explicit bridge and payload paths to the client. It does not search
 `PATH`. The adapter remains replaceable if pi later exposes a native plugin ABI.
 
 D009 maps pi's `context` event to a fresh `promptContext` bridge request before
@@ -151,11 +152,12 @@ is installation evidence, not production package assembly or publication;
 those remain Gate E.
 
 Gate E adds a non-semantic Node launcher in the root package for explicit
-bundled `norm` and conformance access. It uses the same package resolver, passes
-argv without a shell, preserves process streams and exit status, and cannot
-parse `.norm` or search `PATH`. Real installation evidence uses pi's package
-manager with an isolated `PI_CODING_AGENT_DIR`; it does not mutate maintainer
-settings.
+bundled `norm` and conformance access. A thin executable wrapper calls the same
+package resolver used by the extension; it does not depend on symlink or
+realpath equivalence. The launcher passes argv without a shell, preserves
+process streams and exit status, and cannot parse `.norm` or search `PATH`.
+Real installation evidence uses pi's package manager with an isolated
+`PI_CODING_AGENT_DIR`; it does not mutate maintainer settings.
 
 ## Security properties
 
