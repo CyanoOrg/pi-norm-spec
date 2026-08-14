@@ -115,9 +115,8 @@ checks; and `main-review` requires a pull request with one approval, stale
 review dismissal, and resolved review threads. Integrity and quality have no
 bypass. Only the `norm-release-managers` team may bypass the review layer. The
 separate `release-tag-immutable` ruleset blocks updates and deletion of `v*`
-tags and has no bypass. Until the D014 live migration is read back and verified,
-the active monolithic `main-protection` ruleset remains authoritative with no
-bypass actor.
+tags and has no bypass. The predecessor monolithic `main-protection` ruleset is
+disabled with its configuration retained for audit and rollback.
 
 The repository uses the organization teams `norm-maintainers` (Maintain),
 `norm-release-managers` (Maintain), and `norm-automation` (Write). Automation

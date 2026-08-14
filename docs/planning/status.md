@@ -28,13 +28,13 @@
 - D014 accepts three organization teams and layered `main` integrity, quality,
   and review rules. Only the human release-manager team may bypass the review
   layer for an already approved, exact hosted-green fast-forward; integrity,
-  strict CI, and immutable tags have no bypass. The live migration remains
-  pending, so the monolithic `main-protection` ruleset is still authoritative.
-- Current objective: host-verify this D014 governance record, create and read
-  back the three replacement rulesets without relaxing the active monolith,
-  verify effective `main` protection, and then disable the monolith. Afterward,
-  integrate the reviewed exact E2 candidate and implement E3's isolated,
-  version-pinned real `pi install` gate on all four native targets. This does
+  strict CI, and immutable tags have no bypass. The three replacement rulesets
+  are active and read-back verified; the monolithic `main-protection` ruleset
+  is disabled with its configuration retained.
+- Current objective: integrate the reviewed exact E2 candidate through the
+  protected fast-forward path, confirm the resulting exact `main` CI, and then
+  implement E3's isolated, version-pinned real `pi install` gate on all four
+  native targets. This does
   not authorize enforcement, tagging, a GitHub Release, npm ownership, or
   publication.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
@@ -81,9 +81,10 @@
 - The canonical GitHub repository is public. Active rulesets protect `main`
   and immutable `v*` tags; Actions use pinned selected dependencies, a
   read-only token, and approval for every external contributor workflow.
-- The active `main-protection` ruleset still contains all integrity, review,
-  signature, and eight strict status-check rules with no bypass actor. D014's
-  three-layer replacement is an accepted migration target, not yet live state.
+- Active `main-integrity`, `main-quality`, and `main-review` rulesets now
+  protect `main`. Only the human release-manager Team can bypass review; the
+  active automation identity cannot bypass any layer. The predecessor
+  `main-protection` ruleset is disabled rather than deleted.
 - Hard enforcement and escape are intentionally not implemented under D010.
   D011 post-edit validation is complete without blocking or rollback. E1 is
   complete and E2 hosted aggregation is closed, but no npm package is
@@ -328,7 +329,7 @@ Gate E E2 hosted verification on 2026-08-14:
   empty. This closes E2 without claiming E3, tagging, a GitHub Release, npm
   ownership, or publication.
 
-D014 governance design and pre-migration evidence on 2026-08-14:
+D014 governance migration on 2026-08-14:
 
 - the maintainer confirmed that `norm-release-managers` contains the two human
   maintainer identities and excludes `cyano-bot`; `cyano-bot` belongs to
@@ -338,21 +339,33 @@ D014 governance design and pre-migration evidence on 2026-08-14:
 - the repository API confirms linked teams `norm-maintainers` (`18981923`) and
   `norm-release-managers` (`18981934`) with Maintain, plus `norm-automation`
   (`18981945`) with Write;
-- the pre-migration effective `main` rules still come only from active
-  `main-protection` (`20838523`): deletion, non-fast-forward, linear history,
-  signed commits, the reviewed-PR rule, and all eight strict hosted checks. Its
-  bypass list is empty and the active `cyano-bot` identity reports that it can
-  never bypass the ruleset;
+- exact governance commit
+  `ac030789309574c388ae802e1553e5a46431a22d` is the remote feature head;
+  public Actions run `31794793494` passed all eight required checks at that
+  exact revision;
+- active `main-integrity` (`20844508`) owns deletion, non-fast-forward,
+  linear-history, and signed-commit rules with no bypass; active
+  `main-quality` (`20844529`) owns all eight strict GitHub Actions checks
+  with no bypass;
+- active `main-review` (`20844542`) preserves the one-approval,
+  stale-review-dismissal, and resolved-thread contract. Its only bypass actor
+  is Team `norm-release-managers` (`18981934`) in `always` mode; the active
+  `cyano-bot` identity reports `current_user_can_bypass: never`;
 - `release-tag-immutable` (`20838531`) remains active with deletion, update,
-  and non-fast-forward protection and no bypass. It is outside the migration;
+  and non-fast-forward protection and no bypass; its configuration did not
+  change;
+- a machine-checked pre-disable audit confirmed that the three new active
+  layers exactly reproduced every effective `main` rule while the predecessor
+  remained active. After the predecessor was disabled, a second audit found
+  exactly six effective rules sourced only from the three new rulesets;
+- predecessor `main-protection` (`20838523`) is disabled rather than deleted
+  and retains its complete six-rule configuration. The migration did not move
+  `main` from `dd9ce84f11ad3f89e9802a50f66984bd85c78b62` or the feature head
+  from `ac030789309574c388ae802e1553e5a46431a22d`;
 - `bravetwo`, `cyano-org`, and `cyano-bot` currently retain direct Admin while
   the two repository migrations are configured. D014 requires the automation
   identity to return to Write after both repositories' layered rules are read
-  back and verified;
-- migration keeps the monolith active while `main-integrity`, `main-quality`,
-  and `main-review` are created and checked. The monolith is disabled only
-  after effective protection is equivalent; it is retained for rollback and
-  audit rather than deleted.
+  back and verified.
 
 Gate D functional Alpha verification on 2026-08-13:
 
