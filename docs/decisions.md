@@ -279,3 +279,55 @@ validate arbitrary project mutations or that opaque shell/custom tools have a
 known path contract. Explicit bounds and FIFO execution keep feedback
 observable without weakening the bridge lifecycle or relabeling it as hard
 enforcement.
+
+## D012 — Release one adapter package with four exact native runtimes
+
+**Decision.** The first public distribution is five npm packages at one exact
+pi-norm-spec version: root package `pi-norm-spec` and optional native packages
+`pi-norm-spec-linux-x64`, `pi-norm-spec-darwin-arm64`,
+`pi-norm-spec-darwin-x64`, and `pi-norm-spec-win32-x64`. The root package pins
+all four optional dependencies without a range. Platform selection uses npm
+`os` and `cpu`; the Linux package also declares `libc=glibc`. Unsupported libc,
+platform, missing-package, manifest, or identity states fail visibly without a
+`PATH` fallback.
+
+The published root and platform manifests are source-controlled release inputs,
+not ad-hoc variants of the development manifest. Candidate assembly adds only
+the exact bridge binary, sealed D006 upstream payload, and versioned release
+metadata. Every package carries README, license, repository, version, and source
+identity. A platform package's `runtime.json` remains the portable path locator;
+separate root and platform release manifests bind package version, pi source
+revision, target, bridge/runtime APIs, and the exact norm-spec release asset.
+The release gate cross-checks those manifests, the bridge-reported package
+version, the sealed payload identity, package inventories, and tarball hashes.
+
+The root package also supplies a non-semantic Node launcher so advanced users
+and CI can invoke the bundled `norm` and `norm-spec-conformance` executables via
+the installed package or `npx`. It resolves the same platform package and never
+parses `.norm`, searches `PATH`, or reimplements bridge behavior.
+
+The first public rehearsal is `0.1.0-beta.1`, matching the Roadmap boundary in
+which post-edit feedback and production platform packaging are both complete.
+All four platform versions must resolve publicly before the root version is
+published. An exact hosted candidate produces five npm tarballs plus checksums;
+the same bytes become GitHub Pre-release assets and npm publications. Public
+visibility, tag creation, npm ownership, and publication remain separate
+maintainer checkpoints. Hard enforcement and escape remain excluded under
+D010 and are not release gates.
+
+**Context.** Gate D already proves the root and one temporary native package
+through real pi discovery on four native runners, but the rehearsal generates
+one-off manifests, has no root optional dependencies, emits no retained release
+artifacts, and does not exercise registry installation. Pi `0.84.1` installs npm
+packages into an isolated package root with the configured npm-compatible
+installer; its default npm path installs optional dependencies. On 2026-08-14
+all five selected public names returned not-found from the npm registry, which
+is availability evidence rather than reservation or publication authority.
+
+**Rationale.** Exact same-version optional packages give users one `pi install`
+entry while retaining native selection and the complete upstream verification
+boundary. Source-controlled manifests, byte-identical publication artifacts,
+platform-first publication, and explicit partial-release handling prevent a
+root package from advertising missing or rebuilt runtimes. A beta rehearsal is
+honest about the first public npm/pi distribution without weakening the already
+verified functional Alpha or prematurely claiming stable delivery.

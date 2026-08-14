@@ -90,3 +90,11 @@ exports `runtime.json` with this contract:
 `.` or `..` component. The resolver constructs explicit package-local paths;
 missing packages, unsupported platforms, invalid metadata, and unsafe paths
 are typed startup failures. Gate E owns producing and publishing these packages.
+
+D012 keeps this locator focused on portable executable paths. Production
+packages additionally carry versioned root/platform
+`pi-norm-spec/package-release/v1` manifests. The resolver must match product
+version, full pi source revision, target, package/runtime APIs, and the exact
+upstream pin across those manifests before launch. Linux resolution is
+glibc-specific; musl and an unidentified libc are unsupported rather than a
+request to search for another executable.

@@ -53,6 +53,13 @@ pi bridge and a release-derived norm-spec payload with both executables, the
 exact contract bundle, manifest, license, and provenance metadata. The adapter
 does not fall back to an arbitrary `norm` on `PATH`.
 
+D012 fixes the production package topology as one root adapter plus four exact,
+same-version native optional packages. Linux x64 is explicitly glibc-only.
+Source-controlled publish manifests and versioned root/platform release
+manifests bind the pi source revision, package/APIs, target, and exact upstream
+Release asset before the existing sealed-payload handshake runs. Candidate CI
+produces review tarballs but has no publication authority.
+
 ## TypeScript extension
 
 Registers pi events and commands, projects event inputs into bridge requests,
@@ -142,6 +149,13 @@ into an isolated consumer, then pi discovers the installed extension from its
 manifest and the adapter resolves the sibling runtime package normally. This
 is installation evidence, not production package assembly or publication;
 those remain Gate E.
+
+Gate E adds a non-semantic Node launcher in the root package for explicit
+bundled `norm` and conformance access. It uses the same package resolver, passes
+argv without a shell, preserves process streams and exit status, and cannot
+parse `.norm` or search `PATH`. Real installation evidence uses pi's package
+manager with an isolated `PI_CODING_AGENT_DIR`; it does not mutate maintainer
+settings.
 
 ## Security properties
 
