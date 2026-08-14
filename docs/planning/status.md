@@ -20,15 +20,16 @@
   same-version native optional packages, plus release manifests, a bundled-CLI
   launcher, retained candidate artifacts, real `pi install` gates, and a first
   public `0.1.0-beta.1` rehearsal. E1 is complete and its closure commit
-  `dd9ce84` is on `main`. E2 implementation candidate `6b924e6` passes the
-  exact local root and macOS arm64 artifact paths; full hosted artifact-set
-  confirmation remains pending. D013 opens the protected canonical GitHub
-  repository; E3-E4, tags, Releases, npm ownership, and publication remain
-  pending.
-- Current objective: host-verify the branch tip containing E2 implementation
-  `6b924e6` across the root job, four fixed native jobs, and the aggregate
-  candidate-set job. This does not authorize enforcement, tagging, a GitHub
-  Release, npm ownership, or publication.
+  `dd9ce84` is on `main`. E2 is complete at exact candidate `1b820ff`; public
+  hosted run `31787516114` passed the root candidate, four fixed native
+  candidates, and aggregate five-package inventory and retained all eleven
+  review artifacts. D013 opens the protected canonical GitHub repository;
+  E3-E4, tags, Releases, npm ownership, and publication remain pending.
+- Current objective: integrate the E2 branch through the protected pull-request
+  path with all eight required checks, then implement E3's isolated,
+  version-pinned real `pi install` gate on all four native targets. This does
+  not authorize enforcement, tagging, a GitHub Release, npm ownership, or
+  publication.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
   a minimal non-transforming admission-hook request. The request was posted on
   pi issue #7092 on 2026-08-13 and accepts source-ordered clearance followed by
@@ -75,9 +76,8 @@
   read-only token, and approval for every external contributor workflow.
 - Hard enforcement and escape are intentionally not implemented under D010.
   D011 post-edit validation is complete without blocking or rollback. E1 is
-  complete and E2 implementation is locally green, but no npm package is
-  published; E2 hosted aggregation and E3 real `pi install` evidence remain
-  pending.
+  complete and E2 hosted aggregation is closed, but no npm package is
+  published; E3 real `pi install` evidence remains pending.
 - The local `.opencode/skills/norm-spec/` adoption-rehearsal copy is ignored and
   is not a product resource.
 
@@ -277,16 +277,46 @@ Open-source visibility checkpoint on 2026-08-14:
   claim;
 - active ruleset `main-protection` (`20838523`) blocks deletion and force
   pushes, requires linear signed history, one approving review with resolved
-  threads for non-admin changes, and the existing six hosted checks;
+  threads, and initially required the existing six hosted checks. Its bypass
+  list was and remains empty, so administrators also use the protected PR path;
 - active ruleset `release-tag-immutable` (`20838531`) blocks deletion, update,
   and non-fast-forward movement for `refs/tags/v*`;
 - Actions allow GitHub-owned actions and `dtolnay/rust-toolchain` only, require
   full-SHA references, grant a read-only default token that cannot approve pull
   requests, and require approval for all external-contributor workflows;
 - private vulnerability reporting, Dependabot security updates, secret
-  scanning, and push protection are enabled. The E2 root and aggregate checks
-  remain candidates for the required-check set only after their exact public
-  hosted contexts pass once.
+  scanning, and push protection are enabled.
+
+Gate E E2 hosted verification on 2026-08-14:
+
+- GitHub Actions run `31787516114` completed successfully and is bound to exact
+  candidate `1b820ff0a5e37f8e8ab253da80c9562028631fe2`;
+- all eight jobs passed: Rust quality, Extension quality, root candidate, Linux
+  x64, macOS arm64, macOS x64, Windows x64, and aggregate candidate set. The
+  Windows path includes the real npm CLI invocation and drive-letter-safe tar
+  verification fixes from `f17b18e` and `1b820ff`;
+- Actions retained exactly five raw `.tgz` files, their five raw `.sha256`
+  files, and one `pi-norm-spec/package-candidate/v1` inventory. No artifact is
+  expired and no publication credential or package upload was used;
+- the inventory binds source repository `CyanoOrg/pi-norm-spec` and exact
+  revision `1b820ff0a5e37f8e8ab253da80c9562028631fe2`, upstream norm-spec
+  `v0.1.0-rc.1` revision `5c781964b6d9b11c52f29e5b6e2bbe13c25a5ee0`,
+  the 82-case contract digest, one root package, and all four native targets;
+- retained archive SHA-256 values are root
+  `67217c7f88586565a05499171f60b5bb181057e9c4d9a65c1961891a2f0d6f72`,
+  macOS arm64
+  `ca42d00d87f96ddbef2c8773f310b69bf26e5d0cc548c9fa63b6ba411753bf9f`,
+  macOS x64
+  `ba36b9036bedd95fc170c14b6c64b212d0523f1e0f559668057dc5ea4177df10`,
+  Linux x64
+  `191feb8c1a530045010144e47a3f49d4ef3ad3d5168a1be7a2d0208a80605123`,
+  and Windows x64
+  `b8fdfa0bc881de55ae4c8cde41a8ae0be6b5876bb793478bf1641c60f416015c`;
+- after both new contexts passed publicly, `main-protection` was strengthened
+  from six to eight strict GitHub Actions checks by adding
+  `package-root-candidate` and `package-candidate-set`. Its bypass list remains
+  empty. This closes E2 without claiming E3, tagging, a GitHub Release, npm
+  ownership, or publication.
 
 Gate D functional Alpha verification on 2026-08-13:
 
@@ -527,7 +557,7 @@ Bootstrap verification on 2026-08-10:
       libc-aware resolution, and bundled executable access.
 - [x] Implement E2 production staging, clean-revision root/native candidate
       retention, final checksums, and exact aggregate-set verification.
-- [ ] Confirm the exact E2 candidate's retained root plus four native package
+- [x] Confirm the exact E2 candidate's retained root plus four native package
       candidates, checksums, and aggregate inventory through hosted CI.
 - [ ] Verify the E3 version-pinned real `pi install` path on all four native
       targets, including injection and post-edit feedback without blocking.

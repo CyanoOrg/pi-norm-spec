@@ -35,12 +35,12 @@ five-package Gate E contract and selects `0.1.0-beta.1` as the first public
 distribution rehearsal. E1 is complete: exact candidate `486be76` passed
 source-controlled package-contract, strict release identity, glibc-aware
 selection, bundled launcher, and production-shaped package installation gates
-on all four native hosted targets. E2 implementation candidate `6b924e6` adds
-clean-revision root/native candidates, exact checksums, raw hosted artifacts,
-and aggregate five-package verification; its root and macOS arm64 paths are
-green locally, while full hosted E2 closure remains pending. The canonical
-GitHub repository is public under D013 with protected `main`, immutable `v*`
-tags, read-only CI permissions, and private vulnerability reporting. E3 real
+on all four native hosted targets. E2 is complete at exact candidate `1b820ff`:
+public hosted run `31787516114` passed the root candidate, all four native
+candidates, and the aggregate five-package inventory while retaining five
+tarballs, five checksums, and the source-bound inventory. The canonical GitHub
+repository is public under D013 with protected `main`, immutable `v*` tags,
+read-only CI permissions, and private vulnerability reporting. E3 real
 `pi install`, E4 release review, and every tag, Release, and npm publication
 action remain pending.
 
@@ -111,15 +111,15 @@ Stage explicitly, never with `git add -A`, and run `git diff --cached --check`.
 `CyanoOrg/pi-norm-spec` is public. The default branch is governed by the active
 `main-protection` ruleset: deletion and force pushes are blocked, history must
 remain linear, commits must be signed, required CI checks must pass, and
-non-admin changes require a pull request with one approval and resolved review
-threads. The active `release-tag-immutable` ruleset blocks updates and deletion
-of `v*` tags.
+all changes require a pull request with one approval and resolved review
+threads. The active ruleset has no bypass actor. The active
+`release-tag-immutable` ruleset blocks updates and deletion of `v*` tags.
 
 External contributors work from a fork and open a pull request. Workflows from
 all external contributors require maintainer approval and run with a read-only
 token and no repository secrets. Maintainers use a short-lived in-repository
-branch; everyday merges preserve linear history. Admin bypass is reserved for
-an already reviewed exact candidate, never for skipping failed evidence.
+branch; everyday merges preserve linear history. Any future admin bypass needs
+separate explicit authorization and must never be used to skip failed evidence.
 
 ## Versioning and releases
 
