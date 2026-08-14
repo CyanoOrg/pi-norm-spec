@@ -5,9 +5,17 @@
     "moduleResolution": "NodeNext",
     "strict": true,
     "noEmit": true,
+    "allowJs": true,
+    "checkJs": true,
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true
   },
-  "include": ["extensions/**/*.ts", "scripts/**/*.ts", "tests/extension/**/*.ts"]
+  "include": [
+    "bin/**/*.js",
+    "extensions/**/*.ts",
+    "runtime/**/*.js",
+    "scripts/**/*.ts",
+    "tests/extension/**/*.ts"
+  ]
 }

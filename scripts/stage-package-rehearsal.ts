@@ -1,60 +1,63 @@
 import assert from "node:assert/strict";
-import { chmod, copyFile, cp, mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import { chmod, copyFile, cp, mkdir, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-const [stagingRoot, repoRoot, bridge, payload, target] = process.argv.slice(2);
-if (!stagingRoot || !repoRoot || !bridge || !payload || !target) {
+import {
+  createPlatformReleaseManifest,
+  createRootReleaseManifest,
+  loadPackageReleaseInputs,
+} from "./package-release.ts";
+import { PLATFORM_DEFINITIONS } from "../runtime/package-runtime.js";
+
+const [stagingRoot, repoRoot, bridge, payload, target, sourceRevision] = process.argv.slice(2);
+if (!stagingRoot || !repoRoot || !bridge || !payload || !target || !sourceRevision) {
   throw new Error(
-    "usage: stage-package-rehearsal.ts <staging-root> <repo-root> <bridge> <payload> <target>",
+    "usage: stage-package-rehearsal.ts <staging-root> <repo-root> <bridge> <payload> <target> <source-revision>",
   );
 }
 
-const platforms: Readonly<
-  Record<string, { packageName: string; os: string; cpu: string; executable: string }>
-> = {
-  "x86_64-unknown-linux-gnu": {
-    packageName: "pi-norm-spec-linux-x64",
-    os: "linux",
-    cpu: "x64",
-    executable: "pi-norm-bridge",
-  },
-  "aarch64-apple-darwin": {
-    packageName: "pi-norm-spec-darwin-arm64",
-    os: "darwin",
-    cpu: "arm64",
-    executable: "pi-norm-bridge",
-  },
-  "x86_64-apple-darwin": {
-    packageName: "pi-norm-spec-darwin-x64",
-    os: "darwin",
-    cpu: "x64",
-    executable: "pi-norm-bridge",
-  },
-  "x86_64-pc-windows-msvc": {
-    packageName: "pi-norm-spec-win32-x64",
-    os: "win32",
-    cpu: "x64",
-    executable: "pi-norm-bridge.exe",
-  },
+const definition = Object.values(PLATFORM_DEFINITIONS).find(
+  (candidate) => candidate.target === target,
+);
+assert.ok(definition, `unsupported package rehearsal target: ${target}`);
+const platform = {
+  packageName: definition.packageName,
+  os: definition.os,
+  executable: `pi-norm-bridge${definition.os === "win32" ? ".exe" : ""}`,
 };
-
-const platform = platforms[target];
-assert.ok(platform, `unsupported package rehearsal target: ${target}`);
 assert.ok((await stat(bridge)).isFile(), `bridge is not a file: ${bridge}`);
 assert.ok((await stat(payload)).isDirectory(), `payload is not a directory: ${payload}`);
 
-const rootManifest = JSON.parse(await readFile(path.join(repoRoot, "package.json"), "utf8")) as {
-  name?: unknown;
-  version?: unknown;
-};
-assert.equal(rootManifest.name, "pi-norm-spec");
-assert.equal(typeof rootManifest.version, "string");
-
+const inputs = await loadPackageReleaseInputs(repoRoot);
+const rootPackageRoot = path.join(stagingRoot, "root-package");
 const platformRoot = path.join(stagingRoot, "platform-package");
 const platformBin = path.join(platformRoot, "bin");
 const consumerRoot = path.join(stagingRoot, "consumer");
+await mkdir(rootPackageRoot, { recursive: true });
 await mkdir(platformBin, { recursive: true });
 await mkdir(consumerRoot, { recursive: true });
+
+for (const directory of ["bin", "extensions", "runtime", "skills"]) {
+  await cp(path.join(repoRoot, directory), path.join(rootPackageRoot, directory), {
+    recursive: true,
+    force: false,
+    errorOnExist: true,
+  });
+}
+await copyFile(
+  path.join(repoRoot, "packages", "pi-norm-spec", "package.json"),
+  path.join(rootPackageRoot, "package.json"),
+);
+await copyFile(
+  path.join(repoRoot, "packages", "pi-norm-spec", "README.md"),
+  path.join(rootPackageRoot, "README.md"),
+);
+await copyFile(path.join(repoRoot, "LICENSE"), path.join(rootPackageRoot, "LICENSE"));
+await chmod(path.join(rootPackageRoot, "bin", "pi-norm-spec.js"), 0o755);
+await writeJson(
+  path.join(rootPackageRoot, "release.json"),
+  createRootReleaseManifest(inputs, sourceRevision),
+);
 
 const installedBridge = path.join(platformBin, platform.executable);
 await copyFile(bridge, installedBridge);
@@ -64,21 +67,24 @@ await cp(payload, path.join(platformRoot, "upstream"), {
   force: false,
   errorOnExist: true,
 });
-
-await writeJson(path.join(platformRoot, "package.json"), {
-  name: platform.packageName,
-  version: rootManifest.version,
-  description: `Native pi-norm-spec runtime rehearsal package for ${target}`,
-  license: "MIT",
-  os: [platform.os],
-  cpu: [platform.cpu],
-  files: ["bin", "upstream", "runtime.json"],
-});
+await copyFile(
+  path.join(repoRoot, "packages", platform.packageName, "package.json"),
+  path.join(platformRoot, "package.json"),
+);
+await copyFile(
+  path.join(repoRoot, "packages", platform.packageName, "README.md"),
+  path.join(platformRoot, "README.md"),
+);
+await copyFile(path.join(repoRoot, "LICENSE"), path.join(platformRoot, "LICENSE"));
 await writeJson(path.join(platformRoot, "runtime.json"), {
   apiVersion: "pi-norm-spec/platform-runtime/v1",
   bridge: `bin/${platform.executable}`,
   payload: "upstream",
 });
+await writeJson(
+  path.join(platformRoot, "release.json"),
+  createPlatformReleaseManifest(inputs, sourceRevision, target),
+);
 await writeJson(path.join(consumerRoot, "package.json"), {
   name: "pi-norm-spec-package-rehearsal",
   version: "0.0.0",
@@ -88,7 +94,8 @@ await writeJson(path.join(consumerRoot, "package.json"), {
 console.log(
   JSON.stringify({
     packageName: platform.packageName,
-    version: rootManifest.version,
+    version: inputs.rootManifest.version,
+    rootPackageRoot,
     platformRoot,
     consumerRoot,
   }),

@@ -252,15 +252,21 @@ package_rehearsal="$check_root/package-rehearsal"
 tarball_root="$package_rehearsal/tarballs"
 npm_cache="$package_rehearsal/npm-cache"
 mkdir -p "$tarball_root"
+source_revision="$(git rev-parse HEAD)"
+if [[ ! "$source_revision" =~ ^[0-9a-f]{40}$ ]]; then
+  echo "package rehearsal requires a full source revision" >&2
+  exit 1
+fi
 
 node --experimental-strip-types scripts/stage-package-rehearsal.ts \
   "$package_rehearsal" \
   "$repo_root" \
   "$bridge" \
   "$payload" \
-  "$target"
+  "$target" \
+  "$source_revision"
 
-npm pack "$repo_root" \
+npm pack "$package_rehearsal/root-package" \
   --ignore-scripts \
   --pack-destination "$tarball_root" \
   --cache "$npm_cache"
@@ -280,17 +286,40 @@ root_package_inventory="$package_rehearsal/root-package.inventory"
 tar -tzf "$root_package_archive" >"$root_package_inventory"
 for expected_entry in \
   package/package.json \
+  package/release.json \
+  package/bin/pi-norm-spec.js \
   package/extensions/norm-context.ts \
   package/extensions/runtime-resolver.ts \
   package/extensions/bridge-client.ts \
+  package/runtime/launcher.js \
+  package/runtime/package-runtime.js \
   package/skills/pi-norm-spec/SKILL.md; do
   if ! grep -Fxq "$expected_entry" "$root_package_inventory"; then
     echo "root package omitted required runtime entry: $expected_entry" >&2
     exit 1
   fi
 done
-if grep -Eq '^package/(crates|scripts|tests)/' "$root_package_inventory"; then
-  echo "root package included development-only crates, scripts, or tests" >&2
+if grep -Eq '^package/(crates|packages|scripts|tests)/' "$root_package_inventory"; then
+  echo "root package included development-only crates, package inputs, scripts, or tests" >&2
+  exit 1
+fi
+
+platform_package_inventory="$package_rehearsal/platform-package.inventory"
+tar -tzf "$platform_package_archive" >"$platform_package_inventory"
+for expected_entry in \
+  package/package.json \
+  package/release.json \
+  package/runtime.json \
+  "package/bin/pi-norm-bridge$exe_suffix" \
+  package/upstream/release-manifest.json \
+  package/upstream/pi-norm-spec-payload.lock.json; do
+  if ! grep -Fxq "$expected_entry" "$platform_package_inventory"; then
+    echo "platform package omitted required runtime entry: $expected_entry" >&2
+    exit 1
+  fi
+done
+if grep -Eq '^package/(crates|node_modules|scripts|src|target|tests)/' "$platform_package_inventory"; then
+  echo "platform package included development-only source or build directories" >&2
   exit 1
 fi
 
@@ -312,4 +341,52 @@ node --experimental-strip-types scripts/check-pi-alpha.ts \
   "$repo_root" \
   "$installed_package"
 
-echo "Pinned upstream release passed checksum, sealing, identity, 82-case conformance, collect, validate, persistent bridge lifecycle, the real pi Alpha host, and package-shaped installation."
+launcher="$installed_package/bin/pi-norm-spec.js"
+launcher_runtime="$(node "$launcher" runtime)"
+for identity in \
+  '"apiVersion":"pi-norm-spec/package-runtime/v1"' \
+  '"operation":"runtime"' \
+  '"status":"ok"' \
+  '"name":"pi-norm-spec"' \
+  "\"revision\":\"$source_revision\"" \
+  "\"packageName\":\"$platform_package\"" \
+  "\"target\":\"$target\""; do
+  if [[ "$launcher_runtime" != *"$identity"* ]]; then
+    echo "installed launcher runtime omitted exact identity: $identity" >&2
+    exit 1
+  fi
+done
+
+launcher_compatibility="$(node "$launcher" norm compatibility)"
+for identity in \
+  '"apiVersion":"norm-spec/compatibility/v1"' \
+  '"suite":"norm-spec/a1-cli/v1"' \
+  '"caseCount":82'; do
+  if [[ "$launcher_compatibility" != *"$identity"* ]]; then
+    echo "installed launcher compatibility omitted exact identity: $identity" >&2
+    exit 1
+  fi
+done
+
+installed_platform="$package_rehearsal/consumer/node_modules/$platform_package"
+installed_norm="$installed_platform/upstream/bin/norm$exe_suffix"
+installed_contract="$installed_platform/upstream/contract"
+launcher_conformance="$(node "$launcher" conformance \
+  --candidate "$installed_norm" \
+  --contract-dir "$installed_contract")"
+for result in \
+  '"apiVersion":"norm-spec/conformance/v1"' \
+  '"status":"pass"' \
+  '"complete":true' \
+  '"declared":82' \
+  '"executed":82' \
+  '"passed":82' \
+  '"failed":0' \
+  '"notExecuted":0'; do
+  if [[ "$launcher_conformance" != *"$result"* ]]; then
+    echo "installed launcher conformance omitted exact result: $result" >&2
+    exit 1
+  fi
+done
+
+echo "Pinned upstream release passed checksum, sealing, identity, 82-case conformance, collect, validate, persistent bridge lifecycle, the real pi Alpha host, production-shaped installation, and bundled launcher."

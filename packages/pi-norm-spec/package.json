@@ -3,13 +3,16 @@
   "version": "0.1.0-alpha.1",
   "description": "Rust-backed pi adapter for norm-spec conventions",
   "license": "MIT",
-  "author": "Wade",
+  "author": "Wade <bravetwo@163.com>",
+  "repository": "https://github.com/CyanoOrg/pi-norm-spec",
   "keywords": ["pi-package", "norm-spec"],
-  "files": ["bin", "extensions", "runtime", "skills"],
   "type": "module",
-  "scripts": {
-    "typecheck": "tsc --noEmit",
-    "test": "npm run typecheck && node --experimental-strip-types --test tests/extension/*.test.ts"
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "files": ["bin", "extensions", "runtime", "skills", "release.json"],
+  "bin": {
+    "pi-norm-spec": "bin/pi-norm-spec.js"
   },
   "pi": {
     "extensions": ["./extensions/norm-context.ts"]
@@ -34,9 +37,10 @@
   "peerDependencies": {
     "@earendil-works/pi-coding-agent": "*"
   },
-  "devDependencies": {
-    "@types/node": "22.19.19",
-    "@earendil-works/pi-coding-agent": "0.84.1",
-    "typescript": "7.0.2"
+  "optionalDependencies": {
+    "pi-norm-spec-linux-x64": "0.1.0-alpha.1",
+    "pi-norm-spec-darwin-arm64": "0.1.0-alpha.1",
+    "pi-norm-spec-darwin-x64": "0.1.0-alpha.1",
+    "pi-norm-spec-win32-x64": "0.1.0-alpha.1"
   }
 }

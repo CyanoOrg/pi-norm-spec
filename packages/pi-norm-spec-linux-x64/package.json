@@ -1,0 +1,15 @@
+{
+  "name": "pi-norm-spec-linux-x64",
+  "version": "0.1.0-alpha.1",
+  "description": "Native pi-norm-spec runtime for Linux x64 glibc",
+  "license": "MIT",
+  "author": "Wade <bravetwo@163.com>",
+  "repository": "https://github.com/CyanoOrg/pi-norm-spec",
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "os": ["linux"],
+  "cpu": ["x64"],
+  "libc": ["glibc"],
+  "files": ["bin", "upstream", "runtime.json", "release.json"]
+}
