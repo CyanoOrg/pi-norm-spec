@@ -16,9 +16,10 @@ does not implement the `.norm` parser or validator.
 > the real host and package-shaped paths passed on all four native hosted
 > targets. D012 defines the production package contract and first public beta
 > rehearsal. E1's source-controlled package inputs, strict release identity,
-> glibc-aware resolver, and bundled launcher are implemented locally at
-> `034528a`; four-target hosted confirmation remains pending. Enforcement
-> remains outside the current contract.
+> glibc-aware resolver, and bundled launcher are complete at exact candidate
+> `486be76`, with all six hosted jobs and four native package paths green.
+> E2 retained artifacts remain pending. Enforcement remains outside the current
+> contract.
 
 See `AGENTS.md`, `docs/ARCHITECTURE.md`, and
 `docs/planning/v0.1-execution.md` before contributing.

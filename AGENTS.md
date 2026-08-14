@@ -30,10 +30,14 @@ package-shaped isolated installation on all four native targets. D010 records
 that the current hard-enforcement subset is empty; blocking and escape are
 intentionally absent until both external prerequisites exist. D011 post-edit
 validation is complete: exact candidate `e74c4e1` passed the real pi and
-package-shaped paths on all four native hosted targets. Production npm
-platform packages are not implemented. D012 defines the five-package Gate E
-contract and selects `0.1.0-beta.1` as the first public distribution rehearsal;
-implementation and every visibility/publication action remain pending.
+package-shaped paths on all four native hosted targets. D012 defines the
+five-package Gate E contract and selects `0.1.0-beta.1` as the first public
+distribution rehearsal. E1 is complete: exact candidate `486be76` passed
+source-controlled package-contract, strict release identity, glibc-aware
+selection, bundled launcher, and production-shaped package installation gates
+on all four native hosted targets. E2 retained candidate artifacts, E3 real
+`pi install`, E4 release review, and every visibility/publication action remain
+pending.
 
 Read first:
 

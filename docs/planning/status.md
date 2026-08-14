@@ -19,10 +19,10 @@
 - D012 fixes the Gate E production topology as one root package and four exact,
   same-version native optional packages, plus release manifests, a bundled-CLI
   launcher, retained candidate artifacts, real `pi install` gates, and a first
-  public `0.1.0-beta.1` rehearsal. E1 is implemented locally; hosted
-  confirmation, E2-E4, and every external action remain pending.
-- Current objective: confirm the exact E1 package-contract candidate on all six
-  hosted jobs, then begin E2 only after the branch is green. This does not
+  public `0.1.0-beta.1` rehearsal. E1 is complete at exact candidate `486be76`;
+  E2-E4 and every external action remain pending.
+- Current objective: fast-forward the E1 closure to `main`, then begin E2's
+  retained native candidate artifacts from that clean baseline. This does not
   authorize enforcement, public visibility, tagging, or publication.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
   a minimal non-transforming admission-hook request. The request was posted on
@@ -198,6 +198,23 @@ Gate E E1 local implementation on 2026-08-14:
 - the two temporary tarballs were deleted after the local run. This is E1
   implementation evidence, not E2 retained-candidate or publication evidence;
   all six hosted jobs remain required before E1 closes.
+
+Gate E E1 hosted verification on 2026-08-14:
+
+- GitHub Actions run `31779549564` completed successfully and is bound to exact
+  package-contract candidate
+  `486be760a288b87737a01db9cb75e8d36b0527bc`;
+- `rust-quality` passed public-history scanning, formatting, strict Clippy, all
+  21 Rust tests, and rustdoc. `extension-quality` passed clean npm installation,
+  checked TypeScript/JavaScript, and all 29 Extension/package tests;
+- Linux x64 glibc, macOS arm64, macOS x64, and Windows x64 each passed the Rust
+  tests and exact native upstream release gate. That gate generated the
+  source-bound root/platform manifests, checked both tarball inventories,
+  installed the production-shaped pair, exercised the real pi Alpha paths, and
+  ran bundled runtime identity, compatibility, and complete 82/82 conformance;
+- this closes E1 without retaining candidate tarballs or claiming `pi install`,
+  public visibility, npm ownership, tagging, release creation, publication, or
+  hard enforcement. Those remain E2-E4 or D010 checkpoints.
 
 Gate D functional Alpha verification on 2026-08-13:
 
