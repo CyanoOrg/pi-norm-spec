@@ -6,6 +6,11 @@ repo_root="$(cd "$script_root/.." && pwd -P)"
 cd "$repo_root"
 
 target="${1:-}"
+candidate_output="${2:-}"
+if [[ "$#" -gt 2 ]]; then
+  echo "usage: scripts/check-upstream-release.sh [rust-target] [candidate-output-directory]" >&2
+  exit 2
+fi
 if [[ -z "$target" ]]; then
   target="$(rustc -vV | sed -n 's/^host: //p')"
 fi
@@ -37,12 +42,52 @@ case "$target" in
     ;;
 esac
 
-cargo build --quiet -p pi-norm-bridge
+sha256_file() {
+  local file="$1"
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$file" | awk '{print $1}'
+  elif command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 "$file" | awk '{print $1}'
+  else
+    echo "sha256sum or shasum is required" >&2
+    return 1
+  fi
+}
+
+source_revision="$(git rev-parse HEAD)"
+if [[ ! "$source_revision" =~ ^[0-9a-f]{40}$ ]]; then
+  echo "package rehearsal requires a full source revision" >&2
+  exit 1
+fi
+package_version="$(node -p "JSON.parse(require('node:fs').readFileSync('package.json', 'utf8')).version")"
+if [[ -z "$package_version" || "$package_version" == *[!0-9A-Za-z.+-]* ]]; then
+  echo "package rehearsal requires a safe package version" >&2
+  exit 1
+fi
+if [[ -n "$candidate_output" ]]; then
+  if [[ -n "$(git status --porcelain --untracked-files=all)" ]]; then
+    echo "retained package candidates require a clean tracked and untracked worktree" >&2
+    exit 1
+  fi
+  if [[ -e "$candidate_output" && ! -d "$candidate_output" ]] || [[ -L "$candidate_output" ]]; then
+    echo "candidate output must be a real directory: $candidate_output" >&2
+    exit 2
+  fi
+  mkdir -p "$candidate_output"
+  candidate_output="$(cd "$candidate_output" && pwd -P)"
+  cargo build --quiet --release --locked --target "$target" -p pi-norm-bridge
+else
+  cargo build --quiet -p pi-norm-bridge
+fi
 target_root="${CARGO_TARGET_DIR:-$repo_root/target}"
 if [[ "$target_root" != /* ]]; then
   target_root="$repo_root/$target_root"
 fi
-bridge="$target_root/debug/pi-norm-bridge$exe_suffix"
+if [[ -n "$candidate_output" ]]; then
+  bridge="$target_root/$target/release/pi-norm-bridge$exe_suffix"
+else
+  bridge="$target_root/debug/pi-norm-bridge$exe_suffix"
+fi
 if [[ ! -f "$bridge" ]]; then
   echo "pi-norm-bridge was not built at the expected path: $bridge" >&2
   exit 1
@@ -92,14 +137,7 @@ if [[ "$checksum_line" != "$expected_sha  $asset" ]]; then
   exit 1
 fi
 
-if command -v sha256sum >/dev/null 2>&1; then
-  actual_sha="$(sha256sum "$archive" | awk '{print $1}')"
-elif command -v shasum >/dev/null 2>&1; then
-  actual_sha="$(shasum -a 256 "$archive" | awk '{print $1}')"
-else
-  echo "sha256sum or shasum is required" >&2
-  exit 1
-fi
+actual_sha="$(sha256_file "$archive")"
 if [[ "$actual_sha" != "$expected_sha" ]]; then
   echo "downloaded upstream archive checksum mismatch" >&2
   exit 1
@@ -252,12 +290,6 @@ package_rehearsal="$check_root/package-rehearsal"
 tarball_root="$package_rehearsal/tarballs"
 npm_cache="$package_rehearsal/npm-cache"
 mkdir -p "$tarball_root"
-source_revision="$(git rev-parse HEAD)"
-if [[ ! "$source_revision" =~ ^[0-9a-f]{40}$ ]]; then
-  echo "package rehearsal requires a full source revision" >&2
-  exit 1
-fi
-
 node --experimental-strip-types scripts/stage-package-rehearsal.ts \
   "$package_rehearsal" \
   "$repo_root" \
@@ -275,8 +307,8 @@ npm pack "$package_rehearsal/platform-package" \
   --pack-destination "$tarball_root" \
   --cache "$npm_cache"
 
-root_package_archive="$tarball_root/pi-norm-spec-0.1.0-alpha.1.tgz"
-platform_package_archive="$tarball_root/$platform_package-0.1.0-alpha.1.tgz"
+root_package_archive="$tarball_root/pi-norm-spec-$package_version.tgz"
+platform_package_archive="$tarball_root/$platform_package-$package_version.tgz"
 if [[ ! -f "$root_package_archive" || ! -f "$platform_package_archive" ]]; then
   echo "package rehearsal did not produce the expected root and platform tarballs" >&2
   exit 1
@@ -322,6 +354,15 @@ if grep -Eq '^package/(crates|node_modules|scripts|src|target|tests)/' "$platfor
   echo "platform package included development-only source or build directories" >&2
   exit 1
 fi
+
+node --experimental-strip-types scripts/check-package-archive.ts \
+  "$platform_package_archive" \
+  "$source_revision" >/dev/null
+platform_package_sha="$(sha256_file "$platform_package_archive")"
+platform_package_checksum="$platform_package_archive.sha256"
+printf '%s  %s\n' \
+  "$platform_package_sha" \
+  "$(basename "$platform_package_archive")" >"$platform_package_checksum"
 
 npm install \
   --prefix "$package_rehearsal/consumer" \
@@ -388,5 +429,19 @@ for result in \
     exit 1
   fi
 done
+
+if [[ -n "$candidate_output" ]]; then
+  retained_archive="$candidate_output/$(basename "$platform_package_archive")"
+  retained_checksum="$candidate_output/$(basename "$platform_package_checksum")"
+  if [[ -e "$retained_archive" || -e "$retained_checksum" ]]; then
+    echo "refusing to overwrite an existing platform package candidate" >&2
+    exit 1
+  fi
+  cp "$platform_package_archive" "$retained_archive.partial"
+  cp "$platform_package_checksum" "$retained_checksum.partial"
+  mv "$retained_archive.partial" "$retained_archive"
+  mv "$retained_checksum.partial" "$retained_checksum"
+  echo "Retained exact platform candidate: $retained_archive"
+fi
 
 echo "Pinned upstream release passed checksum, sealing, identity, 82-case conformance, collect, validate, persistent bridge lifecycle, the real pi Alpha host, production-shaped installation, and bundled launcher."

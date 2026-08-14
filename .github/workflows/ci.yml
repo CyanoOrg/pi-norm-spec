@@ -37,6 +37,37 @@ jobs:
       - run: npm run typecheck
       - run: npm test
 
+  package-root-candidate:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Build and verify the exact root package candidate
+        id: candidate
+        shell: bash
+        run: |
+          bash scripts/build-root-package-candidate.sh dist/root
+          version="$(node -p "JSON.parse(require('node:fs').readFileSync('package.json', 'utf8')).version")"
+          archive="dist/root/pi-norm-spec-${version}.tgz"
+          echo "archive=$archive" >> "$GITHUB_OUTPUT"
+          echo "checksum=$archive.sha256" >> "$GITHUB_OUTPUT"
+      - name: Upload root package without re-archiving
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          path: ${{ steps.candidate.outputs.archive }}
+          archive: false
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload root package checksum
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          path: ${{ steps.candidate.outputs.checksum }}
+          archive: false
+          if-no-files-found: error
+          retention-days: 14
+
   cross-platform:
     strategy:
       fail-fast: false
@@ -44,12 +75,16 @@ jobs:
         include:
           - os: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
+            package: pi-norm-spec-linux-x64
           - os: macos-15
             target: aarch64-apple-darwin
+            package: pi-norm-spec-darwin-arm64
           - os: macos-15-intel
             target: x86_64-apple-darwin
+            package: pi-norm-spec-darwin-x64
           - os: windows-2022
             target: x86_64-pc-windows-msvc
+            package: pi-norm-spec-win32-x64
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -63,5 +98,58 @@ jobs:
       - uses: dtolnay/rust-toolchain@032958afbdc797a9164d3bc0b56325c1308924a5 # 1.97.1
       - run: cargo test --workspace --all-features
       - name: Verify the exact native upstream release payload
+        id: candidate
         shell: bash
-        run: bash scripts/check-upstream-release.sh "${{ matrix.target }}"
+        run: |
+          bash scripts/check-upstream-release.sh "${{ matrix.target }}" dist/candidate
+          version="$(node -p "JSON.parse(require('node:fs').readFileSync('package.json', 'utf8')).version")"
+          archive="dist/candidate/${{ matrix.package }}-${version}.tgz"
+          echo "archive=$archive" >> "$GITHUB_OUTPUT"
+          echo "checksum=$archive.sha256" >> "$GITHUB_OUTPUT"
+      - name: Upload native package without re-archiving
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          path: ${{ steps.candidate.outputs.archive }}
+          archive: false
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload native package checksum
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          path: ${{ steps.candidate.outputs.checksum }}
+          archive: false
+          if-no-files-found: error
+          retention-days: 14
+
+  package-candidate-set:
+    needs: [package-root-candidate, cross-platform]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Download the exact package candidate files
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: pi-norm-spec-*.tgz*
+          path: dist/downloaded
+          merge-multiple: true
+      - name: Verify and bind the complete package candidate set
+        id: candidate
+        shell: bash
+        run: |
+          version="$(node -p "JSON.parse(require('node:fs').readFileSync('package.json', 'utf8')).version")"
+          inventory="dist/aggregate/pi-norm-spec-${version}-candidate.json"
+          node --experimental-strip-types scripts/check-package-candidate-set.ts \
+            dist/downloaded \
+            "$GITHUB_SHA" \
+            "$inventory"
+          echo "inventory=$inventory" >> "$GITHUB_OUTPUT"
+      - name: Upload the aggregate candidate inventory
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          path: ${{ steps.candidate.outputs.inventory }}
+          archive: false
+          if-no-files-found: error
+          retention-days: 14
