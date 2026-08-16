@@ -30,23 +30,28 @@ const sourceRevision = "1".repeat(40);
 test("publish inputs define one exact root and four bounded native packages", async () => {
   const inputs = await loadPackageReleaseInputs(repoRoot);
   const rootSource = JSON.parse(
-    await readFile(path.join(repoRoot, "packages", "pi-norm-spec", "package.json"), "utf8"),
+    await readFile(path.join(repoRoot, "packages", "root", "package.json"), "utf8"),
   ) as Record<string, unknown>;
-  assert.equal(inputs.rootManifest.name, "pi-norm-spec");
+  assert.equal(inputs.rootManifest.name, "@cyanoorg/pi-norm-spec");
   assert.equal(inputs.rootManifest.version, "0.1.0-alpha.1");
   assert.equal(inputs.platformManifests.size, 4);
   assert.deepEqual(inputs.rootManifest.optionalDependencies, {
-    "pi-norm-spec-linux-x64": "0.1.0-alpha.1",
-    "pi-norm-spec-darwin-arm64": "0.1.0-alpha.1",
-    "pi-norm-spec-darwin-x64": "0.1.0-alpha.1",
-    "pi-norm-spec-win32-x64": "0.1.0-alpha.1",
+    "@cyanoorg/pi-norm-spec-linux-x64": "0.1.0-alpha.1",
+    "@cyanoorg/pi-norm-spec-darwin-arm64": "0.1.0-alpha.1",
+    "@cyanoorg/pi-norm-spec-darwin-x64": "0.1.0-alpha.1",
+    "@cyanoorg/pi-norm-spec-win32-x64": "0.1.0-alpha.1",
   });
   assert.equal("scripts" in rootSource, false, "publish root must not run lifecycle scripts");
   assert.deepEqual(rootSource.files, ["bin", "extensions", "runtime", "skills", "release.json"]);
   assert.deepEqual(rootSource.bin, { "pi-norm-spec": "bin/pi-norm-spec.js" });
 
   for (const definition of Object.values(PLATFORM_DEFINITIONS)) {
-    const file = path.join(repoRoot, "packages", definition.packageName, "package.json");
+    const file = path.join(
+      repoRoot,
+      "packages",
+      definition.packageName.replace("@cyanoorg/pi-norm-spec-", ""),
+      "package.json",
+    );
     const manifest = JSON.parse(await readFile(file, "utf8")) as Record<string, unknown>;
     assert.equal(manifest.name, definition.packageName);
     assert.equal(manifest.version, inputs.rootManifest.version);
@@ -116,7 +121,7 @@ test("runtime resolver accepts one matching package and returns only bundled pat
   context.after(() => fixture.cleanup());
   const runtime = await fixture.resolve({ platform: "darwin", arch: "arm64" });
 
-  assert.equal(runtime.definition.packageName, "pi-norm-spec-darwin-arm64");
+  assert.equal(runtime.definition.packageName, "@cyanoorg/pi-norm-spec-darwin-arm64");
   assert.equal(runtime.definition.target, "aarch64-apple-darwin");
   assert.equal(runtime.bridgePath, path.join(fixture.packageRoot, "bin", "pi-norm-bridge"));
   assert.equal(runtime.payloadPath, path.join(fixture.packageRoot, "upstream"));

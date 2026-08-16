@@ -37,13 +37,18 @@ export interface PackageReleaseInputs {
 }
 
 export async function loadPackageReleaseInputs(repoRoot: string): Promise<PackageReleaseInputs> {
-  const development = await readJson<{
+  /** Directory under packages/ holding one platform publish manifest. */
+function platformDir(definition: { packageName: string }): string {
+  return definition.packageName.replace("@cyanoorg/pi-norm-spec-", "");
+}
+
+const development = await readJson<{
     version?: unknown;
     normSpec?: unknown;
     devDependencies?: Record<string, unknown>;
   }>(path.join(repoRoot, "package.json"));
   const rootManifest = await readPublishManifest(
-    path.join(repoRoot, "packages", "pi-norm-spec", "package.json"),
+    path.join(repoRoot, "packages", "root", "package.json"),
   );
   assert.equal(rootManifest.version, development.version, "development and publish versions differ");
   assert.deepEqual(rootManifest.normSpec, development.normSpec, "development and publish API identities differ");
@@ -54,7 +59,7 @@ export async function loadPackageReleaseInputs(repoRoot: string): Promise<Packag
   const platformManifests = new Map<string, PublishManifest>();
   for (const definition of Object.values(PLATFORM_DEFINITIONS)) {
     const manifest = await readPublishManifest(
-      path.join(repoRoot, "packages", definition.packageName, "package.json"),
+      path.join(repoRoot, "packages", platformDir(definition), "package.json"),
     );
     assert.equal(manifest.name, definition.packageName);
     assert.equal(manifest.version, rootManifest.version);

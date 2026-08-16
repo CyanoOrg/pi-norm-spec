@@ -1,7 +1,7 @@
 {
-  "name": "pi-norm-spec-darwin-x64",
+  "name": "@cyanoorg/pi-norm-spec-darwin-arm64",
   "version": "0.1.0-alpha.1",
-  "description": "Native pi-norm-spec runtime for macOS x64",
+  "description": "Native pi-norm-spec runtime for macOS arm64",
   "license": "MIT",
   "author": "Wade <bravetwo@163.com>",
   "repository": "https://github.com/CyanoOrg/pi-norm-spec",
@@ -9,6 +9,6 @@
     "node": ">=22.19.0"
   },
   "os": ["darwin"],
-  "cpu": ["x64"],
+  "cpu": ["arm64"],
   "files": ["bin", "upstream", "runtime.json", "release.json"]
 }

@@ -421,3 +421,35 @@ fast-forward promotion, while signed linear history, non-fast-forward
 protection, exact CI, and immutable release tags remain mechanically
 unbypassable. Team-scoped authority is auditable and reusable without coupling
 pi-norm-spec's product gates or releases to another repository.
+
+## D015 — Rename the five distribution packages to the @cyanoorg scope
+
+**Decision.** The five Gate E distribution packages are renamed from the
+bare names (`pi-norm-spec` and four `-darwin-arm64`/`-darwin-x64`/
+`-linux-x64`/`-win32-x64` suffixes) to the npm organization scope
+`cyanoorg` created by Wade on 2026-08-16: `@cyanoorg/pi-norm-spec` plus
+`@cyanoorg/pi-norm-spec-<platform>`. Optional dependencies, release
+manifests, platform definitions, rehearsal installation paths, CI
+matrix package inputs, and archive-name expectations (npm pack writes
+`cyanoorg-pi-norm-spec-<platform>-<version>.tgz`) all carry the scoped
+identity. The `packages/` source directories become `root`, `darwin-arm64`,
+`darwin-x64`, `linux-x64`, `win32-x64`. The pi extension status key
+(`pi-norm-spec`), the launcher `bin` alias, and the Skill name are
+product identities, not npm package names, and stay unscoped.
+
+**Context.** dsh-norm-spec D011 adopted the same scope for its
+five-package distribution. No package was ever published under the bare
+names (verified 2026-08-16: registry 404 for all five), so the rename
+carries zero migration cost. This is a D012 amendment executed before
+any publication, per the D012 rule that ownership must be reconfirmed
+immediately before release preparation.
+
+**Rationale.** One npm organization across the norm-spec family puts
+ownership, access control, and transferability at the organization
+level and aligns npm identity with the GitHub organization CyanoOrg.
+Scoped packages cannot be individually squatted or silently
+transferred. Family-wide uniformity (pi, dsh, future adapters) keeps
+one governance story for publication authority.
+
+**Supersedes.** D012's package-name table only; every other Gate E
+contract term stands.

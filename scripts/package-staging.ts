@@ -10,6 +10,13 @@ import {
   type PackageReleaseInputs,
 } from "./package-release.ts";
 
+/** packages/ directory for a publish name: strips the scope and product prefix. */
+function packageDirName(packageName: string): string {
+  return packageName === "@cyanoorg/pi-norm-spec"
+    ? "root"
+    : packageName.replace("@cyanoorg/pi-norm-spec-", "");
+}
+
 export interface RootPackageStageOptions {
   repoRoot: string;
   packageRoot: string;
@@ -107,7 +114,7 @@ async function copyPackageSource(
   packageName: string,
   packageRoot: string,
 ): Promise<void> {
-  const sourceRoot = path.join(repoRoot, "packages", packageName);
+  const sourceRoot = path.join(repoRoot, "packages", packageDirName(packageName));
   await copyFile(path.join(sourceRoot, "package.json"), path.join(packageRoot, "package.json"));
   await copyFile(path.join(sourceRoot, "README.md"), path.join(packageRoot, "README.md"));
   await copyFile(path.join(repoRoot, "LICENSE"), path.join(packageRoot, "LICENSE"));

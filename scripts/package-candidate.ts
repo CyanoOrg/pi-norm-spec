@@ -24,6 +24,13 @@ import {
   loadPackageReleaseInputs,
 } from "./package-release.ts";
 
+/** packages/ directory for a publish name: strips the scope and product prefix. */
+function packageDirName(packageName: string): string {
+  return packageName === "@cyanoorg/pi-norm-spec"
+    ? "root"
+    : packageName.replace("@cyanoorg/pi-norm-spec-", "");
+}
+
 export const PACKAGE_CANDIDATE_API = "pi-norm-spec/package-candidate/v1";
 
 const execFileAsync = promisify(execFile);
@@ -38,6 +45,11 @@ export interface VerifiedPackageArchive {
   target: string | null;
   archive: { file: string; sha256: string; bytes: number };
   release: Record<string, unknown>;
+}
+
+/** npm pack tarball name for a (possibly scoped) package name. */
+function tarballName(packageName: string, version: string): string {
+  return `${packageName.replace("@", "").replace("/", "-")}-${version}.tgz`;
 }
 
 export async function verifyPackageArchive(
@@ -73,12 +85,15 @@ export async function verifyPackageArchive(
   }
   const packageName = packageManifest.name;
   const version = packageManifest.version;
-  assert.equal(path.basename(archive), `${packageName}-${version}.tgz`, "archive name differs from package identity");
+  assert.equal(path.basename(archive), tarballName(packageName, version), "archive name differs from package identity");
 
   const inputs = await loadPackageReleaseInputs(repoRoot);
   assert.equal(version, inputs.rootManifest.version);
   const sourceManifest = JSON.parse(
-    await readFile(path.join(repoRoot, "packages", packageName, "package.json"), "utf8"),
+    await readFile(
+      path.join(repoRoot, "packages", packageDirName(packageName), "package.json"),
+      "utf8",
+    ),
   ) as unknown;
   assert.deepEqual(packageManifest, sourceManifest, "packed package.json differs from source input");
 
@@ -243,17 +258,20 @@ export async function verifyPackageCandidateSet(
   const inputs = await loadPackageReleaseInputs(repoRoot);
   const packageNames = [inputs.rootManifest.name, ...inputs.platformManifests.keys()].sort();
   const expectedFiles = packageNames
-    .flatMap((packageName) => [
-      `${packageName}-${inputs.rootManifest.version}.tgz`,
-      `${packageName}-${inputs.rootManifest.version}.tgz.sha256`,
-    ])
+    .flatMap((packageName) => {
+      // npm pack writes scoped tarballs without the "@" (scope slash becomes "-").
+      return [
+        tarballName(packageName, inputs.rootManifest.version),
+        `${tarballName(packageName, inputs.rootManifest.version)}.sha256`,
+      ];
+    })
     .sort();
   const actualFiles = (await readdir(artifactRoot)).sort();
   assert.deepEqual(actualFiles, expectedFiles, "candidate directory must contain exactly five archives and five checksums");
 
   const verified = [];
   for (const packageName of packageNames) {
-    const archiveFile = `${packageName}-${inputs.rootManifest.version}.tgz`;
+    const archiveFile = tarballName(packageName, inputs.rootManifest.version);
     const checksumFile = `${archiveFile}.sha256`;
     const archivePath = path.join(artifactRoot, archiveFile);
     const checksumPath = path.join(artifactRoot, checksumFile);

@@ -22,19 +22,19 @@ fi
 case "$target" in
   x86_64-unknown-linux-gnu)
     exe_suffix=""
-    platform_package="pi-norm-spec-linux-x64"
+    platform_package="@cyanoorg/pi-norm-spec-linux-x64"
     ;;
   aarch64-apple-darwin)
     exe_suffix=""
-    platform_package="pi-norm-spec-darwin-arm64"
+    platform_package="@cyanoorg/pi-norm-spec-darwin-arm64"
     ;;
   x86_64-apple-darwin)
     exe_suffix=""
-    platform_package="pi-norm-spec-darwin-x64"
+    platform_package="@cyanoorg/pi-norm-spec-darwin-x64"
     ;;
   x86_64-pc-windows-msvc)
     exe_suffix=".exe"
-    platform_package="pi-norm-spec-win32-x64"
+    platform_package="@cyanoorg/pi-norm-spec-win32-x64"
     ;;
   *)
     echo "unsupported upstream release target: $target" >&2
@@ -307,8 +307,10 @@ npm pack "$package_rehearsal/platform-package" \
   --pack-destination "$tarball_root" \
   --cache "$npm_cache"
 
-root_package_archive="$tarball_root/pi-norm-spec-$package_version.tgz"
-platform_package_archive="$tarball_root/$platform_package-$package_version.tgz"
+root_package_archive="$tarball_root/cyanoorg-pi-norm-spec-$package_version.tgz"
+platform_tarball_prefix="${platform_package#@}"
+platform_tarball_prefix="${platform_tarball_prefix//\//-}"
+platform_package_archive="$tarball_root/$platform_tarball_prefix-$package_version.tgz"
 if [[ ! -f "$root_package_archive" || ! -f "$platform_package_archive" ]]; then
   echo "package rehearsal did not produce the expected root and platform tarballs" >&2
   exit 1
@@ -375,7 +377,7 @@ npm install \
   "$root_package_archive" \
   "$platform_package_archive"
 
-installed_package="$package_rehearsal/consumer/node_modules/pi-norm-spec"
+installed_package="$package_rehearsal/consumer/node_modules/@cyanoorg/pi-norm-spec"
 node --experimental-strip-types scripts/check-pi-alpha.ts \
   "$bridge" \
   "$payload" \
@@ -388,7 +390,7 @@ for identity in \
   '"apiVersion":"pi-norm-spec/package-runtime/v1"' \
   '"operation":"runtime"' \
   '"status":"ok"' \
-  '"name":"pi-norm-spec"' \
+  '"name":"@cyanoorg/pi-norm-spec"' \
   "\"revision\":\"$source_revision\"" \
   "\"packageName\":\"$platform_package\"" \
   "\"target\":\"$target\""; do

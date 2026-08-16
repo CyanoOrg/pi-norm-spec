@@ -26,7 +26,7 @@ const SOURCE_REVISION = /^[0-9a-f]{40}$/u;
 /** @type {Readonly<Record<string, PlatformDefinition>>} */
 export const PLATFORM_DEFINITIONS = Object.freeze({
   "darwin-arm64": Object.freeze({
-    packageName: "pi-norm-spec-darwin-arm64",
+    packageName: "@cyanoorg/pi-norm-spec-darwin-arm64",
     platformKey: "darwin-arm64",
     target: "aarch64-apple-darwin",
     os: "darwin",
@@ -34,7 +34,7 @@ export const PLATFORM_DEFINITIONS = Object.freeze({
     libc: undefined,
   }),
   "darwin-x64": Object.freeze({
-    packageName: "pi-norm-spec-darwin-x64",
+    packageName: "@cyanoorg/pi-norm-spec-darwin-x64",
     platformKey: "darwin-x64",
     target: "x86_64-apple-darwin",
     os: "darwin",
@@ -42,7 +42,7 @@ export const PLATFORM_DEFINITIONS = Object.freeze({
     libc: undefined,
   }),
   "linux-x64-glibc": Object.freeze({
-    packageName: "pi-norm-spec-linux-x64",
+    packageName: "@cyanoorg/pi-norm-spec-linux-x64",
     platformKey: "linux-x64-glibc",
     target: "x86_64-unknown-linux-gnu",
     os: "linux",
@@ -50,7 +50,7 @@ export const PLATFORM_DEFINITIONS = Object.freeze({
     libc: "glibc",
   }),
   "win32-x64": Object.freeze({
-    packageName: "pi-norm-spec-win32-x64",
+    packageName: "@cyanoorg/pi-norm-spec-win32-x64",
     platformKey: "win32-x64",
     target: "x86_64-pc-windows-msvc",
     os: "win32",
@@ -293,8 +293,8 @@ function matchReleaseIdentity(rootRelease, platformRelease, definition) {
     }
   }
   const product = /** @type {Record<string, unknown>} */ (rootRelease.product);
-  if (product.name !== "pi-norm-spec") {
-    identityMismatch("root release product name is not pi-norm-spec");
+  if (product.name !== "@cyanoorg/pi-norm-spec") {
+    identityMismatch("root release product name is not @cyanoorg/pi-norm-spec");
   }
   const packages = /** @type {Array<Record<string, unknown>>} */ (rootRelease.packages);
   const selected = packages.filter((entry) => entry.packageName === definition.packageName);
