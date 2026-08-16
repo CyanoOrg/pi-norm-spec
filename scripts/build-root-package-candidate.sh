@@ -31,7 +31,7 @@ if [[ -e "$output_dir" && ! -d "$output_dir" ]] || [[ -L "$output_dir" ]]; then
 fi
 mkdir -p "$output_dir"
 output_dir="$(cd "$output_dir" && pwd -P)"
-archive="$output_dir/pi-norm-spec-$version.tgz"
+archive="$output_dir/cyanoorg-pi-norm-spec-$version.tgz"
 checksum="$archive.sha256"
 if [[ -e "$archive" || -e "$checksum" ]]; then
   echo "refusing to overwrite an existing root package candidate" >&2

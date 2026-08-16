@@ -104,9 +104,10 @@ jobs:
         run: |
           bash scripts/check-upstream-release.sh "${{ matrix.target }}" dist/candidate
           version="$(node -p "JSON.parse(require('node:fs').readFileSync('package.json', 'utf8')).version")"
-          archive="dist/candidate/${{ matrix.package }}-${version}.tgz"
-          archive="${archive//@/-}"
-          archive="${archive//\//-}"
+          tarball_base="${{ matrix.package }}"
+          tarball_base="${tarball_base#@}"
+          tarball_base="${tarball_base//\//-}"
+          archive="dist/candidate/${tarball_base}-${version}.tgz"
           echo "archive=$archive" >> "$GITHUB_OUTPUT"
           echo "checksum=$archive.sha256" >> "$GITHUB_OUTPUT"
       - name: Upload native package without re-archiving
