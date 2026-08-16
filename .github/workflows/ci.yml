@@ -50,7 +50,7 @@ jobs:
         run: |
           bash scripts/build-root-package-candidate.sh dist/root
           version="$(node -p "JSON.parse(require('node:fs').readFileSync('package.json', 'utf8')).version")"
-          archive="dist/root/pi-norm-spec-${version}.tgz"
+          archive="dist/root/cyanoorg-pi-norm-spec-${version}.tgz"
           echo "archive=$archive" >> "$GITHUB_OUTPUT"
           echo "checksum=$archive.sha256" >> "$GITHUB_OUTPUT"
       - name: Upload root package without re-archiving
@@ -105,6 +105,8 @@ jobs:
           bash scripts/check-upstream-release.sh "${{ matrix.target }}" dist/candidate
           version="$(node -p "JSON.parse(require('node:fs').readFileSync('package.json', 'utf8')).version")"
           archive="dist/candidate/${{ matrix.package }}-${version}.tgz"
+          archive="${archive//@/-}"
+          archive="${archive//\//-}"
           echo "archive=$archive" >> "$GITHUB_OUTPUT"
           echo "checksum=$archive.sha256" >> "$GITHUB_OUTPUT"
       - name: Upload native package without re-archiving
