@@ -1,31 +1,63 @@
 # pi-norm-spec
 
-A hybrid Rust + TypeScript pi adapter for the canonical norm-spec engine.
+A hybrid Rust + TypeScript pi adapter for the canonical norm-spec engine:
+per-session `.norm` convention injection and soft post-edit
+convention validation. Rust evaluates normalized conventions and exposes a
+versioned bridge; TypeScript provides the minimal pi ExtensionAPI entry
+point. This repository does not implement the `.norm` parser or
+validator — format semantics stay upstream in
+[norm-spec](https://github.com/CyanoOrg/norm-spec).
 
-Rust evaluates normalized conventions and exposes a versioned bridge;
-TypeScript provides the minimal pi ExtensionAPI entry point. This repository
-does not implement the `.norm` parser or validator.
+## Why
 
-> Status: `0.1.0-alpha.1` unpublished pre-release identity. The GitHub
-> repository is public and protected; no npm package is published. Gate B and
-> Gate C are complete on all four native hosted targets. Gate D path-scoped
-> ephemeral injection, the single
-> pi-specific Skill, non-destructive zero-`.norm` onboarding, and the
-> package-shaped isolated install passed the real pi `0.84.1` host on all four
-> native targets at `f080395`. The functional Alpha checkpoint is complete.
-> D011 post-edit validation feedback is complete at exact candidate `e74c4e1`:
-> the real host and package-shaped paths passed on all four native hosted
-> targets. D012 defines the production package contract and first public beta
-> rehearsal. E1's source-controlled package inputs, strict release identity,
-> glibc-aware resolver, and bundled launcher are complete at exact candidate
-> `486be76`, with all six hosted jobs and four native package paths green.
-> E2 is complete at exact candidate `1b820ff`: public hosted run `31787516114`
-> passed the root candidate, all four native candidates, and the aggregate
-> five-package inventory while retaining all eleven review artifacts.
-> Enforcement remains outside the current contract.
+Conventions only matter if they reach the agent while it works. A validated
+`.norm` tree on disk is inert by itself; the common workaround — an
+always-resident instruction file — spends tokens re-establishing the same
+ambiguity while its effectiveness decays with distance and competing
+context.
 
-See `AGENTS.md`, `docs/ARCHITECTURE.md`, and
-`docs/planning/v0.1-execution.md` before contributing.
+This adapter delivers convention knowledge the way a cache wants it:
+
+> Page the conventions that apply to the current working directory into
+> the agent's perception at action time, and check edits against them
+> afterward.
+
+Delivery is host-specific. pi's `context` event fires before each
+provider turn with a copy of the message list, so the injection is truly
+**ephemeral**: the freshly collected conventions ride the tail of the
+current turn and never enter the session log — next turn collects and
+renders again from disk. Nothing accumulates, nothing goes stale. The same
+format and semantics run under a different host in
+[dsh-norm-spec](https://github.com/CyanoOrg/dsh-norm-spec) — the delivery
+layer is the host-specific part, and that boundary is the point.
+
+**Status: `0.1.0-alpha.1` unpublished pre-release. The GitHub repository
+is public and protected; no npm package is published yet. Gate B through E2
+are complete (see `docs/planning/status.md` for the execution state);
+E3/E4 — real-host install verification and the first public beta — remain.
+
+## What it does
+
+- Starts one verified Rust bridge per session against a sealed,
+  checksum-pinned upstream norm-spec payload (no `PATH` fallback).
+- On each `context` event, collects the conventions for the active
+  project path and appends them to the returned message copy as one hidden
+  custom message — the prior turn's injection is stripped first, so exactly
+  one fresh reminder is present per turn (D009).
+- After successful built-in `write`/`edit` results, appends bounded
+  soft validation feedback (D011); green results stay silent and the
+  original tool result is preserved.
+- Registers one pi-specific Skill and a `norm-status` slash command
+  (human-facing) for convention inspection; enforcement stays outside the
+  current contract (D010).
+
+## Documentation
+
+- `AGENTS.md`, `docs/ARCHITECTURE.md` — boundaries and the Rust/TypeScript split
+- `docs/decisions.md` — decision records D001+ with rationale
+- `docs/planning/v0.1-execution.md`, `docs/planning/status.md` — gates,
+  execution state, and exact-candidate evidence
+- `ROADMAP.md` — milestone plan (beta via E3/E4, then stable)
 
 ## License
 
