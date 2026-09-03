@@ -286,6 +286,10 @@ node --experimental-strip-types scripts/check-pi-alpha.ts \
   "$payload" \
   "$repo_root"
 
+node --experimental-strip-types scripts/check-target-rescoping.ts \
+  "$bridge" \
+  "$payload"
+
 package_rehearsal="$check_root/package-rehearsal"
 tarball_root="$package_rehearsal/tarballs"
 npm_cache="$package_rehearsal/npm-cache"
