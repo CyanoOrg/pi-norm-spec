@@ -453,3 +453,40 @@ one governance story for publication authority.
 
 **Supersedes.** D012's package-name table only; every other Gate E
 contract term stands.
+
+## D016 — Normalize read/edit tracking to the parent directory
+
+**Decision.** The adapter's tool-call tracking normalizes `read` and `edit`
+targets to the input path's parent directory through `dirname`, matching the
+existing `write` behavior. Tracked tools accept `input.file_path` as a
+harmless alias of `input.path`: the first non-empty string field wins and an
+absent, empty, or non-string field falls through to the other spelling.
+`grep`, `find`, and `ls` keep their current semantics (the observed path
+as-is, falling back to `.`), unknown tools still never change the active
+target, and the `pi-norm-spec/prompt-context/v1` wire schema is unchanged —
+normalization only selects which target the adapter requests, and the context
+message still carries the bridge-returned target verbatim. The tracking
+decision is extracted from the session lifecycle into a pure, unit-tested
+module.
+
+**Context.** The 2026-09-03 cross-repository audit
+(`docs/planning/beta1-readiness-plan.md`) found `updateTarget` had zero test
+coverage (F2) and that file-grained `read`/`edit` targets rewrote
+functionally identical context messages whenever the agent alternated files
+in one directory (F3). The same audit confirmed pi's built-in `read`,
+`edit`, and `write` tool schemas all declare `path` as the argument field
+(pi `0.84.1`: `dist/core/tools/read.js:17`, `edit.js:18`, `write.js:12`),
+so adapter and host agree and the alias is optional hardening rather than
+defect repair (F1); the write tool's renderer already tolerates both
+spellings. norm-spec decision D020's collect semantics treat a file target
+as its parent directory, and dsh-norm-spec D013 set the adapter-side
+normalization precedent after its `path`/`file_path` field defect passed
+every gate through exactly this coverage gap.
+
+**Rationale.** Directory normalization is information-preserving — upstream
+collect already resolves a file target to its parent-directory chain — while
+removing per-file context churn for same-directory work. The alias costs
+nothing on pi and keeps hosts that send `file_path` from silently losing
+tracking. Leaving `grep`/`find`/`ls`, unknown-tool behavior, and the wire
+schema untouched confines the change to adapter-side target selection, where
+the defect lived.
