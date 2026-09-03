@@ -171,12 +171,12 @@ await withPiHost(projectRoot, async ({ agentDir, observation, runner }) => {
   messages = await runner.emitContext(messages);
   injected = contextMessage(messages);
   assert.ok(injected);
-  assert.equal((injected.details as { target: string }).target, "docs/planning/status.md");
+  assert.equal((injected.details as { target: string }).target, "docs/planning");
   assert.deepEqual((injected.details as { conventionPaths: string[] }).conventionPaths, [
     "docs/.norm",
     ".norm",
   ]);
-  assert.equal(observation.statuses.get("pi-norm-spec"), "norm: 2 @ docs/planning/status.md");
+  assert.equal(observation.statuses.get("pi-norm-spec"), "norm: 2 @ docs/planning");
 
   const green = await runner.emitToolResult({
     type: "tool_result",

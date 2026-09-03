@@ -1,4 +1,3 @@
-import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type {
@@ -15,6 +14,7 @@ import {
   type BridgeLaunch,
 } from "./bridge-client.ts";
 import { resolvePlatformRuntime } from "./runtime-resolver.ts";
+import { nextActiveTarget } from "./target-tracking.ts";
 import {
   parseValidationResponse,
   presentValidation,
@@ -111,22 +111,7 @@ class NormBridgeLifecycle {
   }
 
   updateTarget(toolName: string, input: Readonly<Record<string, unknown>>): void {
-    const inputPath =
-      typeof input.path === "string" && input.path.length > 0 ? input.path : undefined;
-    switch (toolName) {
-      case "read":
-      case "edit":
-        if (inputPath) this.activeTarget = inputPath;
-        break;
-      case "write":
-        if (inputPath) this.activeTarget = dirname(inputPath);
-        break;
-      case "grep":
-      case "find":
-      case "ls":
-        this.activeTarget = inputPath ?? ".";
-        break;
-    }
+    this.activeTarget = nextActiveTarget(this.activeTarget, toolName, input);
   }
 
   async inject(

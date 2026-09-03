@@ -48,3 +48,11 @@ preparation.
 - Public GitHub collaboration with protected linear signed `main`, immutable
   `v*` tags, approval-gated external workflows, private vulnerability
   reporting, secret scanning, and push protection.
+
+### Changed
+
+- `read` and `edit` tool-call tracking now normalizes to the input path's
+  parent directory, matching `write` and removing per-file context churn for
+  same-directory work (D016). `file_path` is accepted as a harmless alias of
+  `path`; `grep`/`find`/`ls`, unknown-tool handling, and the
+  `pi-norm-spec/prompt-context/v1` wire schema are unchanged.

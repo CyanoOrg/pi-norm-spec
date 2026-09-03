@@ -115,7 +115,7 @@ test("built-in tool paths select the next provider target deterministically", as
     { type: "context", messages: [] },
     testHarness.ctx,
   )) as { messages: Array<Record<string, unknown>> };
-  assert.equal((result.messages[0]?.details as Record<string, unknown>).target, "docs/guide.md");
+  assert.equal((result.messages[0]?.details as Record<string, unknown>).target, "docs");
 
   await testHarness.handlers.get("tool_call")?.(
     { type: "tool_call", toolCallId: "t3", toolName: "write", input: { path: "crates/new.rs", content: "" } },
