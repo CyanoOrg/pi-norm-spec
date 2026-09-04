@@ -570,7 +570,16 @@ test("a child crash after ready becomes visible without silent restart", async (
   registerNormContext(testHarness.pi, { resolveRuntime: () => launch("crash-after-ready") });
 
   await testHarness.handlers.get("session_start")?.({ type: "session_start", reason: "startup" }, testHarness.ctx);
-  await new Promise((resolve) => setTimeout(resolve, 80));
+  // The fake child exits ~20ms after ready; poll instead of sleeping a fixed
+  // delay so a loaded runner cannot lose the propagation race (the fixed 80ms
+  // window flaked on macos-15-intel, 2026-09-04).
+  for (
+    let i = 0;
+    i < 200 && testHarness.statuses.get("pi-norm-spec") !== "norm: failed";
+    i++
+  ) {
+    await new Promise((resolve) => setTimeout(resolve, 25));
+  }
   assert.equal(testHarness.statuses.get("pi-norm-spec"), "norm: failed");
   assert.match(testHarness.notifications.at(-1)?.message ?? "", /pi-norm-spec\/client\//);
 });
