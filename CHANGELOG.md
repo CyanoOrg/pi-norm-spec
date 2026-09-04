@@ -5,6 +5,8 @@ preparation.
 
 ## [Unreleased]
 
+## [0.1.0-beta.1] - 2026-09-04
+
 ### Added
 
 - Hybrid Rust engine/bridge and thin TypeScript extension architecture.

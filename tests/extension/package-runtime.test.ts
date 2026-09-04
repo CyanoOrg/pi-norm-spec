@@ -33,13 +33,13 @@ test("publish inputs define one exact root and four bounded native packages", as
     await readFile(path.join(repoRoot, "packages", "root", "package.json"), "utf8"),
   ) as Record<string, unknown>;
   assert.equal(inputs.rootManifest.name, "@cyanoorg/pi-norm-spec");
-  assert.equal(inputs.rootManifest.version, "0.1.0-alpha.1");
+  assert.equal(inputs.rootManifest.version, "0.1.0-beta.1");
   assert.equal(inputs.platformManifests.size, 4);
   assert.deepEqual(inputs.rootManifest.optionalDependencies, {
-    "@cyanoorg/pi-norm-spec-linux-x64": "0.1.0-alpha.1",
-    "@cyanoorg/pi-norm-spec-darwin-arm64": "0.1.0-alpha.1",
-    "@cyanoorg/pi-norm-spec-darwin-x64": "0.1.0-alpha.1",
-    "@cyanoorg/pi-norm-spec-win32-x64": "0.1.0-alpha.1",
+    "@cyanoorg/pi-norm-spec-linux-x64": "0.1.0-beta.1",
+    "@cyanoorg/pi-norm-spec-darwin-arm64": "0.1.0-beta.1",
+    "@cyanoorg/pi-norm-spec-darwin-x64": "0.1.0-beta.1",
+    "@cyanoorg/pi-norm-spec-win32-x64": "0.1.0-beta.1",
   });
   assert.equal("scripts" in rootSource, false, "publish root must not run lifecycle scripts");
   assert.deepEqual(rootSource.files, ["bin", "extensions", "runtime", "skills", "release.json"]);

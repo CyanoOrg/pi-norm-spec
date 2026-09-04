@@ -2,8 +2,8 @@
 
 ## Resume here
 
-- Stage: public source repository with an unpublished `0.1.0-alpha.1`
-  pre-release development identity; Gate A, Gate B, and Gate C are complete.
+- Stage: public source repository preparing the `0.1.0-beta.1` first public
+  beta; Gate A, Gate B, and Gate C are complete.
   Gate D's functional Alpha checkpoint is complete at exact package-inclusive
   candidate `f080395` with all four native hosted targets green.
 - D010 closes the enforcement-scope checkpoint: the pinned A1
@@ -38,14 +38,11 @@
   tracking now normalizes to the parent directory with `file_path` as a
   harmless alias, covered by a unit matrix and a real-pi-host subdirectory
   re-scoping E2E wired into `scripts/check-upstream-release.sh`.
-- Current objective: prepare the exact `0.1.0-beta.1` release identity
-  without feature work (E4). E3 is closed: main run `33844263465` passed
-  the real `pi` package-manager install gate on Linux x64, macOS arm64/x64,
-  and Windows x64 at `1e5836e`, confirmed again at `5a70eba` in run
-  `33847311721`. Remaining E4 work is release/security review and the exact
-  hosted-green candidate; the signed tag, GitHub Pre-release, npm ownership
-  recheck, and five-package publication stay at their separate maintainer
-  checkpoints.
+- Current objective: land the exact `0.1.0-beta.1` release-preparation
+  candidate through hosted CI (E4). The local review is recorded in
+  `docs/planning/beta1-release-review.md`; the signed tag, GitHub
+  Pre-release, npm ownership recheck, and five-package publication stay at
+  their separate maintainer checkpoints.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
   a minimal non-transforming admission-hook request. The request was posted on
   pi issue #7092 on 2026-08-13 and accepts source-ordered clearance followed by
@@ -364,6 +361,25 @@ Gate E E3 local implementation on 2026-09-04:
   launcher checks using its retained root and platform tarballs. Local
   `aarch64-apple-darwin` evidence passed; the exact branch candidate still
   requires hosted confirmation on all four native targets before E3 closes.
+
+Gate E E4 release preparation on 2026-09-04:
+
+- branch `chore/prepare-0.1.0-beta.1` bumps every identity surface to
+  `0.1.0-beta.1` (workspace, both crates, root and four platform manifests,
+  both lock files, test expectations, and the synchronized README/AGENTS/
+  status posture) and promotes `CHANGELOG.md` to
+  `[0.1.0-beta.1] - 2026-09-04`;
+- local gates passed at the exact candidate: `cargo fmt --check`, strict
+  workspace Clippy, all 21 Rust tests, rustdoc with warnings denied, 55
+  TypeScript/extension tests, the public-history scan, `npm audit` with
+  zero vulnerabilities in both trees, and the full release-derived
+  `check-upstream-release.sh` run including the E3 install gate at the
+  beta.1 identity;
+- the npm ownership recheck recorded all five `@cyanoorg` names as HTTP 404
+  (absence only, not ownership) and is repeated before publication;
+- the release review record is `docs/planning/beta1-release-review.md`.
+  Hosted confirmation of this exact candidate remains before the human
+  checkpoints.
 
 Gate E E3 hosted closure on 2026-09-04:
 

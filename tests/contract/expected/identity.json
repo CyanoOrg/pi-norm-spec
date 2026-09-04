@@ -9,6 +9,6 @@
     "expectedNormCollectApi": "norm-spec/collect/v1",
     "expectedNormValidateApi": "norm-spec/validate/v1",
     "promptContextApiVersion": "pi-norm-spec/prompt-context/v1",
-    "packageVersion": "0.1.0-alpha.1"
+    "packageVersion": "0.1.0-beta.1"
   }
 }

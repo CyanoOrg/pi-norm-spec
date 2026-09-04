@@ -1,6 +1,6 @@
 {
   "name": "@cyanoorg/pi-norm-spec-win32-x64",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-beta.1",
   "description": "Native pi-norm-spec runtime for Windows x64",
   "license": "MIT",
   "author": "Wade <bravetwo@163.com>",

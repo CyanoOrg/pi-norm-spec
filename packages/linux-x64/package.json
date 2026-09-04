@@ -1,6 +1,6 @@
 {
   "name": "@cyanoorg/pi-norm-spec-linux-x64",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-beta.1",
   "description": "Native pi-norm-spec runtime for Linux x64 glibc",
   "license": "MIT",
   "author": "Wade <bravetwo@163.com>",

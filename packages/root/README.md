@@ -8,7 +8,8 @@ optional dependencies select one supported native runtime package. It does not
 parse or validate `.norm` files itself and never searches `PATH` for a fallback.
 
 The checked-in manifest is a candidate-assembly input. The current
-`0.1.0-alpha.1` development identity is not authorized for publication.
+`0.1.0-beta.1` identity is prepared for the first public beta rehearsal;
+publication remains gated on the E4 maintainer checkpoints.
 
 See <https://github.com/CyanoOrg/pi-norm-spec> for source, support boundaries,
 and release evidence.

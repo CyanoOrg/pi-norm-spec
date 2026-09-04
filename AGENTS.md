@@ -17,8 +17,8 @@ intentionally hybrid:
 
 ## Current state
 
-Version `0.1.0-alpha.1` is the current unpublished pre-release development
-identity. Gate A, Gate B, and Gate C are complete.
+Version `0.1.0-beta.1` is the current release-preparation identity for the
+first public beta. Gate A, Gate B, and Gate C are complete.
 The Rust runtime pins all four public norm-spec `0.1.0-rc.1` archive checksums,
 verifies a sealed release-derived payload, executes compatibility, collect,
 validate, and all 82 conformance cases, and is verified on all four native

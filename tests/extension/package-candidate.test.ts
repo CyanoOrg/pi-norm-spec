@@ -69,9 +69,9 @@ test("candidate assembly rejects a checksum that is not bound to its archive", a
   context.after(() => fixture.cleanup());
   const checksum = path.join(
     fixture.artifactRoot,
-    "cyanoorg-pi-norm-spec-0.1.0-alpha.1.tgz.sha256",
+    "cyanoorg-pi-norm-spec-0.1.0-beta.1.tgz.sha256",
   );
-  await writeFile(checksum, `${"0".repeat(64)}  cyanoorg-pi-norm-spec-0.1.0-alpha.1.tgz\n`, "utf8");
+  await writeFile(checksum, `${"0".repeat(64)}  cyanoorg-pi-norm-spec-0.1.0-beta.1.tgz\n`, "utf8");
 
   await assert.rejects(
     verifyPackageCandidateSet(
