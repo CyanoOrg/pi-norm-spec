@@ -436,6 +436,14 @@ for result in \
   fi
 done
 
+node --experimental-strip-types scripts/check-pi-install.ts \
+  "$bridge" \
+  "$payload" \
+  "$root_package_archive" \
+  "$platform_package_archive" \
+  "$repo_root" \
+  "$package_version"
+
 if [[ -n "$candidate_output" ]]; then
   retained_archive="$candidate_output/$(basename "$platform_package_archive")"
   retained_checksum="$candidate_output/$(basename "$platform_package_checksum")"
@@ -450,4 +458,4 @@ if [[ -n "$candidate_output" ]]; then
   echo "Retained exact platform candidate: $retained_archive"
 fi
 
-echo "Pinned upstream release passed checksum, sealing, identity, 82-case conformance, collect, validate, persistent bridge lifecycle, the real pi Alpha host, production-shaped installation, and bundled launcher."
+echo "Pinned upstream release passed checksum, sealing, identity, 82-case conformance, collect, validate, persistent bridge lifecycle, the real pi Alpha host, production-shaped installation, the real pi package-manager path, and bundled launcher."

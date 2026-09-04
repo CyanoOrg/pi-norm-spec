@@ -48,6 +48,10 @@ preparation.
 - Public GitHub collaboration with protected linear signed `main`, immutable
   `v*` tags, approval-gated external workflows, private vulnerability
   reporting, secret scanning, and push protection.
+- The real `pi` package-manager install path as an E3 gate: a version-pinned
+  managed npm install root, boot autoload, Skill, injection with re-scoping,
+  post-edit feedback, zero-`.norm` onboarding, and visible missing-platform
+  and stale-version failures.
 
 ### Changed
 

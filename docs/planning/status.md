@@ -38,10 +38,11 @@
   tracking now normalizes to the parent directory with `file_path` as a
   harmless alias, covered by a unit matrix and a real-pi-host subdirectory
   re-scoping E2E wired into `scripts/check-upstream-release.sh`.
-- Current objective: implement E3's isolated, version-pinned real `pi install`
-  gate on all four native targets (WS-B of the beta.1 readiness plan). This
-  does not authorize enforcement, tagging, a GitHub Release, npm ownership,
-  or publication.
+- Current objective: confirm E3's isolated, version-pinned real `pi install`
+  gate on all four native targets (WS-B of the beta.1 readiness plan). The
+  local implementation is complete; hosted confirmation remains. This does
+  not authorize enforcement, tagging, a GitHub Release, npm ownership, or
+  publication.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
   a minimal non-transforming admission-hook request. The request was posted on
   pi issue #7092 on 2026-08-13 and accepts source-ordered clearance followed by
@@ -333,6 +334,33 @@ Gate E E2 hosted verification on 2026-08-14:
   `package-root-candidate` and `package-candidate-set`. Its bypass list remains
   empty. This closes E2 without claiming E3, tagging, a GitHub Release, npm
   ownership, or publication.
+
+Gate E E3 local implementation on 2026-09-04:
+
+- `scripts/check-pi-install.ts` exercises the real pi package-manager path
+  against isolated agent directories: the managed user-scope npm root
+  `<agentDir>/npm` is seeded with the exact root and platform tarballs using
+  the same real `npm install --prefix ... --legacy-peer-deps` command shape
+  pi itself runs, and `<agentDir>/settings.json` pins
+  `npm:@cyanoorg/pi-norm-spec@<version>`;
+- the real boot path (`SettingsManager.create` plus `DefaultResourceLoader`
+  without factories or in-memory overrides) discovers exactly one extension
+  from the managed install root; the real session stack then passes Skill
+  loading, root context injection, D016 parent-directory re-scoping after a
+  read, green post-edit feedback, and zero-`.norm` cold start without
+  project writes;
+- negative paths prove a missing platform package fails visibly without a
+  `PATH` fallback and a mismatched pinned version never silently loads the
+  installed package (the version-mismatch path attempts the real registry
+  fetch and fails with a visible 404 for the unpublished name);
+- the literal registry fetch of the published name remains impossible before
+  publication and belongs to the post-publication smoke at the E4 npm
+  checkpoint, matching D012's requirement to validate the public install
+  path before stable;
+- `scripts/check-upstream-release.sh` runs the gate after the bundled
+  launcher checks using its retained root and platform tarballs. Local
+  `aarch64-apple-darwin` evidence passed; the exact branch candidate still
+  requires hosted confirmation on all four native targets before E3 closes.
 
 D014 governance migration on 2026-08-14:
 
