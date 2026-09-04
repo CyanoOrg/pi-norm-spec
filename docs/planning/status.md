@@ -383,15 +383,17 @@ Gate E E4 release preparation on 2026-09-04:
 
 Gate E E3 hosted closure on 2026-09-04:
 
-- main run `33844263465` (bound to `1e5836e`) passed all eight required
-  checks; each of the four native jobs — Linux x64 glibc, macOS arm64,
-  macOS x64, and Windows x64 — emitted the real `pi` package-manager gate
-  success line for the version-pinned managed install, boot autoload, Skill,
-  injection with re-scoping, post-edit feedback, zero-`.norm` onboarding,
-  and the visible missing-platform and stale-version failures;
-- main run `33847311721` (bound to `5a70eba`) repeated the same eight-check
-  result after the crash-visibility test switched from a fixed delay to
-  polling, confirming the E3 gate is not timing-sensitive;
+- main run `33844263465` (bound to `1e5836e`) emitted the real `pi`
+  package-manager gate success line on all four native targets — Linux x64
+  glibc, macOS arm64, macOS x64, and Windows x64 — for the version-pinned
+  managed install, boot autoload, Skill, injection with re-scoping,
+  post-edit feedback, zero-`.norm` onboarding, and the visible
+  missing-platform and stale-version failures; the run itself failed its
+  macos-15-intel job when the crash-visibility unit test lost its
+  fixed-delay race and skipped the dependent candidate-set job;
+- main run `33847311721` (bound to `5a70eba`) passed all eight required
+  checks after the crash-visibility test switched from a fixed delay to
+  polling, confirming the E3 gate and its timing-insensitivity;
 - the literal registry fetch remains reserved for the post-publication smoke
   at the E4 npm checkpoint. This closes E3 without tagging, a GitHub
   Release, npm ownership, or publication.
