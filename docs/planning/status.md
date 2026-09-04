@@ -31,12 +31,17 @@
   strict CI, and immutable tags have no bypass. The three replacement rulesets
   are active and read-back verified; the monolithic `main-protection` ruleset
   is disabled with its configuration retained.
-- Current objective: integrate the reviewed exact E2 candidate through the
-  protected fast-forward path, confirm the resulting exact `main` CI, and then
-  implement E3's isolated, version-pinned real `pi install` gate on all four
-  native targets. This does
-  not authorize enforcement, tagging, a GitHub Release, npm ownership, or
-  publication.
+- The reviewed exact E2 candidate `1b820ff` is integrated on `main` through
+  the protected path, and D016 tracking normalization (WS-A of
+  `docs/planning/beta1-readiness-plan.md`) merged at `beac8fb` with hosted
+  run `33831645074` green across all eight required checks: `read`/`edit`
+  tracking now normalizes to the parent directory with `file_path` as a
+  harmless alias, covered by a unit matrix and a real-pi-host subdirectory
+  re-scoping E2E wired into `scripts/check-upstream-release.sh`.
+- Current objective: implement E3's isolated, version-pinned real `pi install`
+  gate on all four native targets (WS-B of the beta.1 readiness plan). This
+  does not authorize enforcement, tagging, a GitHub Release, npm ownership,
+  or publication.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
   a minimal non-transforming admission-hook request. The request was posted on
   pi issue #7092 on 2026-08-13 and accepts source-ordered clearance followed by
@@ -600,6 +605,8 @@ Bootstrap verification on 2026-08-10:
 - [x] Implement post-edit validation feedback locally (D011).
 - [x] Confirm the final D011 candidate's real-host/package path on all four
       native hosted targets.
+- [x] Normalize read/edit target tracking to the parent directory and add
+      real-host re-scoping evidence (D016, beta.1 WS-A).
 - [x] Define the production five-package distribution and first public beta
       rehearsal contract (D012).
 - [x] Implement E1 source-controlled package manifests, release identities,
