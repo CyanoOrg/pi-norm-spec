@@ -38,11 +38,14 @@
   tracking now normalizes to the parent directory with `file_path` as a
   harmless alias, covered by a unit matrix and a real-pi-host subdirectory
   re-scoping E2E wired into `scripts/check-upstream-release.sh`.
-- Current objective: confirm E3's isolated, version-pinned real `pi install`
-  gate on all four native targets (WS-B of the beta.1 readiness plan). The
-  local implementation is complete; hosted confirmation remains. This does
-  not authorize enforcement, tagging, a GitHub Release, npm ownership, or
-  publication.
+- Current objective: prepare the exact `0.1.0-beta.1` release identity
+  without feature work (E4). E3 is closed: main run `33844263465` passed
+  the real `pi` package-manager install gate on Linux x64, macOS arm64/x64,
+  and Windows x64 at `1e5836e`, confirmed again at `5a70eba` in run
+  `33847311721`. Remaining E4 work is release/security review and the exact
+  hosted-green candidate; the signed tag, GitHub Pre-release, npm ownership
+  recheck, and five-package publication stay at their separate maintainer
+  checkpoints.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
   a minimal non-transforming admission-hook request. The request was posted on
   pi issue #7092 on 2026-08-13 and accepts source-ordered clearance followed by
@@ -362,6 +365,21 @@ Gate E E3 local implementation on 2026-09-04:
   `aarch64-apple-darwin` evidence passed; the exact branch candidate still
   requires hosted confirmation on all four native targets before E3 closes.
 
+Gate E E3 hosted closure on 2026-09-04:
+
+- main run `33844263465` (bound to `1e5836e`) passed all eight required
+  checks; each of the four native jobs — Linux x64 glibc, macOS arm64,
+  macOS x64, and Windows x64 — emitted the real `pi` package-manager gate
+  success line for the version-pinned managed install, boot autoload, Skill,
+  injection with re-scoping, post-edit feedback, zero-`.norm` onboarding,
+  and the visible missing-platform and stale-version failures;
+- main run `33847311721` (bound to `5a70eba`) repeated the same eight-check
+  result after the crash-visibility test switched from a fixed delay to
+  polling, confirming the E3 gate is not timing-sensitive;
+- the literal registry fetch remains reserved for the post-publication smoke
+  at the E4 npm checkpoint. This closes E3 without tagging, a GitHub
+  Release, npm ownership, or publication.
+
 D014 governance migration on 2026-08-14:
 
 - the maintainer confirmed that `norm-release-managers` contains the two human
@@ -643,7 +661,7 @@ Bootstrap verification on 2026-08-10:
       retention, final checksums, and exact aggregate-set verification.
 - [x] Confirm the exact E2 candidate's retained root plus four native package
       candidates, checksums, and aggregate inventory through hosted CI.
-- [ ] Verify the E3 version-pinned real `pi install` path on all four native
+- [x] Verify the E3 version-pinned real `pi install` path on all four native
       targets, including injection and post-edit feedback without blocking.
 - [ ] Complete E4 release/security review and stop at the public beta human
       checkpoints.
