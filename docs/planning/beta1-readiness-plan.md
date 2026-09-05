@@ -84,7 +84,9 @@ repository update order.
 
 1. Host Adapter SDK convergence with dsh-norm-spec (its precondition
    "pi E3/E4 complete" is met at beta.1): extract the shared
-   engine-side merge/projection rather than forking it.
+   engine-side merge/projection rather than forking it. Approved
+   2026-09-05 to start during norm-spec's soak window — pure
+   downstream integration work that does not touch norm-spec.
 2. Multi-target context mirroring norm-spec decision D020 semantics
    through the converged SDK.
 3. Layout-index analog riding the context seam, backed by a real

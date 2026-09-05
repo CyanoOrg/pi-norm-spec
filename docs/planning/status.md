@@ -51,7 +51,9 @@
   warnings surfaced as status feedback, and the remove/reinstall recovery
   path. `docs/planning/beta1-release-review.md` records the E4 review; the
   next sequenced work is WS-D (SDK convergence, multi-target, layout index)
-  per the readiness plan.
+  per the readiness plan. WS-D SDK convergence is approved to start during
+  norm-spec's soak window (2026-09-05 onward) — pure downstream integration
+  work with dsh-norm-spec that does not touch norm-spec.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
   a minimal non-transforming admission-hook request. The request was posted on
   pi issue #7092 on 2026-08-13 and accepts source-ordered clearance followed by
