@@ -2,8 +2,10 @@
 
 ## Resume here
 
-- Stage: public source repository preparing the `0.1.0-beta.1` first public
-  beta; Gate A, Gate B, and Gate C are complete.
+- Stage: `v0.1.0-beta.1` is published — the first public beta (2026-09-05:
+  signed tag, GitHub Pre-release with five tarballs, five checksums, and the
+  aggregate candidate inventory, and five npm packages under the `beta`
+  dist-tag). Gate A, Gate B, and Gate C are complete.
   Gate D's functional Alpha checkpoint is complete at exact package-inclusive
   candidate `f080395` with all four native hosted targets green.
 - D010 closes the enforcement-scope checkpoint: the pinned A1
@@ -38,11 +40,18 @@
   tracking now normalizes to the parent directory with `file_path` as a
   harmless alias, covered by a unit matrix and a real-pi-host subdirectory
   re-scoping E2E wired into `scripts/check-upstream-release.sh`.
-- Current objective: land the exact `0.1.0-beta.1` release-preparation
-  candidate through hosted CI (E4). The local review is recorded in
-  `docs/planning/beta1-release-review.md`; the signed tag, GitHub
-  Pre-release, npm ownership recheck, and five-package publication stay at
-  their separate maintainer checkpoints.
+- Current objective: post-publication soak and watch. The exact candidate
+  `063737c` (PR #8, hosted run `33941813746` green) was tagged
+  `v0.1.0-beta.1`, released as a GitHub Pre-release with eleven assets, and
+  published to npm — four native packages first, then root, all under the
+  `beta` dist-tag with `latest` intentionally unset. The post-publication
+  smoke passed the real `pi install
+  npm:@cyanoorg/pi-norm-spec@0.1.0-beta.1` path end to end: managed
+  install, sealed-payload boot, injection with D016 re-scoping, post-edit
+  warnings surfaced as status feedback, and the remove/reinstall recovery
+  path. `docs/planning/beta1-release-review.md` records the E4 review; the
+  next sequenced work is WS-D (SDK convergence, multi-target, layout index)
+  per the readiness plan.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
   a minimal non-transforming admission-hook request. The request was posted on
   pi issue #7092 on 2026-08-13 and accepts source-ordered clearance followed by
@@ -681,5 +690,7 @@ Bootstrap verification on 2026-08-10:
       candidates, checksums, and aggregate inventory through hosted CI.
 - [x] Verify the E3 version-pinned real `pi install` path on all four native
       targets, including injection and post-edit feedback without blocking.
-- [ ] Complete E4 release/security review and stop at the public beta human
-      checkpoints.
+- [x] Complete E4 release/security review and stop at the public beta human
+      checkpoints; the maintainer executed publication on 2026-09-05 (signed
+      tag `v0.1.0-beta.1`, GitHub Pre-release, five npm packages under the
+      `beta` dist-tag), with the post-publication smoke green.
