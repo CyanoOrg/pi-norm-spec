@@ -490,3 +490,45 @@ nothing on pi and keeps hosts that send `file_path` from silently losing
 tracking. Leaving `grep`/`find`/`ls`, unknown-tool behavior, and the wire
 schema untouched confines the change to adapter-side target selection, where
 the defect lived.
+
+## D017 — Verify and pin the pi host line before further SDK work
+
+**Decision.** The adapter treats the pi 1.x host line as an explicit
+verification gate, not a compatibility assumption. Development identity
+moves to `@earendil-works/pi-coding-agent` `1.2.0`; the full local gate set
+and the real-host E2E legs re-run green under `1.2.0` before any release or
+WS-D SDK-convergence implementation starts; and the published peer range
+narrows from `*` to the verified envelope once that evidence exists
+(recommended `>=0.84.1 <2`, recorded at implementation; pi installs run
+`--legacy-peer-deps`, so the range is advisory identity, not enforcement).
+Loading the source checkout as a pi package remains unsupported: the
+sealed-payload resolver keeps failing loudly, development installs use
+staged package candidates or published packages only, and a user-settings
+source path is an installation error to correct with `pi install`, not a
+product defect needing a fallback.
+
+**Context.** The maintainer's host upgraded `0.84.1` → `1.2.0` with the
+2026-10-14 configuration migration. Post-migration settings pointed
+`packages` at the source checkout and pi 1.2.0 surfaced the by-design
+`pi-norm-spec/runtime/root-release-invalid` failure (fixed 2026-10-23 by
+installing the published `0.1.0-beta.1` and removing the source path;
+pre-migration settings had referenced a stale nonexistent path, so the
+extension had been silently absent rather than working). All E3/E4 install
+evidence is bound to pi `0.84.1`. A static check of the installed `1.2.0`
+confirmed the SDK surface `scripts/check-pi-install.ts` consumes is still
+exported and that the extension loads under `1.2.0` up to runtime
+resolution, but the behavioral surface — `context` event semantics,
+`tool_result` content patching, status presentation — has no 1.x evidence.
+The registry also shows `latest` pointing at `0.1.0-beta.1` on all five
+packages, correcting the E4-era "latest unset" record: npm assigns `latest`
+at first publication and it cannot be unset, so installs must pin the exact
+version or `@beta`.
+
+**Rationale.** A major host bump without recorded evidence is the largest
+open risk to every published package and to WS-D, which builds directly on
+the SDK. Verifying first costs hours and converts an assumption into a
+citable gate. The sealed-payload boundary (D006, D012) already defines the
+only supported load paths, so the configuration failure needs no code change:
+silent source-load tolerance would weaken the release-manifest contract the
+distribution gates verify. The execution sequence lives in
+`docs/planning/pi-1x-host-compat-plan.md` (H1 → H2 → H3, then WS-D).
