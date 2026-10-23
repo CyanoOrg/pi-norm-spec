@@ -12,3 +12,9 @@ updates:
       # manifest host binding test, so they can never pass alone. Host line
       # movement happens deliberately through the D017 gate sequence.
       - dependency-name: "@earendil-works/pi-coding-agent"
+      # @types/node's major must track the engines floor (node >=22.19.0),
+      # not the newest runtime: types from newer majors let Node 23+ APIs
+      # pass typecheck and ship as silent runtime breaks on floor hosts.
+      # Minor and patch updates stay within the current major and are fine.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
