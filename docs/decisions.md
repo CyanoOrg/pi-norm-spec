@@ -532,3 +532,55 @@ only supported load paths, so the configuration failure needs no code change:
 silent source-load tolerance would weaken the release-manifest contract the
 distribution gates verify. The execution sequence lives in
 `docs/planning/pi-1x-host-compat-plan.md` (H1 → H2 → H3, then WS-D).
+
+## D018 — Extract the shared engine-side merge/projection into a family SDK
+
+**Decision.** pi-norm-spec and dsh-norm-spec stop carrying parallel copies of
+the engine-side merge/projection. A new standalone repository under the
+CyanoOrg organization (working name `norm-adapter-sdk`, crate
+`norm-adapter-engine`) hosts the host-agnostic computation over normalized
+norm-spec machine output: the protocol mirrors (collect, validate, scan), the
+single- and multi-target prompt-context projection, and the layout index. The
+SDK parameterizes exactly the host-difference points dsh-norm-spec D001
+documented — machine API identity strings, prompt header/footer markers, and
+error-code prefixes — and nothing else. Each adapter keeps its bridge process
+protocol, sealed-payload and distribution verification, upstream pin, host
+injection idiom, and release cadence. Adapters pin the SDK exactly (`=x.y.z`);
+the SDK carries an independent SemVer line starting `0.1.0`. pi-norm-spec
+consumes the SDK only behind byte-identical output gates for
+`pi-norm-spec/prompt-context/v1`; multi-target context (WS-D item 2) and the
+layout-index analog with a real `scan` bridge method (WS-D item 3) are adopted
+through the SDK in later workstreams, not in the extraction swap. Extraction
+source is dsh-norm-spec `0.2.1` — the operating adapter with multi-target and
+scan/layout-index — cross-checked against this repository's copies, which a
+2026-10-23 audit found identical modulo identity strings.
+
+**Context.** Both sides approved convergence during the soak window (WS-D
+item 1 of `docs/planning/beta1-readiness-plan.md`, approved 2026-09-05;
+dsh-norm-spec ROADMAP 0.2 and its status item 4). The preconditions hold: pi
+E3/E4 completed at `v0.1.0-beta.1` (2026-09-05), and dsh-norm-spec's `0.2.1`
+host sync landed 2026-10-01, satisfying its sequencing note to extract "from
+an adapter that actually works". The audit: `norm_protocol.rs` and
+`prompt_context.rs` differ only in identity strings, while dsh-norm-engine
+additionally carries `multi_prompt_context.rs` (300 lines), `layout_index.rs`
+(261 lines), and the scan wire-format mirror — 1,436 lines versus 699 here.
+dsh-norm-spec D001 rejected a direct cross-adapter crate dependency ("would
+couple two independently released adapters more tightly than their SemVer
+permits") and hosting the SDK inside either adapter recreates that asymmetry;
+a standalone family repository with the D014-style governance pattern does
+not. The work is pure downstream integration per the WS-D approval and does
+not touch norm-spec.
+
+**Rationale.** Convergence removes the defect class where a fix lands in one
+fork only — the family already saw one target-tracking defect pass every gate
+through exactly this duplication. Extracting from the better-exercised fork
+minimizes new code while the identity-only local diff cross-checks it.
+Parameterizing only the D001-documented identity points keeps each host's
+wire output byte-stable, so the swap is verifiable by golden-output gates
+rather than review trust. Exact SDK pinning preserves each adapter's release
+independence, and confining the SDK to engine-side computation leaves every
+distribution, sealing, and host-adaptation concern where its gates already
+live. The phase plan and gates live in
+`docs/planning/wsd-sdk-convergence-plan.md`; the SDK repository name and
+crate label are reviewable during Phase 1 without reopening this record's
+structure.
