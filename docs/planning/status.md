@@ -86,6 +86,18 @@
   `>=0.84.1 <2` (pi installs run `--legacy-peer-deps`, so the range is
   identity, not enforcement). D017's local scope is closed; the next
   publication carries the new host binding and peer range.
+- 2026-10-23 (WS-D start): the SDK convergence workstream opened per the
+  readiness plan. The 2026-10-23 audit found the shared engine modules
+  (`norm_protocol.rs`, `prompt_context.rs`) identical modulo identity
+  strings, with dsh-norm-spec `0.2.1` additionally carrying the operating
+  `multi_prompt_context.rs`, `layout_index.rs`, and scan wire-format mirror
+  (1,436 versus 699 lines here). D018 fixes the structure — a standalone
+  family SDK repository parameterizing only the three dsh-norm-spec D001
+  identity points, adapters pinning exactly, extraction from dsh-norm-spec
+  `0.2.1` cross-checked against this repository — with the phase plan and
+  gates in `docs/planning/wsd-sdk-convergence-plan.md`. D018 awaits
+  maintainer approval in its pull request; Phase 1 (repository skeleton and
+  extraction) starts only after it.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
   a minimal non-transforming admission-hook request. The request was posted on
   pi issue #7092 on 2026-08-13 and accepts source-ordered clearance followed by
