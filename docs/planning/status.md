@@ -44,16 +44,31 @@
   `063737c` (PR #8, hosted run `33941813746` green) was tagged
   `v0.1.0-beta.1`, released as a GitHub Pre-release with eleven assets, and
   published to npm — four native packages first, then root, all under the
-  `beta` dist-tag with `latest` intentionally unset. The post-publication
+  `beta` dist-tag. The post-publication
   smoke passed the real `pi install
   npm:@cyanoorg/pi-norm-spec@0.1.0-beta.1` path end to end: managed
   install, sealed-payload boot, injection with D016 re-scoping, post-edit
   warnings surfaced as status feedback, and the remove/reinstall recovery
-  path. `docs/planning/beta1-release-review.md` records the E4 review; the
-  next sequenced work is WS-D (SDK convergence, multi-target, layout index)
-  per the readiness plan. WS-D SDK convergence is approved to start during
-  norm-spec's soak window (2026-09-05 onward) — pure downstream integration
-  work with dsh-norm-spec that does not touch norm-spec.
+  path. `docs/planning/beta1-release-review.md` records the E4 review.
+- 2026-10-23: the maintainer host line is pi `1.2.0` (major upgrade with
+  the 2026-10-14 configuration migration). A post-migration settings source
+  path surfaced the by-design `root-release-invalid` sealed-payload failure;
+  the environment was fixed with the published beta (`pi install
+  npm:@cyanoorg/pi-norm-spec@0.1.0-beta.1`, verified structurally), and a
+  pre-migration stale path means the extension had been silently absent
+  under the old settings. D017 adopts pi 1.x as an explicit verification
+  gate: the next sequenced work is the host-compatibility plan
+  `docs/planning/pi-1x-host-compat-plan.md` (H1 development identity → H2
+  full gates under `1.2.0` → H3 peer-range declaration), then WS-D (SDK
+  convergence, multi-target, layout index) per the readiness plan. WS-D SDK
+  convergence remains approved to start during norm-spec's soak window
+  (2026-09-05 onward) — pure downstream integration work with dsh-norm-spec
+  that does not touch norm-spec — but not before H2 is green. Record
+  correction: the registry shows `latest = 0.1.0-beta.1` on all five
+  packages; npm assigns `latest` at first publication and it cannot be unset,
+  so the E4-era "`latest` intentionally unset" wording was not representable.
+  Installs pin the exact version or `@beta`; re-check the tag map at every
+  release review so only a deliberate stable promotion moves `latest`.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
   a minimal non-transforming admission-hook request. The request was posted on
   pi issue #7092 on 2026-08-13 and accepts source-ordered clearance followed by
