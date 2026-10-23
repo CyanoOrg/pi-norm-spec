@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "chore(deps)"
+    ignore:
+      # D017: the pi host dependency is a verification identity, not an
+      # automatable bump. Automated host bumps cannot update the release
+      # manifest host binding test, so they can never pass alone. Host line
+      # movement happens deliberately through the D017 gate sequence.
+      - dependency-name: "@earendil-works/pi-coding-agent"
