@@ -69,6 +69,23 @@
   so the E4-era "`latest` intentionally unset" wording was not representable.
   Installs pin the exact version or `@beta`; re-check the tag map at every
   release review so only a deliberate stable promotion moves `latest`.
+- 2026-10-23 (H1/H2 evidence): the host-compatibility plan's first two
+  workstreams are complete on branch `build/pi-1x-sdk-identity`. H1 pins the
+  SDK identity at `1.2.0` (release-manifest host binding and its identity
+  test updated; TypeScript suite 55/55). H2 is green under `1.2.0`: `cargo
+  fmt`/`clippy`/`test`/`doc`, and `scripts/check-upstream-release.sh` end to
+  end — sealed payload, 82-case conformance, collect/validate, persistent
+  bridge, real-pi Alpha host, production-shaped install, and the real
+  package-manager path including visible missing-platform and stale-version
+  failures. A real-binary smoke (`pi -p` in a one-convention fixture built
+  with the sealed `norm init --profile convention`) returned the injected
+  marker token verbatim, proving per-turn context injection on the genuine
+  `1.2.0` host; `/norm-status` rendering is TUI-only and not observable in
+  print mode. H3 is complete on the same branch: both the workspace and
+  `packages/root/package.json` declare the verified advisory peer range
+  `>=0.84.1 <2` (pi installs run `--legacy-peer-deps`, so the range is
+  identity, not enforcement). D017's local scope is closed; the next
+  publication carries the new host binding and peer range.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
   a minimal non-transforming admission-hook request. The request was posted on
   pi issue #7092 on 2026-08-13 and accepts source-ordered clearance followed by
