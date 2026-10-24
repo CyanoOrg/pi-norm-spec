@@ -76,6 +76,7 @@ export class BridgeClient {
   private stdoutBuffer = "";
   private stderr = "";
   private nextRequest = 0;
+  private requestTail: Promise<unknown> = Promise.resolve();
   private startupTimer: ReturnType<typeof setTimeout> | undefined;
 
   private constructor(options: BridgeClientOptions) {
@@ -123,7 +124,31 @@ export class BridgeClient {
     if (signal?.aborted) {
       return Promise.reject(new BridgeRequestCancelledError("not-sent"));
     }
-    return this.sendRequest<T>(method, params, signal);
+    // The bridge protocol allows one active operation; serialize every
+    // request client-side so concurrent callers (for example a background
+    // layout-index refresh racing the per-turn context request) can never
+    // receive a busy error.
+    const send = (): Promise<T> => {
+      if (this.state !== "ready") {
+        return Promise.reject(
+          this.failure ??
+            new BridgeClientError(
+              "pi-norm-spec/client/not-ready",
+              `bridge is not ready: ${this.state}`,
+            ),
+        );
+      }
+      if (signal?.aborted) {
+        return Promise.reject(new BridgeRequestCancelledError("not-sent"));
+      }
+      return this.sendRequest<T>(method, params, signal);
+    };
+    const result = this.requestTail.then(send, send);
+    this.requestTail = result.then(
+      () => undefined,
+      () => undefined,
+    );
+    return result;
   }
 
   async shutdown(): Promise<void> {
