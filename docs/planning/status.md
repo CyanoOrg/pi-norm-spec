@@ -137,6 +137,15 @@
   `docs/planning/beta3-release-review.md` records the checklist), and the
   live resumed session kept byte-identical beta.2 injection under
   `1.4.0` throughout.
+- 2026-10-24 (beta.3 published): `v0.1.0-beta.3` is out — five npm packages
+  under the `beta` dist-tag from the exact tagged candidate `8c2b626`
+  (push-event run 40092003751), signed tag verified, GitHub Pre-release
+  with eleven assets, and the post-publication smoke green on the pi
+  `1.4.0` binary: packuments refreshed before install, platform binaries
+  verified, and a fresh process returned both the multi-scope marker and
+  the layout description token — the first live dual-block confirmation.
+  The beta.3 review checklist is closed; `docs/planning/beta3-release-review.md`
+  carries the evidence.
 - 2026-10-24 (beta.2 preparation): `0.1.0-beta.2` release preparation landed
   on `release/0.1.0-beta.2` — workspace and all five package identities
   bumped, `[Unreleased]` promoted with the D017 host line, D018 SDK

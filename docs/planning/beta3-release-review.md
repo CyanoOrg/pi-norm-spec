@@ -30,14 +30,21 @@ Scope, evidence, and publication checklist for `v0.1.0-beta.3` (2026-10-24).
 
 ## Publication checklist
 
-- [ ] Host-verified candidate from CI on the exact release commit: five
-      archives, five checksums, aggregate inventory (**push-event run**;
-      see the beta.2 post-script).
-- [ ] npm publish: four native packages first, then root, under the `beta`
-      dist-tag (browser 2FA).
-- [ ] Signed tag `v0.1.0-beta.3` on the exact release commit.
-- [ ] GitHub Release (pre-release) with the five artifacts and checksums.
-- [ ] Post-publication smoke through the real
+- [x] Host-verified candidate from CI on the exact release commit: five
+      archives, five checksums, aggregate inventory (push-event run
+      40092003751 on 8c2b626; five sha256 checks green; inventory bound
+      to the exact release commit).
+- [x] npm publish: four native packages first, then root, under the `beta`
+      dist-tag (maintainer-executed; `beta` moved to 0.1.0-beta.3, `latest`
+      intentionally unchanged at 0.1.0-beta.1; all five packuments visible
+      on the first poll).
+- [x] Signed tag `v0.1.0-beta.3` on the exact release commit (verified).
+- [x] GitHub Release (pre-release) with the five artifacts and checksums
+      (plus the aggregate candidate inventory; eleven assets).
+- [x] Post-publication smoke through the real
       `pi install npm:@cyanoorg/pi-norm-spec@0.1.0-beta.3` path on the
-      pi `1.4.0` binary, verifying the multi-target dual-block format in a
-      fresh session.
+      pi `1.4.0` binary: all five packuments refreshed before install,
+      platform package binaries verified, and a fresh `pi -p` process
+      returned both the sub-scope convention marker and the layout
+      description token — live confirmation of the multi-target dual-block
+      format.
