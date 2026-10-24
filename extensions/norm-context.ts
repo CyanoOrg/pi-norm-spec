@@ -14,7 +14,7 @@ import {
   type BridgeLaunch,
 } from "./bridge-client.ts";
 import { resolvePlatformRuntime } from "./runtime-resolver.ts";
-import { nextActiveTarget } from "./target-tracking.ts";
+import { mutationPath, nextTargetSet } from "./target-tracking.ts";
 import {
   parseValidationResponse,
   presentValidation,
@@ -25,16 +25,27 @@ import {
 
 const STATUS_KEY = "pi-norm-spec";
 const CONTEXT_MESSAGE_TYPE = "pi-norm-spec-context";
-const PROMPT_CONTEXT_API = "pi-norm-spec/prompt-context/v1";
+const PROMPT_CONTEXT_MULTI_API = "pi-norm-spec/prompt-context-multi/v1";
+const LAYOUT_INDEX_API = "pi-norm-spec/layout-index/v1";
 const INCOMPLETE_BEHAVIOR = "enforcement is not implemented";
 const PI_NORM_SKILL = fileURLToPath(
   new URL("../skills/pi-norm-spec/SKILL.md", import.meta.url),
 );
 
-interface PromptContextResult {
-  apiVersion: typeof PROMPT_CONTEXT_API;
+interface PromptContextMultiScope {
   target: string;
   conventionPaths: string[];
+}
+
+interface PromptContextMultiResult {
+  apiVersion: typeof PROMPT_CONTEXT_MULTI_API;
+  root: string;
+  scopes: PromptContextMultiScope[];
+  prompt: string | null;
+}
+
+interface LayoutIndexResult {
+  apiVersion: typeof LAYOUT_INDEX_API;
   prompt: string | null;
 }
 
@@ -47,8 +58,10 @@ class NormBridgeLifecycle {
   private client: BridgeClient | undefined;
   private failure: BridgeClientError | undefined;
   private contextFailure: BridgeClientError | undefined;
-  private lastContext: PromptContextResult | undefined;
-  private activeTarget = ".";
+  private lastContext: PromptContextMultiResult | undefined;
+  private targetSet: string[] = ["."];
+  private lastMutationPath: string | undefined;
+  private layoutIndexPrompt: string | undefined;
   private onboardingNotified = false;
   private validationFailure: BridgeClientError | undefined;
   private validationTail: Promise<void> = Promise.resolve();
@@ -65,7 +78,9 @@ class NormBridgeLifecycle {
     this.failure = undefined;
     this.contextFailure = undefined;
     this.lastContext = undefined;
-    this.activeTarget = ".";
+    this.targetSet = ["."];
+    this.lastMutationPath = undefined;
+    this.layoutIndexPrompt = undefined;
     this.onboardingNotified = false;
     this.validationFailure = undefined;
     this.validationTail = Promise.resolve();
@@ -91,6 +106,7 @@ class NormBridgeLifecycle {
       const payload = client.getStatus().ready?.payload;
       const tag = typeof payload?.tag === "string" ? payload.tag : "unknown";
       ctx.ui.setStatus(STATUS_KEY, `norm: ${tag}`);
+      void this.refreshLayoutIndex(client, ctx);
     } catch (error) {
       if (generation === this.generation) this.recordFailure(ctx, asBridgeError(error));
     }
@@ -111,7 +127,10 @@ class NormBridgeLifecycle {
   }
 
   updateTarget(toolName: string, input: Readonly<Record<string, unknown>>): void {
-    this.activeTarget = nextActiveTarget(this.activeTarget, toolName, input);
+    this.targetSet = nextTargetSet(this.targetSet, toolName, input);
+    if (toolName === "write" || toolName === "edit") {
+      this.lastMutationPath = mutationPath(input);
+    }
   }
 
   async inject(
@@ -126,11 +145,11 @@ class NormBridgeLifecycle {
 
     try {
       const value = await client.request<unknown>(
-        "promptContext",
-        { root: ctx.cwd, target: this.activeTarget },
+        "promptContextMulti",
+        { root: ctx.cwd, targets: this.targetSet },
         ctx.signal,
       );
-      const context = parsePromptContext(value);
+      const context = parsePromptContextMulti(value);
       this.contextFailure = undefined;
       this.lastContext = context;
       this.setContextStatus(ctx, context);
@@ -139,18 +158,21 @@ class NormBridgeLifecycle {
         return { messages: withoutPriorContext };
       }
 
+      const blocks = [this.layoutIndexPrompt, context.prompt].filter(
+        (block): block is string => block !== undefined,
+      );
       return {
         messages: [
           ...withoutPriorContext,
           {
             role: "custom" as const,
             customType: CONTEXT_MESSAGE_TYPE,
-            content: context.prompt,
+            content: blocks.join("\n"),
             display: false,
             details: {
               apiVersion: context.apiVersion,
-              target: context.target,
-              conventionPaths: context.conventionPaths,
+              targets: context.scopes.map((scope) => scope.target),
+              conventionPaths: uniqueConventionPaths(context),
             },
             timestamp: Date.now(),
           },
@@ -194,6 +216,11 @@ class NormBridgeLifecycle {
         if (presentation.notice) {
           ctx.ui.notify(presentation.notice.message, presentation.notice.level);
         }
+        const edited = this.lastMutationPath;
+        this.lastMutationPath = undefined;
+        if (edited !== undefined && (edited === ".norm" || edited.endsWith("/.norm"))) {
+          await this.refreshLayoutIndex(client, ctx);
+        }
         return presentation.patch;
       } catch (error) {
         if (error instanceof BridgeRequestCancelledError) return undefined;
@@ -215,19 +242,30 @@ class NormBridgeLifecycle {
       const target =
         typeof status.ready?.payload.target === "string" ? status.ready.payload.target : "unknown";
       const collected = this.lastContext
-        ? `; context ${this.lastContext.conventionPaths.length} @ ${this.lastContext.target}`
+        ? `; context ${uniqueConventionPaths(this.lastContext).length} @ ${this.lastContext.scopes
+            .map((scope) => scope.target)
+            .join(",")}`
         : "";
       return `pi-norm-spec runtime ready: ${tag} (${target})${collected}; ${INCOMPLETE_BEHAVIOR}`;
     }
     return `pi-norm-spec runtime is not started; ${INCOMPLETE_BEHAVIOR}`;
   }
 
-  private setContextStatus(ctx: ExtensionContext, context: PromptContextResult): void {
-    const count = context.conventionPaths.length;
-    ctx.ui.setStatus(
-      STATUS_KEY,
-      count === 0 ? `norm: empty @ ${context.target}` : `norm: ${count} @ ${context.target}`,
-    );
+  private setContextStatus(ctx: ExtensionContext, context: PromptContextMultiResult): void {
+    const count = uniqueConventionPaths(context).length;
+    const targets = context.scopes.map((scope) => scope.target).join(",");
+    ctx.ui.setStatus(STATUS_KEY, count === 0 ? `norm: empty @ ${targets}` : `norm: ${count} @ ${targets}`);
+  }
+
+  private async refreshLayoutIndex(client: BridgeClient, ctx: ExtensionContext): Promise<void> {
+    try {
+      const value = await client.request<unknown>("layoutIndex", { root: ctx.cwd }, ctx.signal);
+      const layout = parseLayoutIndex(value);
+      this.layoutIndexPrompt = layout.prompt ?? undefined;
+    } catch {
+      // Keep the previously rendered block: the layout is auxiliary guidance
+      // and a failed refresh must not blank it silently (D019).
+    }
   }
 
   private recordContextFailure(ctx: ExtensionContext, failure: BridgeClientError): void {
@@ -313,15 +351,36 @@ function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-function parsePromptContext(value: unknown): PromptContextResult {
+function parsePromptContextMulti(value: unknown): PromptContextMultiResult {
   if (
     !isRecord(value) ||
-    value.apiVersion !== PROMPT_CONTEXT_API ||
-    typeof value.target !== "string" ||
-    !Array.isArray(value.conventionPaths) ||
-    !value.conventionPaths.every((path) => typeof path === "string") ||
+    value.apiVersion !== PROMPT_CONTEXT_MULTI_API ||
+    typeof value.root !== "string" ||
+    !Array.isArray(value.scopes)
+  ) {
+    throw new BridgeClientError(
+      "pi-norm-spec/client/context-invalid",
+      "bridge prompt context had an unexpected schema or empty-state contract",
+    );
+  }
+  const scopes = value.scopes.map((scope) => {
+    if (
+      !isRecord(scope) ||
+      typeof scope.target !== "string" ||
+      !Array.isArray(scope.conventionPaths) ||
+      !scope.conventionPaths.every((path) => typeof path === "string")
+    ) {
+      throw new BridgeClientError(
+        "pi-norm-spec/client/context-invalid",
+        "bridge prompt context had an unexpected schema or empty-state contract",
+      );
+    }
+    return { target: scope.target, conventionPaths: [...scope.conventionPaths] };
+  });
+  const everyScopeEmpty = scopes.every((scope) => scope.conventionPaths.length === 0);
+  if (
     !(typeof value.prompt === "string" || value.prompt === null) ||
-    (value.conventionPaths.length === 0) !== (value.prompt === null)
+    everyScopeEmpty !== (value.prompt === null)
   ) {
     throw new BridgeClientError(
       "pi-norm-spec/client/context-invalid",
@@ -329,11 +388,35 @@ function parsePromptContext(value: unknown): PromptContextResult {
     );
   }
   return {
-    apiVersion: PROMPT_CONTEXT_API,
-    target: value.target,
-    conventionPaths: [...value.conventionPaths],
+    apiVersion: PROMPT_CONTEXT_MULTI_API,
+    root: value.root,
+    scopes,
     prompt: value.prompt,
   };
+}
+
+function parseLayoutIndex(value: unknown): LayoutIndexResult {
+  if (
+    !isRecord(value) ||
+    value.apiVersion !== LAYOUT_INDEX_API ||
+    !Array.isArray(value.entries) ||
+    !(typeof value.prompt === "string" || value.prompt === null) ||
+    (value.entries.length === 0) !== (value.prompt === null)
+  ) {
+    throw new BridgeClientError(
+      "pi-norm-spec/client/layout-index-invalid",
+      "bridge layout index had an unexpected schema or empty-state contract",
+    );
+  }
+  return { apiVersion: LAYOUT_INDEX_API, prompt: value.prompt };
+}
+
+function uniqueConventionPaths(context: PromptContextMultiResult): string[] {
+  const paths = new Set<string>();
+  for (const scope of context.scopes) {
+    for (const path of scope.conventionPaths) paths.add(path);
+  }
+  return [...paths];
 }
 
 function isContextMessage(value: unknown): boolean {

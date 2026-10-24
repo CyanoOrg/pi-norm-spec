@@ -112,42 +112,68 @@ if (mode === "startup-failure") {
   let active;
   let promptContextRequests = 0;
   let validateRequests = 0;
+  const layoutBlock = "PI_NORM_LAYOUT_INDEX_V1\n- .: root governance\nEND_PI_NORM_LAYOUT_INDEX_V1";
+  const layoutPromptForMode = () => {
+    if (mode === "layout") return layoutBlock;
+    if (mode === "layout-after-edit") return validateRequests > 0 ? layoutBlock : null;
+    return null;
+  };
   const lines = createInterface({ input: process.stdin });
   lines.on("line", (line) => {
     const request = JSON.parse(line);
     if (request.method === "status") {
       emit({ apiVersion, type: "response", id: request.id, status: "ok", result: { healthy: true } });
-    } else if (request.method === "promptContext" && mode === "context-error") {
+    } else if (request.method === "promptContextMulti" && mode === "context-error") {
       emit({
         apiVersion,
         type: "response",
         id: request.id,
         status: "error",
-        error: { code: "fake/context", message: "fake context failure", path: request.params.target },
+        error: { code: "fake/context", message: "fake context failure", path: (request.params.targets ?? []).join(",") },
       });
-    } else if (request.method === "promptContext" && mode === "context-error-once" && promptContextRequests++ === 0) {
+    } else if (request.method === "promptContextMulti" && mode === "context-error-once" && promptContextRequests++ === 0) {
       emit({
         apiVersion,
         type: "response",
         id: request.id,
         status: "error",
-        error: { code: "fake/context", message: "fake context failure", path: request.params.target },
+        error: { code: "fake/context", message: "fake context failure", path: (request.params.targets ?? []).join(",") },
       });
-    } else if (request.method === "promptContext" && mode === "cancel") {
+    } else if (request.method === "promptContextMulti" && mode === "cancel") {
       active = request.id;
-    } else if (request.method === "promptContext") {
-      const target = request.params.target;
+    } else if (request.method === "promptContextMulti") {
+      const targets = Array.isArray(request.params.targets) ? request.params.targets : ["."];
       const empty = mode === "empty-context";
+      const scopes = targets.map((target) => ({
+        target,
+        conventionPaths: empty ? [] : target.startsWith("docs") ? ["docs/.norm", ".norm"] : [".norm"],
+      }));
       emit({
         apiVersion,
         type: "response",
         id: request.id,
         status: "ok",
         result: {
-          apiVersion: "pi-norm-spec/prompt-context/v1",
-          target,
-          conventionPaths: empty ? [] : target.startsWith("docs") ? ["docs/.norm", ".norm"] : [".norm"],
-          prompt: empty ? null : `PI_NORM_SPEC_CONTEXT_V1\ntarget=${target}\nEND_PI_NORM_SPEC_CONTEXT_V1`,
+          apiVersion: "pi-norm-spec/prompt-context-multi/v1",
+          root: request.params.root ?? ".",
+          scopes,
+          prompt: empty
+            ? null
+            : `PI_NORM_SPEC_CONTEXT_MULTI_V1\ntargets=${targets.join(",")}\nEND_PI_NORM_SPEC_CONTEXT_MULTI_V1`,
+        },
+      });
+    } else if (request.method === "layoutIndex") {
+      const prompt = layoutPromptForMode();
+      emit({
+        apiVersion,
+        type: "response",
+        id: request.id,
+        status: "ok",
+        result: {
+          apiVersion: "pi-norm-spec/layout-index/v1",
+          root: request.params.root ?? ".",
+          entries: prompt ? [{ path: ".", description: "root governance" }] : [],
+          prompt,
         },
       });
     } else if (request.method === "validate" && mode === "validate-error") {

@@ -78,11 +78,11 @@ test("context hook injects root conventions without a persistent message hook", 
   assert.deepEqual(result.messages[1], {
     role: "custom",
     customType: "pi-norm-spec-context",
-    content: "PI_NORM_SPEC_CONTEXT_V1\ntarget=.\nEND_PI_NORM_SPEC_CONTEXT_V1",
+    content: "PI_NORM_SPEC_CONTEXT_MULTI_V1\ntargets=.\nEND_PI_NORM_SPEC_CONTEXT_MULTI_V1",
     display: false,
     details: {
-      apiVersion: "pi-norm-spec/prompt-context/v1",
-      target: ".",
+      apiVersion: "pi-norm-spec/prompt-context-multi/v1",
+      targets: ["."],
       conventionPaths: [".norm"],
     },
     timestamp: result.messages[1]?.timestamp,
@@ -115,7 +115,10 @@ test("built-in tool paths select the next provider target deterministically", as
     { type: "context", messages: [] },
     testHarness.ctx,
   )) as { messages: Array<Record<string, unknown>> };
-  assert.equal((result.messages[0]?.details as Record<string, unknown>).target, "docs");
+  assert.deepEqual((result.messages[0]?.details as Record<string, unknown>).targets, [
+    "docs",
+    ".",
+  ]);
 
   await testHarness.handlers.get("tool_call")?.(
     { type: "tool_call", toolCallId: "t3", toolName: "write", input: { path: "crates/new.rs", content: "" } },
@@ -126,7 +129,11 @@ test("built-in tool paths select the next provider target deterministically", as
     testHarness.ctx,
   )) as { messages: Array<Record<string, unknown>> };
   assert.equal(result.messages.length, 1, "prior ephemeral context should be replaced");
-  assert.equal((result.messages[0]?.details as Record<string, unknown>).target, "crates");
+  assert.deepEqual((result.messages[0]?.details as Record<string, unknown>).targets, [
+    "crates",
+    "docs",
+    ".",
+  ]);
 
   await testHarness.handlers.get("tool_call")?.(
     { type: "tool_call", toolCallId: "t4", toolName: "grep", input: { pattern: "Gate D" } },
@@ -136,7 +143,11 @@ test("built-in tool paths select the next provider target deterministically", as
     { type: "context", messages: [] },
     testHarness.ctx,
   )) as { messages: Array<Record<string, unknown>> };
-  assert.equal((result.messages[0]?.details as Record<string, unknown>).target, ".");
+  assert.deepEqual((result.messages[0]?.details as Record<string, unknown>).targets, [
+    ".",
+    "crates",
+    "docs",
+  ]);
 
   await testHarness.handlers.get("session_shutdown")?.(
     { type: "session_shutdown", reason: "quit" },
@@ -582,4 +593,83 @@ test("a child crash after ready becomes visible without silent restart", async (
   }
   assert.equal(testHarness.statuses.get("pi-norm-spec"), "norm: failed");
   assert.match(testHarness.notifications.at(-1)?.message ?? "", /pi-norm-spec\/client\//);
+});
+
+test("layout index rides the context seam as a cached prefix block (D019)", async () => {
+  const testHarness = harness({ cwd: "/project" });
+  registerNormContext(testHarness.pi, { resolveRuntime: () => launch("layout") });
+  await testHarness.handlers.get("session_start")?.(
+    { type: "session_start", reason: "startup" },
+    testHarness.ctx,
+  );
+  await new Promise((resolve) => setTimeout(resolve, 50));
+
+  const result = (await testHarness.handlers.get("context")?.(
+    { type: "context", messages: [] },
+    testHarness.ctx,
+  )) as { messages: Array<Record<string, unknown>> };
+  const content = result.messages[0]?.content as string;
+  assert.match(
+    content,
+    /^PI_NORM_LAYOUT_INDEX_V1\n- \.: root governance\nEND_PI_NORM_LAYOUT_INDEX_V1\nPI_NORM_SPEC_CONTEXT_MULTI_V1/,
+  );
+  assert.match(content, /END_PI_NORM_SPEC_CONTEXT_MULTI_V1$/);
+
+  await testHarness.handlers.get("session_shutdown")?.(
+    { type: "session_shutdown", reason: "quit" },
+    testHarness.ctx,
+  );
+});
+
+test("a successful .norm edit refreshes the cached layout index (D019)", async () => {
+  const testHarness = harness({ cwd: "/project" });
+  registerNormContext(testHarness.pi, { resolveRuntime: () => launch("layout-after-edit") });
+  await testHarness.handlers.get("session_start")?.(
+    { type: "session_start", reason: "startup" },
+    testHarness.ctx,
+  );
+  await new Promise((resolve) => setTimeout(resolve, 50));
+
+  let result = (await testHarness.handlers.get("context")?.(
+    { type: "context", messages: [] },
+    testHarness.ctx,
+  )) as { messages: Array<Record<string, unknown>> };
+  assert.match(
+    result.messages[0]?.content as string,
+    /^PI_NORM_SPEC_CONTEXT_MULTI_V1/,
+    "no layout block before a .norm edit",
+  );
+
+  const input = { path: ".norm", oldText: "a", newText: "b" };
+  await testHarness.handlers.get("tool_call")?.(
+    { type: "tool_call", toolCallId: "t-edit", toolName: "edit", input },
+    testHarness.ctx,
+  );
+  await testHarness.handlers.get("tool_result")?.(
+    {
+      type: "tool_result",
+      toolCallId: "t-edit",
+      toolName: "edit",
+      input,
+      content: [{ type: "text", text: "edited" }],
+      details: undefined,
+      isError: false,
+    },
+    testHarness.ctx,
+  );
+
+  result = (await testHarness.handlers.get("context")?.(
+    { type: "context", messages: [] },
+    testHarness.ctx,
+  )) as { messages: Array<Record<string, unknown>> };
+  assert.match(
+    result.messages[0]?.content as string,
+    /^PI_NORM_LAYOUT_INDEX_V1/,
+    "layout block appears after the .norm edit",
+  );
+
+  await testHarness.handlers.get("session_shutdown")?.(
+    { type: "session_shutdown", reason: "quit" },
+    testHarness.ctx,
+  );
 });

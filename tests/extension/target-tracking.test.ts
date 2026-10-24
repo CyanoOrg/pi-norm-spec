@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { nextActiveTarget } from "../../extensions/target-tracking.ts";
+import {
+  MAX_TRACKED_TARGETS,
+  mutationPath,
+  nextActiveTarget,
+  nextTargetSet,
+} from "../../extensions/target-tracking.ts";
 
 interface MatrixCase {
   name: string;
@@ -197,4 +202,27 @@ test("alternating files in one directory no longer churns the target", () => {
   const second = nextActiveTarget(first, "read", { path: "docs/b.md" });
   const third = nextActiveTarget(second, "edit", { file_path: "docs/c.md" });
   assert.deepEqual([first, second, third], ["docs", "docs", "docs"]);
+});
+
+test("recency set is most-recent-first, deduplicated, and capped (D019)", () => {
+  let set = ["."];
+  set = nextTargetSet(set, "read", { path: "docs/a.md" });
+  assert.deepEqual(set, ["docs", "."]);
+  set = nextTargetSet(set, "write", { path: "crates/b.rs" });
+  assert.deepEqual(set, ["crates", "docs", "."]);
+  set = nextTargetSet(set, "edit", { file_path: "docs/c.md" });
+  assert.deepEqual(set, ["docs", "crates", "."]);
+  set = nextTargetSet(set, "read", { path: "x/d.md" });
+  set = nextTargetSet(set, "read", { path: "y/e.md" });
+  set = nextTargetSet(set, "read", { path: "z/f.md" });
+  assert.equal(set.length, MAX_TRACKED_TARGETS);
+  assert.deepEqual(set, ["z", "y", "x", "docs"]);
+  set = nextTargetSet(set, "bash", { command: "ls" });
+  assert.deepEqual(set, ["z", "y", "x", "docs"], "untracked tools leave the set unchanged");
+});
+
+test("mutationPath resolves the file_path alias then path", () => {
+  assert.equal(mutationPath({ file_path: "docs/.norm", path: "other" }), "docs/.norm");
+  assert.equal(mutationPath({ path: ".norm" }), ".norm");
+  assert.equal(mutationPath({}), undefined);
 });
