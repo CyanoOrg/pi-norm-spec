@@ -1,7 +1,9 @@
 //! pi prompt-context identity over the shared family engine.
 
 pub use norm_adapter_engine::{
-    AdapterIdentity, MAX_PROMPT_CONTEXT_BYTES, PromptContext, PromptContextError,
+    AdapterIdentity, MAX_MULTI_PROMPT_BYTES, MAX_PROMPT_CONTEXT_BYTES, MultiPromptContext,
+    MultiPromptContextError, MultiScopeContext, MultiScopeConvention, PromptContext,
+    PromptContextError,
 };
 
 /// pi-norm-spec compile-time identity for the shared engine (D018).

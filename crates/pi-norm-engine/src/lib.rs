@@ -8,26 +8,31 @@
 
 #![forbid(unsafe_code)]
 
+mod layout_index;
 mod norm_protocol;
 mod prompt_context;
 mod upstream_pin;
 
+pub use layout_index::{LayoutIndex, LayoutIndexEntry, LayoutIndexError, MAX_LAYOUT_INDEX_BYTES};
 pub use norm_protocol::{
     NormCollectResponse, NormCollectedConvention, NormCompatibility, NormConformanceCandidate,
     NormConformanceFailure, NormConformanceIdentity, NormConformanceIssue, NormConformanceReport,
     NormConformanceSuite, NormConformanceSummary, NormDiagnostic, NormErrorDetail,
-    NormErrorResponse, NormProductIdentity, NormRustApiIdentity, NormValidateResponse,
-    NormValidationResult, NormValidationStatus, NormValidationSummary,
+    NormErrorResponse, NormProductIdentity, NormRustApiIdentity, NormScanCoverage, NormScanNaming,
+    NormScanRecurringFilename, NormScanResponse, NormScanSymlink, NormScanSymlinkAction,
+    NormScanSymlinkKind, NormScannedDirectory, NormValidateResponse, NormValidationResult,
+    NormValidationStatus, NormValidationSummary,
 };
 pub use prompt_context::{
-    MAX_PROMPT_CONTEXT_BYTES, PI_IDENTITY, PROMPT_CONTEXT_API_VERSION, PromptContext,
-    PromptContextError,
+    MAX_MULTI_PROMPT_BYTES, MAX_PROMPT_CONTEXT_BYTES, MultiPromptContext, MultiPromptContextError,
+    MultiScopeContext, MultiScopeConvention, PI_IDENTITY, PROMPT_CONTEXT_API_VERSION,
+    PromptContext, PromptContextError,
 };
 pub use upstream_pin::{
     NORM_COLLECT_API, NORM_COMPATIBILITY_API, NORM_CONFORMANCE_API, NORM_CONTRACT_BUNDLE_API,
-    NORM_ERROR_API, NORM_FORMAT, NORM_PRODUCT_NAME, NORM_PRODUCT_VERSION, NORM_VALIDATE_API,
-    RELEASE_ARTIFACT_API, UPSTREAM_CHECKSUM_FILE, UPSTREAM_PIN_API, UpstreamAssetPin, UpstreamPin,
-    native_rust_target,
+    NORM_ERROR_API, NORM_FORMAT, NORM_PRODUCT_NAME, NORM_PRODUCT_VERSION, NORM_SCAN_API,
+    NORM_VALIDATE_API, RELEASE_ARTIFACT_API, UPSTREAM_CHECKSUM_FILE, UPSTREAM_PIN_API,
+    UpstreamAssetPin, UpstreamPin, native_rust_target,
 };
 
 use serde::Serialize;

@@ -8,14 +8,17 @@ use std::{
     thread::{self, JoinHandle},
 };
 
-use pi_norm_engine::{BRIDGE_API_VERSION, NormCompatibility, PI_IDENTITY, PromptContext};
+use pi_norm_engine::{
+    BRIDGE_API_VERSION, LayoutIndex, MultiPromptContext, NormCompatibility, PI_IDENTITY,
+    PromptContext,
+};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use serde_json::Value;
 
 use crate::{
     UpstreamError,
     process::CancellationToken,
-    upstream::{UpstreamOperationError, UpstreamRuntime},
+    upstream::{UpstreamOperationError, UpstreamRuntime, validate_prompt_targets},
 };
 
 const MAX_FRAME_BYTES: usize = 1024 * 1024;
@@ -87,6 +90,25 @@ struct CollectParams {
 struct PromptContextParams {
     root: PathBuf,
     target: PathBuf,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct ScanParams {
+    root: PathBuf,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct LayoutIndexParams {
+    root: PathBuf,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct PromptContextMultiParams {
+    root: PathBuf,
+    targets: Vec<String>,
 }
 
 #[derive(Deserialize)]
@@ -242,6 +264,9 @@ impl SessionState<'_> {
             "status" => self.handle_status(&request),
             "collect" => self.handle_collect(request),
             "promptContext" => self.handle_prompt_context(request),
+            "scan" => self.handle_scan(request),
+            "layoutIndex" => self.handle_layout_index(request),
+            "promptContextMulti" => self.handle_prompt_context_multi(request),
             "validate" => self.handle_validate(request),
             "cancel" => self.handle_cancel(&request),
             "shutdown" => self.handle_shutdown(request),
@@ -315,6 +340,94 @@ impl SessionState<'_> {
         };
         let cancellation = CancellationToken::default();
         spawn_prompt_context(
+            self.runtime.clone(),
+            request.id.clone(),
+            params,
+            cancellation.clone(),
+            self.events.clone(),
+        );
+        self.active = Some(ActiveRequest {
+            id: request.id,
+            cancellation,
+        });
+        Ok(LoopControl::Continue)
+    }
+
+    fn handle_scan(&mut self, request: RequestFrame) -> Result<LoopControl, UpstreamError> {
+        if self.active.is_some() {
+            send_busy(self.output, &request.id)?;
+            return Ok(LoopControl::Continue);
+        }
+        let params: ScanParams = match request_params(&request) {
+            Ok(params) => params,
+            Err(error) => {
+                send_error(self.output, &request.id, &error)?;
+                return Ok(LoopControl::Continue);
+            }
+        };
+        let cancellation = CancellationToken::default();
+        spawn_scan(
+            self.runtime.clone(),
+            request.id.clone(),
+            params,
+            cancellation.clone(),
+            self.events.clone(),
+        );
+        self.active = Some(ActiveRequest {
+            id: request.id,
+            cancellation,
+        });
+        Ok(LoopControl::Continue)
+    }
+
+    fn handle_layout_index(&mut self, request: RequestFrame) -> Result<LoopControl, UpstreamError> {
+        if self.active.is_some() {
+            send_busy(self.output, &request.id)?;
+            return Ok(LoopControl::Continue);
+        }
+        let params: LayoutIndexParams = match request_params(&request) {
+            Ok(params) => params,
+            Err(error) => {
+                send_error(self.output, &request.id, &error)?;
+                return Ok(LoopControl::Continue);
+            }
+        };
+        let cancellation = CancellationToken::default();
+        spawn_layout_index(
+            self.runtime.clone(),
+            request.id.clone(),
+            params,
+            cancellation.clone(),
+            self.events.clone(),
+        );
+        self.active = Some(ActiveRequest {
+            id: request.id,
+            cancellation,
+        });
+        Ok(LoopControl::Continue)
+    }
+
+    fn handle_prompt_context_multi(
+        &mut self,
+        request: RequestFrame,
+    ) -> Result<LoopControl, UpstreamError> {
+        if self.active.is_some() {
+            send_busy(self.output, &request.id)?;
+            return Ok(LoopControl::Continue);
+        }
+        let params: PromptContextMultiParams = match request_params(&request) {
+            Ok(params) => params,
+            Err(error) => {
+                send_error(self.output, &request.id, &error)?;
+                return Ok(LoopControl::Continue);
+            }
+        };
+        if let Err(error) = validate_prompt_targets(&params.targets) {
+            send_error(self.output, &request.id, &error)?;
+            return Ok(LoopControl::Continue);
+        }
+        let cancellation = CancellationToken::default();
+        spawn_prompt_context_multi(
             self.runtime.clone(),
             request.id.clone(),
             params,
@@ -469,6 +582,107 @@ fn spawn_prompt_context(
             .collect_initialized(&params.root, &params.target, &cancellation)
             .and_then(|collection| {
                 PromptContext::from_collection(&PI_IDENTITY, collection).map_err(|error| {
+                    UpstreamOperationError::Failed(UpstreamError::external(
+                        error.code(),
+                        error.message(),
+                    ))
+                })
+            })
+            .and_then(to_value);
+        let _ = events.send(InputEvent::OperationFinished { id, result });
+    });
+}
+
+fn spawn_scan(
+    runtime: UpstreamRuntime,
+    id: String,
+    params: ScanParams,
+    cancellation: CancellationToken,
+    events: SyncSender<InputEvent>,
+) {
+    thread::spawn(move || {
+        let result = runtime
+            .scan_initialized(&params.root, &cancellation)
+            .and_then(to_value);
+        let _ = events.send(InputEvent::OperationFinished { id, result });
+    });
+}
+
+/// Maximum number of declaring directories one layout-index render collects
+/// (D019, mirroring dsh-norm-spec D015).
+const MAX_LAYOUT_DIRECTORIES: usize = 16;
+
+fn spawn_layout_index(
+    runtime: UpstreamRuntime,
+    id: String,
+    params: LayoutIndexParams,
+    cancellation: CancellationToken,
+    events: SyncSender<InputEvent>,
+) {
+    thread::spawn(move || {
+        let result = runtime
+            .scan_initialized(&params.root, &cancellation)
+            .and_then(|scan| {
+                let collections = scan
+                    .directories
+                    .iter()
+                    .filter(|directory| directory.has_norm)
+                    .take(MAX_LAYOUT_DIRECTORIES)
+                    .map(|directory| {
+                        runtime.collect_initialized(
+                            &params.root,
+                            std::path::Path::new(&directory.path),
+                            &cancellation,
+                        )
+                    })
+                    .collect::<Result<Vec<_>, UpstreamOperationError>>();
+                collections.and_then(|collections| {
+                    LayoutIndex::from_scan(
+                        &PI_IDENTITY,
+                        params.root.to_string_lossy().into_owned(),
+                        &scan,
+                        &collections,
+                    )
+                    .map_err(|error| {
+                        UpstreamOperationError::Failed(UpstreamError::external(
+                            error.code(),
+                            error.message(),
+                        ))
+                    })
+                })
+            })
+            .and_then(to_value);
+        let _ = events.send(InputEvent::OperationFinished { id, result });
+    });
+}
+
+fn spawn_prompt_context_multi(
+    runtime: UpstreamRuntime,
+    id: String,
+    params: PromptContextMultiParams,
+    cancellation: CancellationToken,
+    events: SyncSender<InputEvent>,
+) {
+    thread::spawn(move || {
+        let collections = params
+            .targets
+            .iter()
+            .map(|target| {
+                runtime.collect_initialized(
+                    &params.root,
+                    std::path::Path::new(target),
+                    &cancellation,
+                )
+            })
+            .collect::<Result<Vec<_>, UpstreamOperationError>>();
+        let result = collections
+            .and_then(|collections| {
+                MultiPromptContext::from_collections(
+                    &PI_IDENTITY,
+                    params.root.to_string_lossy().into_owned(),
+                    &collections,
+                )
+                .map_err(|error| {
                     UpstreamOperationError::Failed(UpstreamError::external(
                         error.code(),
                         error.message(),
@@ -809,8 +1023,9 @@ mod tests {
     use std::{collections::HashSet, io::Cursor};
 
     use super::{
-        BRIDGE_API_VERSION, CollectParams, MAX_FRAME_BYTES, PromptContextParams, decode_request,
-        read_input_frame, request_params,
+        BRIDGE_API_VERSION, CollectParams, MAX_FRAME_BYTES, PromptContextMultiParams,
+        PromptContextParams, ScanParams, decode_request, read_input_frame, request_params,
+        validate_prompt_targets,
     };
 
     #[test]
@@ -877,6 +1092,46 @@ mod tests {
         };
         assert_eq!(error.code(), "pi-norm-spec/bridge/params-invalid");
         Ok(())
+    }
+
+    #[test]
+    fn multi_params_reject_missing_targets() -> Result<(), Box<dyn std::error::Error>> {
+        let mut seen = HashSet::new();
+        let frame = format!(
+            r#"{{"apiVersion":"{BRIDGE_API_VERSION}","type":"request","id":"r-multi","method":"promptContextMulti","params":{{"root":"."}}}}"#
+        );
+        let request = decode_request(&frame, &mut seen)?;
+        let Err(error) = request_params::<PromptContextMultiParams>(&request) else {
+            return Err("promptContextMulti unexpectedly accepted a missing targets list".into());
+        };
+        assert_eq!(error.code(), "pi-norm-spec/bridge/params-invalid");
+        Ok(())
+    }
+
+    #[test]
+    fn scan_params_require_root() -> Result<(), Box<dyn std::error::Error>> {
+        let mut seen = HashSet::new();
+        let frame = format!(
+            r#"{{"apiVersion":"{BRIDGE_API_VERSION}","type":"request","id":"r-scan","method":"scan","params":{{"extra":1}}}}"#
+        );
+        let request = decode_request(&frame, &mut seen)?;
+        let Err(error) = request_params::<ScanParams>(&request) else {
+            return Err("scan unexpectedly accepted missing root".into());
+        };
+        assert_eq!(error.code(), "pi-norm-spec/bridge/params-invalid");
+        Ok(())
+    }
+
+    #[test]
+    fn multi_targets_follow_the_d019_rules() {
+        let ok = vec!["docs".to_owned(), "crates".to_owned()];
+        assert!(validate_prompt_targets(&ok).is_ok());
+        assert!(validate_prompt_targets(&[]).is_err());
+        assert!(validate_prompt_targets(&[String::new()]).is_err());
+        let duplicates = vec!["docs".to_owned(), "docs".to_owned()];
+        assert!(validate_prompt_targets(&duplicates).is_err());
+        let five = (0..5).map(|index| index.to_string()).collect::<Vec<_>>();
+        assert!(validate_prompt_targets(&five).is_err());
     }
 
     #[test]

@@ -20,6 +20,8 @@ pub const NORM_FORMAT: &str = "norm-spec/a1";
 pub const NORM_COMPATIBILITY_API: &str = "norm-spec/compatibility/v1";
 /// Required collect protocol.
 pub const NORM_COLLECT_API: &str = "norm-spec/collect/v1";
+/// Required scan protocol.
+pub const NORM_SCAN_API: &str = "norm-spec/scan/v1";
 /// Required validate protocol.
 pub const NORM_VALIDATE_API: &str = "norm-spec/validate/v1";
 /// Required shared error protocol.
