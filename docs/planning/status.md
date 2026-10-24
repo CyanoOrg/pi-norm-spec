@@ -98,6 +98,20 @@
   gates in `docs/planning/wsd-sdk-convergence-plan.md`. D018 awaits
   maintainer approval in its pull request; Phase 1 (repository skeleton and
   extraction) starts only after it.
+- 2026-10-24 (WS-D Phase 2 swap): `pi-norm-engine` internals now come from the
+  family SDK `norm-adapter-engine` pinned `=0.1.0` — `norm_protocol.rs` and
+  `prompt_context.rs` became facades over the SDK, the crate keeps only the
+  pi `AdapterIdentity`, the upstream pin, and the adapter-local surface, and
+  the bridge passes the identity explicitly at its single projection call
+  site. `UpstreamError` owns its code as `String` because SDK error codes are
+  runtime-built; the wire format is unchanged. Verification: fmt/clippy/test/
+  doc and the TypeScript suite (55/55) green, `scripts/check-upstream-release.sh`
+  end to end green under the swap (checksum, sealing, identity, 82-case
+  conformance, collect, validate, persistent bridge, real pi Alpha host,
+  production-shaped installation, real package-manager path, bundled
+  launcher), with byte-identity locked upstream by the SDK's dual-identity
+  golden fixtures. `docs/ARCHITECTURE.md` records the provenance change in
+  the same commit; the convergence plan closes Phases 0-2.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
   a minimal non-transforming admission-hook request. The request was posted on
   pi issue #7092 on 2026-08-13 and accepts source-ordered clearance followed by

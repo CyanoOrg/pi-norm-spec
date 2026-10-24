@@ -14,38 +14,37 @@ Every phase runs the full applicable gates before the next starts.
   identity-parameterization contract, exact-pinning policy, and
   extraction source (dsh-norm-spec `0.2.1`, cross-checked against this
   repository's identity-only diff).
-- [ ] Maintainer approval of D018 (this pull request's review; Phase 1
-      starts only after it).
+- [x] Maintainer approval of D018 (PR #14, merged 2026-10-23).
 
 ## Phase 1 — SDK repository skeleton and extraction
 
-- [ ] Create `CyanoOrg/norm-adapter-sdk` with the D014-style governance
+- [x] Create `CyanoOrg/norm-adapter-sdk` with the D014-style governance
       pattern: protected `main` (integrity, quality, review layers),
       immutable `v*` tags, read-only CI token, organization teams.
-- [ ] Extract from dsh-norm-spec `0.2.1`: `norm_protocol.rs` (collect,
+- [x] Extract from dsh-norm-spec `0.2.1`: `norm_protocol.rs` (collect,
       validate, scan mirrors), `prompt_context.rs`,
       `multi_prompt_context.rs`, `layout_index.rs`.
-- [ ] Parameterize the three D001 identity points (machine API strings,
+- [x] Parameterize the three D001 identity points (machine API strings,
       prompt header/footer markers, error-code prefixes); no other
       host-specific behavior enters the SDK.
-- [ ] SDK's own gates: fmt, clippy `-D warnings`, tests, doc; golden
+- [x] SDK's own gates: fmt, clippy `-D warnings`, tests, doc; golden
       output fixtures proving both hosts' identity sets render
       byte-identically to each adapter's current output.
-- [ ] SDK `0.1.0` on crates.io under the exact-pin policy; repository
+- [x] SDK `0.1.0` on crates.io under the exact-pin policy; repository
       name and crate label reviewed with the maintainer before the first
       publication.
 
 ## Phase 2 — pi-norm-spec swap (unreleased main)
 
-- [ ] Replace `pi-norm-engine` internals with the SDK dependency
+- [x] Replace `pi-norm-engine` internals with the SDK dependency
       (`=0.1.0`); keep module re-exports so the bridge and tests see an
       unchanged surface.
-- [ ] Byte-identical `pi-norm-spec/prompt-context/v1` output: golden
+- [x] Byte-identical `pi-norm-spec/prompt-context/v1` output: golden
       comparison against the pre-swap output on the full conformance
       corpus; 82-case conformance, collect, validate unchanged.
-- [ ] Full local gates plus `scripts/check-upstream-release.sh` end to
+- [x] Full local gates plus `scripts/check-upstream-release.sh` end to
       end; real-host smoke with the current verified pi line.
-- [ ] Update `docs/ARCHITECTURE.md` for the engine-side provenance
+- [x] Update `docs/ARCHITECTURE.md` for the engine-side provenance
       change in the same commit as the swap.
 
 ## Phase 3 — Multi-target and layout index through the SDK
