@@ -5,6 +5,8 @@ preparation.
 
 ## [Unreleased]
 
+## [0.1.0-beta.3] - 2026-10-24
+
 ### Added
 
 - Multi-target prompt context (D019): bridge `promptContextMulti` with a
@@ -15,6 +17,11 @@ preparation.
   and after successful `.norm` edits.
 - Bridge requests serialize client-side, respecting the protocol's
   one-active-operation rule for concurrent callers.
+
+### Changed
+
+- Verified host line moved from pi `1.2.0` to `1.4.0` (D017 H4): release
+  manifests bind the new host identity; the peer range is unchanged.
 
 ## [0.1.0-beta.2] - 2026-10-24
 

@@ -124,6 +124,19 @@
   82-case conformance, persistent bridge with three-method assertions,
   real pi Alpha host, re-scoping with recency semantics, production
   installation, and the real package-manager path.
+- 2026-10-24 (H4 + beta.3 preparation): pi `1.4.0` shipped and the
+  maintainer upgraded (new managed install location). Full-text changelog
+  scan of 1.3.0/1.4.0 found zero overlap with the consumed surface — the
+  one extension-affecting change (`before_provider_headers` attribution)
+  is an event this adapter never registers, so no adaptation was needed.
+  H4 re-verification on `build/pi-1x-host-1.4.0`: devDependency pinned at
+  exactly `1.4.0`, identity test updated, and the full local gates plus
+  `scripts/check-upstream-release.sh` green under the new SDK. The branch
+  also carries the `0.1.0-beta.3` release preparation (D019 entries plus
+  the host-line change promoted in the changelog;
+  `docs/planning/beta3-release-review.md` records the checklist), and the
+  live resumed session kept byte-identical beta.2 injection under
+  `1.4.0` throughout.
 - 2026-10-24 (beta.2 preparation): `0.1.0-beta.2` release preparation landed
   on `release/0.1.0-beta.2` — workspace and all five package identities
   bumped, `[Unreleased]` promoted with the D017 host line, D018 SDK

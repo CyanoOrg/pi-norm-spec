@@ -96,7 +96,7 @@ mod tests {
             identity.prompt_context_api_version,
             PROMPT_CONTEXT_API_VERSION
         );
-        assert_eq!(identity.package_version, "0.1.0-beta.2");
+        assert_eq!(identity.package_version, "0.1.0-beta.3");
     }
 
     #[test]
