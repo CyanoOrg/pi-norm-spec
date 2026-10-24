@@ -26,11 +26,44 @@ Scope, evidence, and publication checklist for `v0.1.0-beta.2` (2026-10-24).
 
 ## Publication checklist
 
-- [ ] Host-verified candidate from CI on the exact release commit: five
-      archives, five checksums, aggregate inventory.
-- [ ] npm publish: four native packages first, then root, under the `beta`
-      dist-tag.
-- [ ] Signed tag `v0.1.0-beta.2` on the exact release commit.
-- [ ] GitHub Release with the five artifacts and checksums.
-- [ ] Post-publication smoke through the real
-      `pi install npm:@cyanoorg/pi-norm-spec@0.1.0-beta.2` path.
+- [x] Host-verified candidate from CI on the exact release commit: five
+      archives, five checksums, aggregate inventory (push-event run
+      40074403212 on a6e1ba8; five sha256 checks green; inventory revision
+      bound to a6e1ba8).
+- [x] npm publish: four native packages first, then root, under the `beta`
+      dist-tag (maintainer-executed with browser 2FA; `beta` moved to
+      0.1.0-beta.2, `latest` intentionally unchanged at 0.1.0-beta.1).
+- [x] Signed tag `v0.1.0-beta.2` on the exact release commit (verified).
+- [x] GitHub Release with the five artifacts and checksums (plus the
+      aggregate candidate inventory; eleven assets).
+- [x] Post-publication smoke through the real
+      `pi install npm:@cyanoorg/pi-norm-spec@0.1.0-beta.2` path (fresh
+      managed install, platform package restored, strict fixture
+      validation, marker token returned verbatim through a new pi
+      process).
+
+## Post-script (2026-10-24): operational lessons
+
+Two registry mechanics surfaced during this publication; both are now part
+of the working procedure for the next release.
+
+1. **Candidate artifacts must come from the push-event run.** A
+   `pull_request`-event run shares the PR head SHA but its `GITHUB_SHA` is
+   GitHub's ephemeral merge commit (`refs/pull/N/merge`), so the aggregate
+   inventory it emits binds a revision that does not exist on `main`. The
+   first downloaded set was rejected exactly here: inventory revision
+   `bc4ae96f` versus the release commit `a6e1ba8`. Always select the
+   `push`-event run on `main` and re-verify the inventory's bound revision.
+
+2. **Stale packuments propagate per package, and npm silently skips
+   unresolvable optional dependencies.** After publication, the five
+   packuments became visible at different times (rounds of minutes). An
+   install executed inside that window resolved the root package but hit
+   `ETARGET` on the still-stale platform packument — and because platform
+   packages are `optionalDependencies`, npm skipped it silently, producing
+   a "successful" install with no runtime. Procedure: during the
+   propagation window, refresh every packument
+   (`npm view <pkg> versions --prefer-online` for root and all four
+   platform packages) before installing, and verify the platform package
+   directory and its `upstream/bin/norm` exist before declaring an
+   install good.
