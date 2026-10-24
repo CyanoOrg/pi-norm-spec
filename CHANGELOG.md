@@ -5,6 +5,17 @@ preparation.
 
 ## [Unreleased]
 
+### Added
+
+- Multi-target prompt context (D019): bridge `promptContextMulti` with a
+  recency set of at most four directories, shared-content-once merge
+  through the family SDK, riding the per-turn context seam.
+- Layout index (D019): bridge `scan` and `layoutIndex` methods; the cached
+  layout block prefixes the context message and refreshes at session start
+  and after successful `.norm` edits.
+- Bridge requests serialize client-side, respecting the protocol's
+  one-active-operation rule for concurrent callers.
+
 ## [0.1.0-beta.2] - 2026-10-24
 
 ### Changed

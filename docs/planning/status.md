@@ -112,6 +112,18 @@
   launcher), with byte-identity locked upstream by the SDK's dual-identity
   golden fixtures. `docs/ARCHITECTURE.md` records the provenance change in
   the same commit; the convergence plan closes Phases 0-2.
+- 2026-10-24 (WS-D Phase 3 implementation): D019 shipped on
+  `feat/phase3-multi-target-layout`. The bridge gained additive `scan`,
+  `layoutIndex`, and `promptContextMulti` methods (D019 target rules:
+  non-empty, duplicate-free, capped at 4); the extension tracks a recency
+  set, injects the multi-target context with the cached layout-index
+  prefix block, refreshes the layout at session start and after
+  successful `.norm` edits, and serializes bridge requests client-side
+  after the one-active-operation race surfaced in the Alpha gate. The
+  full `check-upstream-release.sh` chain is green under the new flow:
+  82-case conformance, persistent bridge with three-method assertions,
+  real pi Alpha host, re-scoping with recency semantics, production
+  installation, and the real package-manager path.
 - 2026-10-24 (beta.2 preparation): `0.1.0-beta.2` release preparation landed
   on `release/0.1.0-beta.2` — workspace and all five package identities
   bumped, `[Unreleased]` promoted with the D017 host line, D018 SDK

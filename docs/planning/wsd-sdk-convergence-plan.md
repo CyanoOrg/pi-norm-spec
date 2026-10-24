@@ -49,12 +49,11 @@ Every phase runs the full applicable gates before the next starts.
 
 ## Phase 3 — Multi-target and layout index through the SDK
 
-- [x] Decision record for the pi-side wiring (D019, this phase's first
-      step; awaiting maintainer approval).
-- [ ] Multi-target context (WS-D item 2) per D019: bridge
+- [x] Decision record for the pi-side wiring (D019, approved in PR #21).
+- [x] Multi-target context (WS-D item 2) per D019: bridge
       `promptContextMulti`, recency-set tracking, multi block on the
       context seam.
-- [ ] Real `scan` bridge method and the layout-index block per D019
+- [x] Real `scan` bridge method and the layout-index block per D019
       (WS-D item 3): bridge `scan` and `layoutIndex`, cached prefix block
       refreshed at session start and after `.norm` edits.
 - [ ] dsh-norm-spec swaps onto the same SDK version on its own track;
