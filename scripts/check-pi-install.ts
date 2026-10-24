@@ -212,7 +212,7 @@ try {
     ]);
     let injected = contextMessage(messages);
     assert.ok(injected, "the root context must inject through the managed install");
-    assert.equal((injected.details as { target: string }).target, ".");
+    assert.deepEqual((injected.details as { targets: string[] }).targets, ["."]);
 
     await runner.emitToolCall({
       type: "tool_call",
@@ -223,9 +223,9 @@ try {
     messages = await runner.emitContext(messages);
     injected = contextMessage(messages);
     assert.ok(injected);
-    assert.equal(
-      (injected.details as { target: string }).target,
-      "docs/planning",
+    assert.deepEqual(
+      (injected.details as { targets: string[] }).targets,
+      ["docs/planning", "."],
       "read must re-scope to the parent directory through the managed install",
     );
     assert.deepEqual((injected.details as { conventionPaths: string[] }).conventionPaths, [

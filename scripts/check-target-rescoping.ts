@@ -126,7 +126,7 @@ try {
   ]);
   let injected = contextMessage(messages);
   assert.ok(injected, "the first provider turn must inject the root-only context");
-  assert.equal((injected.details as { target: string }).target, ".");
+  assert.deepEqual((injected.details as { targets: string[] }).targets, ["."]);
   assert.deepEqual((injected.details as { conventionPaths: string[] }).conventionPaths, [
     ".norm",
   ]);
@@ -140,16 +140,16 @@ try {
   messages = await runner.emitContext(messages);
   injected = contextMessage(messages);
   assert.ok(injected, "the follow-up provider turn must inject the subdirectory context");
-  assert.equal(
-    (injected.details as { target: string }).target,
-    "sub",
-    "read must re-scope the target to the file's parent directory",
+  assert.deepEqual(
+    (injected.details as { targets: string[] }).targets,
+    ["sub", "."],
+    "read must re-scope the recency set to the file's parent directory",
   );
   assert.deepEqual((injected.details as { conventionPaths: string[] }).conventionPaths, [
     "sub/.norm",
     ".norm",
   ]);
-  assert.equal(statuses.get("pi-norm-spec"), "norm: 2 @ sub");
+  assert.equal(statuses.get("pi-norm-spec"), "norm: 2 @ sub,.");
 
   await runner.emitToolCall({
     type: "tool_call",
@@ -160,10 +160,10 @@ try {
   messages = await runner.emitContext(messages);
   injected = contextMessage(messages);
   assert.ok(injected);
-  assert.equal(
-    (injected.details as { target: string }).target,
-    "sub",
-    "a sibling file in the same directory must not churn the target",
+  assert.deepEqual(
+    (injected.details as { targets: string[] }).targets,
+    ["sub", "."],
+    "a sibling file in the same directory must not churn the recency set",
   );
   assert.deepEqual((injected.details as { conventionPaths: string[] }).conventionPaths, [
     "sub/.norm",

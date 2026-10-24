@@ -160,7 +160,7 @@ await withPiHost(projectRoot, async ({ agentDir, observation, runner }) => {
   let injected = contextMessage(messages);
   assert.ok(injected);
   assert.equal(injected.display, false);
-  assert.equal((injected.details as { target: string }).target, ".");
+  assert.deepEqual((injected.details as { targets: string[] }).targets, ["."]);
 
   await runner.emitToolCall({
     type: "tool_call",
@@ -171,12 +171,15 @@ await withPiHost(projectRoot, async ({ agentDir, observation, runner }) => {
   messages = await runner.emitContext(messages);
   injected = contextMessage(messages);
   assert.ok(injected);
-  assert.equal((injected.details as { target: string }).target, "docs/planning");
+  assert.deepEqual((injected.details as { targets: string[] }).targets, [
+    "docs/planning",
+    ".",
+  ]);
   assert.deepEqual((injected.details as { conventionPaths: string[] }).conventionPaths, [
     "docs/.norm",
     ".norm",
   ]);
-  assert.equal(observation.statuses.get("pi-norm-spec"), "norm: 2 @ docs/planning");
+  assert.equal(observation.statuses.get("pi-norm-spec"), "norm: 2 @ docs/planning,.");
 
   const green = await runner.emitToolResult({
     type: "tool_result",
