@@ -81,7 +81,7 @@ test("release builders bind exact source, package, host, and upstream identities
   });
   assert.deepEqual(root.host, {
     package: "@earendil-works/pi-coding-agent",
-    version: "1.2.0",
+    version: "1.4.0",
   });
   assert.equal((root.packages as unknown[]).length, 4);
   assert.equal((root.upstream as { sourceRevision: string }).sourceRevision, "5c781964b6d9b11c52f29e5b6e2bbe13c25a5ee0");
