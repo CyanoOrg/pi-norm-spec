@@ -114,6 +114,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
 
 [[package]]
+name = "norm-adapter-engine"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e4dd94980292c8760c09bc50a64d4be7f792e382401e4f3d087074e922745af5"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "once_cell"
 version = "1.21.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -134,6 +144,7 @@ dependencies = [
 name = "pi-norm-engine"
 version = "0.1.0-beta.1"
 dependencies = [
+ "norm-adapter-engine",
  "serde",
  "serde_json",
 ]

@@ -31,15 +31,15 @@ const CONTRACT_LOCK_FILE: &str = "contract/bundle.lock.json";
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UpstreamError {
-    code: &'static str,
+    code: String,
     message: String,
     path: Option<String>,
 }
 
 impl UpstreamError {
-    fn new(code: &'static str, message: impl Into<String>) -> Self {
+    fn new(code: impl Into<String>, message: impl Into<String>) -> Self {
         Self {
-            code,
+            code: code.into(),
             message: message.into(),
             path: None,
         }
@@ -47,7 +47,7 @@ impl UpstreamError {
 
     /// Construct a stable error at an external command boundary.
     #[must_use]
-    pub fn external(code: &'static str, message: impl Into<String>) -> Self {
+    pub fn external(code: impl Into<String>, message: impl Into<String>) -> Self {
         Self::new(code, message)
     }
 
@@ -58,8 +58,8 @@ impl UpstreamError {
 
     /// Stable machine-readable error code.
     #[must_use]
-    pub const fn code(&self) -> &'static str {
-        self.code
+    pub fn code(&self) -> &str {
+        &self.code
     }
 
     /// Human-readable diagnostic.

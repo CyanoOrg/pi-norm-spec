@@ -18,12 +18,18 @@ pi-norm-bridge                process protocol and lifecycle
       │                                  │
       │                                  │ normalized machine responses
       ▼                                  ▼
-pi-norm-engine                prompt context; future typed policy
+pi-norm-engine                pi identity and upstream pin
+      │
+      ▼
+norm-adapter-engine           prompt context; future typed policy
 ```
 
 ## `pi-norm-engine`
 
-Consumes normalized, versioned norm-spec data and calculates active prompt
+The engine-side merge/projection is owned by the family SDK
+`norm-adapter-engine` (pinned `=0.1.0`, D018): this crate supplies the pi
+`AdapterIdentity`, the upstream pin, and the adapter-local protocol surface.
+It consumes normalized, versioned norm-spec data and calculates active prompt
 context. It may calculate enforceable policy decisions only after the D010
 upstream and host prerequisites exist. It does not parse YAML or traverse
 `.norm` inheritance itself.

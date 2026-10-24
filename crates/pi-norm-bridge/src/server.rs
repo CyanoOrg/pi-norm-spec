@@ -8,7 +8,7 @@ use std::{
     thread::{self, JoinHandle},
 };
 
-use pi_norm_engine::{BRIDGE_API_VERSION, NormCompatibility, PromptContext};
+use pi_norm_engine::{BRIDGE_API_VERSION, NormCompatibility, PI_IDENTITY, PromptContext};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use serde_json::Value;
 
@@ -468,7 +468,7 @@ fn spawn_prompt_context(
         let result = runtime
             .collect_initialized(&params.root, &params.target, &cancellation)
             .and_then(|collection| {
-                PromptContext::from_collection(collection).map_err(|error| {
+                PromptContext::from_collection(&PI_IDENTITY, collection).map_err(|error| {
                     UpstreamOperationError::Failed(UpstreamError::external(
                         error.code(),
                         error.message(),
