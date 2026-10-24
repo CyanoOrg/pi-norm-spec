@@ -31,7 +31,7 @@ format and semantics run under a different host in
 [dsh-norm-spec](https://github.com/CyanoOrg/dsh-norm-spec) — the delivery
 layer is the host-specific part, and that boundary is the point.
 
-**Status: `0.1.0-beta.1` release preparation. The GitHub repository
+**Status: `0.1.0-beta.2` release preparation. The GitHub repository
 is public and protected; no npm package is published yet. Gate B through E3
 are complete (see `docs/planning/status.md` for the execution state);
 E4 — the first public beta — awaits its release checkpoints.**

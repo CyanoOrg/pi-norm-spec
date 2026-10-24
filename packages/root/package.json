@@ -1,6 +1,6 @@
 {
   "name": "@cyanoorg/pi-norm-spec",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.0-beta.2",
   "description": "Rust-backed pi adapter for norm-spec conventions",
   "license": "MIT",
   "author": "Wade <bravetwo@163.com>",
@@ -38,9 +38,9 @@
     "@earendil-works/pi-coding-agent": ">=0.84.1 <2"
   },
   "optionalDependencies": {
-    "@cyanoorg/pi-norm-spec-linux-x64": "0.1.0-beta.1",
-    "@cyanoorg/pi-norm-spec-darwin-arm64": "0.1.0-beta.1",
-    "@cyanoorg/pi-norm-spec-darwin-x64": "0.1.0-beta.1",
-    "@cyanoorg/pi-norm-spec-win32-x64": "0.1.0-beta.1"
+    "@cyanoorg/pi-norm-spec-linux-x64": "0.1.0-beta.2",
+    "@cyanoorg/pi-norm-spec-darwin-arm64": "0.1.0-beta.2",
+    "@cyanoorg/pi-norm-spec-darwin-x64": "0.1.0-beta.2",
+    "@cyanoorg/pi-norm-spec-win32-x64": "0.1.0-beta.2"
   }
 }

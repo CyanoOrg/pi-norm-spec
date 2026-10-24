@@ -24,7 +24,7 @@
 是 [dsh-norm-spec](https://github.com/CyanoOrg/dsh-norm-spec)——递送层
 是宿主相关的部分，这条边界正是意义所在。
 
-**状态：`0.1.0-beta.1` 发布准备中。GitHub 仓库公开且受保护；
+**状态：`0.1.0-beta.2` 发布准备中。GitHub 仓库公开且受保护；
 npm 包尚未发布。Gate B 至 E3 已完成（执行状态见 `docs/planning/status.md`）；
 剩余 E4——首个公开 beta 的发布检查点。**
 

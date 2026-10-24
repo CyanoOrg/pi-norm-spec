@@ -5,6 +5,26 @@ preparation.
 
 ## [Unreleased]
 
+## [0.1.0-beta.2] - 2026-10-24
+
+### Changed
+
+- Verified host line moved from pi `0.84.1` to `1.2.0` (D017): release
+  manifests record the new host binding, and the advisory peer range narrows
+  from `*` to `>=0.84.1 <2`.
+- Engine-side merge/projection adopted from the family SDK
+  `norm-adapter-engine` `=0.1.0` (D018): `pi-norm-engine` becomes an
+  identity-and-pin facade; `pi-norm-spec/prompt-context/v1` output is
+  byte-for-byte unchanged, locked by dual-identity golden fixtures and the
+  full release chain.
+
+### Fixed
+
+- Development-scope `undici` resolved to `8.12.3`, clearing six registry
+  advisories; dependabot ignores automated host bumps (D017) and
+  `@types/node` majors beyond the engines floor (`22.20.5`, within the
+  `22.x` line).
+
 ## [0.1.0-beta.1] - 2026-09-04
 
 ### Added

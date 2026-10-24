@@ -112,6 +112,14 @@
   launcher), with byte-identity locked upstream by the SDK's dual-identity
   golden fixtures. `docs/ARCHITECTURE.md` records the provenance change in
   the same commit; the convergence plan closes Phases 0-2.
+- 2026-10-24 (beta.2 preparation): `0.1.0-beta.2` release preparation landed
+  on `release/0.1.0-beta.2` — workspace and all five package identities
+  bumped, `[Unreleased]` promoted with the D017 host line, D018 SDK
+  adoption, and dependency-hygiene entries, version assertions updated
+  (engine identity test, contract identity fixture, package-runtime and
+  package-candidate expectations), and `docs/planning/beta2-release-review.md`
+  recording scope, evidence, and the publication checklist. All local gates
+  green under the new identity.
 - `docs/planning/pi-final-tool-input-request.md` turns the pi prerequisite into
   a minimal non-transforming admission-hook request. The request was posted on
   pi issue #7092 on 2026-08-13 and accepts source-ordered clearance followed by
