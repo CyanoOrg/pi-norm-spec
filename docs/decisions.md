@@ -584,3 +584,60 @@ live. The phase plan and gates live in
 `docs/planning/wsd-sdk-convergence-plan.md`; the SDK repository name and
 crate label are reviewable during Phase 1 without reopening this record's
 structure.
+
+## D019 — Multi-target context and the layout index through the family SDK
+
+**Decision.** WS-D items 2 and 3 ship as three additive surfaces rendered
+by the family SDK (`norm-adapter-engine` `=0.1.0`), mirroring the shapes
+dsh-norm-spec already operates (its D014/D015/D016):
+
+1. The bridge gains three additive `pi-norm-spec/bridge/v1` methods; no
+   existing method changes. `scan` (`root`) invokes the pinned upstream
+   `norm scan` and returns `norm-spec/scan/v1` verbatim behind the bridge
+   framing. `layoutIndex` (`root`) scans, collects each declaring
+   directory capped at 16 in scan order, and renders
+   `pi-norm-spec/layout-index/v1` through the SDK's `LayoutIndex` and
+   `PI_IDENTITY` (64 KiB fail-not-truncate). `promptContextMulti`
+   (`root`, `targets`: non-empty, duplicate-free, capped at 4) fans out
+   serially over `collect` v1 in request order under the existing
+   one-active-operation rule with one cancellation token, and renders
+   `pi-norm-spec/prompt-context-multi/v1` through the SDK's
+   `MultiPromptContext`: one scope per target in request order,
+   most-specific-first within a scope, and a convention collected by
+   several scopes rendered with full content exactly once — in the first
+   scope that collects it — with later scopes carrying shared markers;
+   the 256 KiB fail-not-truncate budget is shared, and `prompt` is `null`
+   only when every scope is empty. `promptContext` stays single-target.
+
+2. The extension's target tracking (D016) extends from one active target
+   to a bounded recency set of at most 4 directories, most recent first;
+   built-in `read`/`edit`/`write` paths update the set with
+   parent-directory normalization unchanged.
+
+3. Mounting seam: pi has no system-prompt-section surface, so both ride
+   D009's per-turn hidden message as two self-describing marked blocks —
+   the cached layout-index block (when non-empty), then the fresh
+   multi-target context block. The layout index refreshes at session
+   start and after a successful built-in edit to a `.norm` file (the
+   D011 post-edit path already detects those); between refreshes its
+   text is stable.
+
+**Context.** dsh D016's problem transfers directly: alternating or
+parallel work across directories made the single target flap — each
+directory change rewrote the per-turn message with at most one scope's
+conventions visible. dsh D015's education-over-enforcement rationale
+applies unchanged: the first action into a directory cannot be preceded
+by that directory's conventions, and the statically enumerable layout
+map lets the model be educated instead of blocked (D010's stance).
+Merge semantics remain projection-level; inheritance itself stays
+upstream pending `collect/v2` (WS-E).
+
+**Rationale.** Method-per-shape keeps every parameter set strictly
+validatable under `deny_unknown_fields`, and additive methods are
+invisible to callers that never use them. The shared-content rule keeps
+the merged prompt near the size of a single chain despite multiple
+scopes, and the recency cap bounds the fan-out at four upstream spawns.
+Riding the existing context seam adds no new host surface and leaves
+D009, D011, D016, and D010 untouched. The SDK already carries the
+reference implementations with pi-identity golden coverage, so pi-side
+work is wiring, gates, and host evidence — not semantics.
